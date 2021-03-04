@@ -10,7 +10,7 @@ export const SectionTitle = styled.h2`
       right: 0;
       bottom: -2px;
       height: 2px;
-      background-color: #FF9BFF;
+      background-color: ${props.theme.flavors.pink};
     }
   `}
 `;

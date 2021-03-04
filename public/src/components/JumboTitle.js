@@ -9,7 +9,7 @@ export const JumboTitle = styled.h1`
         z-index: -1;
         color: rgba(0,0,0,0.05);
         font-size: 95px;
-        left: -12%;
+        left: 0%;
         bottom: 0;
       }
     `

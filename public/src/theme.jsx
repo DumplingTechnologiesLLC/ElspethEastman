@@ -16,16 +16,20 @@ const mixins = {
 const buttonAnimationTiming = '.15s';
 const buttonAnimationAlgorithm = 'ease-in';
 export const theme = {
+  maxContentWidth: '1200px',
   flavors: {
     green: '#00fd9a',
     blue: '#01d1fe',
     blueTransparent: 'rgba(1, 209, 254, .7)',
     secondaryActive: '#f1f1f1',
     secondaryShadow: '#d6d6d6',
+    navbar: 'white',
     secondary: 'white',
     midBlue: '#00B3D9',
     pink: '#ff9bff',
     yellow: '#feff8a',
+    pie: '#007A94',
+    pieHover: '#0098B8',
   },
   button: {
     defaultStyling: css`

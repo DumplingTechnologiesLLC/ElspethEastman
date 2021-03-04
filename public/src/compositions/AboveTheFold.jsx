@@ -1,19 +1,39 @@
 import React from 'react';
 // import PropTypes from 'prop-types';
-import JumboTitle from './JumboTitle';
-import ColoredText from './ColoredText';
-import { Column, Row } from './Layout';
-import ContentParagraph from './ContentParagraph';
+import styled from 'styled-components';
+import JumboTitle from '../components/JumboTitle';
+import ColoredText from '../components/ColoredText';
+import { Column, Row } from '../components/Layout';
+import ContentParagraph from '../components/ContentParagraph';
 import HeroImage from '../assets/hero.png';
-import TheHeroImage from './HeroImage';
-import ButtonGroup from './ButtonGroup';
-import PrimaryButton from './PrimaryButton';
-import SecondaryButton from './SecondaryButton';
+import TheHeroImage from '../components/HeroImage';
+import ButtonGroup from '../components/ButtonGroup';
+import PrimaryButton from '../components/PrimaryButton';
+import SecondaryButton from '../components/SecondaryButton';
+
+const AboveTheFoldContainer = styled(Row)`
+  margin-top: 3em;
+  position: relative;
+`;
+const ImageContainer = styled(Column)`
+  display: flex;
+  justify-content: flex-end;
+`;
+const AboveTheFoldButtons = styled(ButtonGroup)`
+  margin-top: 2em;
+`;
+const PageAnchor = styled.span`
+  position: absolute;
+  top: -200px;
+  opacity: 0;
+  z-index: -1;
+`;
 
 export const AboveTheFold = () => (
-  <Row>
+  <AboveTheFoldContainer>
     <Column columnCount={2}>
-      <JumboTitle shadowText="EASTMAN">
+      <PageAnchor id="PageStart" />
+      <JumboTitle id="PageTitle" shadowText="EASTMAN">
         HI, I&apos;M
         {' '}
         <ColoredText flavor="pink">ELSPETH!</ColoredText>
@@ -32,19 +52,19 @@ export const AboveTheFold = () => (
       <ContentParagraph>
         Let’s do lunch, because lunch is tasty.
       </ContentParagraph>
-      <ButtonGroup separated>
+      <AboveTheFoldButtons separated>
         <PrimaryButton>
           See my work
         </PrimaryButton>
         <SecondaryButton>
           Get in touch
         </SecondaryButton>
-      </ButtonGroup>
+      </AboveTheFoldButtons>
     </Column>
-    <Column columnCount={2}>
+    <ImageContainer columnCount={2}>
       <TheHeroImage src={HeroImage} alt="Elspeth Eastman" />
-    </Column>
-  </Row>
+    </ImageContainer>
+  </AboveTheFoldContainer>
 );
 
 export default AboveTheFold;
