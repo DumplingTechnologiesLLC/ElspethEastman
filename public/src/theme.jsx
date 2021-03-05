@@ -35,6 +35,13 @@ const buttonAnimationTiming = '.15s';
 const buttonAnimationAlgorithm = 'ease-in';
 export const theme = {
   maxContentWidth: '1200px',
+  heroImageHeight: '500px',
+  spottedSection: css`
+    margin-top: 2em;
+    padding: 10em 2em 0 2em;
+    position: relative;
+    overflow: hidden;
+  `,
   flavors: {
     green: '#00fd9a',
     blue: '#01d1fe',
@@ -49,7 +56,11 @@ export const theme = {
     pie: '#007A94',
     pieHover: '#0098B8',
   },
+  buttonGroup: {
+    spacing: '.25em',
+  },
   button: {
+    /* eslint-disable max-len */
     defaultStyling: css`
       cursor: pointer;
       width: 100%; 
@@ -66,38 +77,25 @@ export const theme = {
     ['box-shadow', buttonAnimationTiming, buttonAnimationAlgorithm],
   )
 }
-    `,
-    // transitionTiming: '.2s',
-    // defaultStyling: css`
-    //   height: 40px;
-    //   cursor: pointer;
-    //   width: 100%;
-    //   display: flex;
-    //   align-items: center;
-    //   justify-content: center;
-    //   box-sizing: border-box;
-    //   text-align: center;
-    //   font-weight: bold;
-    //   padding: .25em 1em;
-    //   position: relative;
-    //   border-width: 2px;
-    //   border-style: solid;
-
-    //   &:disabled {
-    //     opacity: .7;
-    //     cursor: not-allowed;
-    //   }
-    // `,
-  },
-  input: {
-    // defaultStyling: css`
-    //   padding: .25em 1em;
-    //   width: 100%;
-    //   box-sizing: border-box;
-    //   height: 33px;
-    // `,
+`,
   },
   text: {
+    sectionTitleAfter: css`
+      position: absolute;
+      content: ' ';
+      left: 0;
+      right: 0;
+      bottom: -2px;
+      height: 2px;
+    `,
+    jumboTitleShadow: css`
+      position: absolute;
+        z-index: -1;
+        color: rgba(0,0,0,0.05);
+        font-size: 95px;
+        left: 0%;
+        bottom: 0;
+    `,
     jumboTitle: css`
       font-family: 'Dolcissimo';
       font-size: 50px;

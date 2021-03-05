@@ -7,8 +7,15 @@ export const ButtonGroup = styled.div`
     width: 100%;
     ${props.separated ? css`
     button + button {
-      ${props.vertical ? 'margin-top: .25em' : 'margin-left: .25em'};
-    }
+      ${
+  props.vertical
+    ? css`
+      margin-top: ${props.theme.buttonGroup.spacing}
+    `
+    : css`
+      margin-left: ${props.theme.buttonGroup.spacing}
+    `};
+      }
     ` : ''}
   `}
 `;

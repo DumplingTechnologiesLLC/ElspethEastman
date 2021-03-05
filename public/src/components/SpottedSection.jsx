@@ -1,14 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Spots from '../assets/svg/BackgroundDivider.svg';
 
 const StyledSection = styled.section`
-  margin-top: 2em;
-  /* padding-top: 10em; */
-  padding: 10em 2em 0 2em;
-  position: relative;
-  overflow: hidden;
+  ${(props) => css`
+    ${props.theme.spottedSection}
+  `}
 `;
 const BackgroundImage = styled.img`
   width: 100%;

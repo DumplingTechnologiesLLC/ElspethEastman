@@ -1,7 +1,9 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const HeroImage = styled.img`
-  height: 500px;
+  ${(props) => css`
+    height: ${props.theme.heroImageHeight}
+  `}
 `;
 
 export default HeroImage;

@@ -4,12 +4,7 @@ export const SectionTitle = styled.h2`
   ${(props) => css`
     ${props.theme.text.sectionTitle}
     &::after {
-      position: absolute;
-      content: ' ';
-      left: 0;
-      right: 0;
-      bottom: -2px;
-      height: 2px;
+      ${props.theme.text.sectionTitleAfter}
       background-color: ${props.theme.flavors.pink};
     }
   `}
