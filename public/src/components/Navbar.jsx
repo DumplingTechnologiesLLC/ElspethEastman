@@ -4,7 +4,7 @@ import NavbarBrandImage from '../assets/NavbarBrand.png';
 
 const StyledNav = styled.nav`
   ${(props) => css`
-    z-index: 1;
+    z-index: 999;
     background-color: ${props.theme.flavors.navbar};
     padding: .5em 1em;
     display: flex;

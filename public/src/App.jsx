@@ -6,6 +6,7 @@ import AboveTheFold from './compositions/AboveTheFold';
 import Navbar from './components/Navbar';
 import Skills from './compositions/Skills';
 import LatestProjects from './compositions/LatestProjects';
+import Music from './compositions/Music';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <AboveTheFold />
           <Skills />
           <LatestProjects />
+          <Music />
         </PageContent>
       </PageLayout>
     </ElspethTheme>

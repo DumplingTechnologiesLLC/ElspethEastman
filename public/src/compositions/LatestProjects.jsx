@@ -32,11 +32,18 @@ const ProjectContainer = styled.div`
 export const LatestProjects = () => {
   const [loadedProjects, setLoadedProjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  /**
+   * Disabled because we don't really care about loadedProjects here being stale at the time of useEffect since it
+   * gets clobbered regardless, and the only thing we are interested in watching is currentPage which tells us when
+   * to reload the page.
+   */
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     API.retrieveProjects(currentPage).then((results) => {
       setLoadedProjects(loadedProjects.concat(results));
     });
   }, [currentPage]);
+  /* eslint-enable react-hooks/exhaustive-deps */
   return (
     <SpottedSection>
       <TitleButtonPairing>

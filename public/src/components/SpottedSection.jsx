@@ -5,8 +5,10 @@ import Spots from '../assets/svg/BackgroundDivider.svg';
 
 const StyledSection = styled.section`
   margin-top: 2em;
-  padding-top: 10em;
+  /* padding-top: 10em; */
+  padding: 10em 2em 0 2em;
   position: relative;
+  overflow: hidden;
 `;
 const BackgroundImage = styled.img`
   width: 100%;

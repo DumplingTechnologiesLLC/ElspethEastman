@@ -113,6 +113,7 @@ export const theme = {
     sectionTitle: css`
       font-family: 'Dolcissimo';
       font-size: 25px;
+      /* margin-left: 2.7em; */
       font-weight: bold;
       font-stretch: expanded;
       position: relative;
