@@ -3,9 +3,29 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { createGlobalStyle } from 'styled-components'
+import Montserrat from './assets/Montserrat/Montserrat-Regular.woff';
+import Dolcissimo from './assets/Dolcissimo/Dolcissimo.woff';
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    margin: 0;
+    background-color: #fefefe;
+  }
+  @font-face {
+    font-family: 'Montserrat';
+    src: local('Montserrat'), url(${Montserrat}) format('woff');
+  }
+  @font-face {
+    font-family: 'Dolcissimo';
+    src: local('Dolcissimo'), url(${Dolcissimo}) format('woff');
+  }
+`
+
 
 ReactDOM.render(
   <React.StrictMode>
+    <GlobalStyle />
     <App />
   </React.StrictMode>,
   document.getElementById('root'),

@@ -1,10 +1,11 @@
 import React from 'react';
 import { PageLayout, PageContent } from './components/PageLayout';
-import SectionTitle from './components/SectionTitle';
+
 import ElspethTheme from './theme';
 import AboveTheFold from './compositions/AboveTheFold';
 import Navbar from './components/Navbar';
 import Skills from './compositions/Skills';
+import LatestProjects from './compositions/LatestProjects';
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
         <PageContent>
           <AboveTheFold />
           <Skills />
-          <SectionTitle>Latest Projects</SectionTitle>
+          <LatestProjects />
         </PageContent>
       </PageLayout>
     </ElspethTheme>

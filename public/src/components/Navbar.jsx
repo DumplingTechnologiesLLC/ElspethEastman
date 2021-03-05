@@ -64,14 +64,13 @@ const StyledNavBrand = styled.img`
 export const Navbar = () => {
   const handleAnchor = (event, link) => {
     event.preventDefault();
-    console.log('click');
     document.querySelector(link).scrollIntoView({
       behavior: 'smooth',
     });
   };
   return (
     <StyledNav>
-      <a href="#PageStart">
+      <a onClick={(e) => handleAnchor(e, '#PageStart')} href="#PageStart">
         <StyledNavBrand src={NavbarBrandImage} alt="Brand image" />
       </a>
       <StyledNavItems>

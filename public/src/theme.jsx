@@ -6,6 +6,24 @@ const mixins = {
   transition: (...args) => css`
       transition: ${args.map(([property, timing, transition]) => `${property} ${timing} ${transition}`).join(', ')};
   `,
+  imageLoadingText: (text, textColor, borderColor) => css`
+    &::after {
+      display: flex;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      color: ${textColor};
+      background-color: #f7f7f7;
+      border: 1px solid ${borderColor};
+      font-family: 'Montserrat';
+      content: '${text}';
+    }
+  `,
   buttonBoxShadow: (color) => css`
     box-shadow: 0px 0px 2px 2px ${color};
   `,
@@ -86,6 +104,11 @@ export const theme = {
       font-weight: bold;
       font-stretch: expanded;
       position: relative;
+    `,
+    youtubeTitle: css`
+      font-family: 'Montserrat';
+      font-weight: bold;
+      font-size: 1.25em;
     `,
     sectionTitle: css`
       font-family: 'Dolcissimo';

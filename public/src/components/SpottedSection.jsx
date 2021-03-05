@@ -9,15 +9,15 @@ const StyledSection = styled.section`
   position: relative;
 `;
 const BackgroundImage = styled.img`
-  z-index: -1;
   width: 100%;
   position: absolute;
+  pointer-events: none;
   top: 0;
 `;
 
 export const SpottedSection = ({ children }) => (
   <StyledSection>
-    <BackgroundImage src={Spots} />
+    <BackgroundImage tabIndex="-1" aria-hidden src={Spots} />
     {children}
   </StyledSection>
 );
