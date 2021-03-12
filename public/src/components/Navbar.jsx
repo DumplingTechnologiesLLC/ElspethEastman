@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import NavbarBrandImage from '../assets/NavbarBrand.png';
 
@@ -29,12 +30,11 @@ const StyledNavItem = styled.li`
 
 const StyledNavLink = styled.a`
   ${(props) => css`
+    ${props.theme.text.baseContentTextStyling}
     text-decoration: none;
     position: relative;
-    font-family: 'Montserrat';
-    color: black;
     &:visited {
-      color: black;
+      color: ${props.theme.flavors.baseTextColor};
     }
     &::after {
       position: absolute;
@@ -61,12 +61,13 @@ const StyledNavBrand = styled.img`
   height: 80px;
 `;
 
-export const Navbar = () => {
+export const Navbar = ({ handleContactMe }) => {
   const handleAnchor = (event, link) => {
     event.preventDefault();
-    document.querySelector(link).scrollIntoView({
+    const el = document.querySelector(link.substring(1, link.length));
+    el ? el.scrollIntoView({
       behavior: 'smooth',
-    });
+    }) : window.location = link;
   };
   return (
     <StyledNav>
@@ -75,33 +76,37 @@ export const Navbar = () => {
       </a>
       <StyledNavItems>
         <StyledNavItem>
-          <StyledNavLink onClick={(e) => handleAnchor(e, '#PageStart')} href="#PageStart">
+          <StyledNavLink onClick={(e) => handleAnchor(e, '/#PageStart')} href="/#PageStart">
             About Me
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
-          <StyledNavLink>
+          <StyledNavLink onClick={(e) => handleAnchor(e, '/#latestProjects')} href="/#latestProjects">
             Latest Projects
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
-          <StyledNavLink>
+          <StyledNavLink onClick={(e) => handleAnchor(e, '/#Music')} href="/#Music">
             Reels &amp; Music
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
-          <StyledNavLink>
+          <StyledNavLink onClick={(e) => handleAnchor(e, '/#Experience')} href="/#Experience">
             Experience
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
-          <StyledNavLink>
+          <StyledNavLink onClick={(e) => { e.preventDefault(); handleContactMe(true); }}>
             Contact Me
           </StyledNavLink>
         </StyledNavItem>
       </StyledNavItems>
     </StyledNav>
   );
+};
+
+Navbar.propTypes = {
+  handleContactMe: PropTypes.func.isRequired,
 };
 
 export default Navbar;

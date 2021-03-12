@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import SpottedSection from '../components/SpottedSection';
-import SectionTitle from '../components/SectionTitle';
-import SecondaryButton from '../components/SecondaryButton';
+import SpottedSection from '../components/Layout/SpottedSection';
+import SectionTitle from '../components/Text/SectionTitle';
+import SecondaryButton from '../components/Buttons/SecondaryButton';
 import YoutubeComponent from '../components/YoutubeComponent';
-import ButtonGroup from '../components/ButtonGroup';
+import ButtonGroup from '../components/Buttons/ButtonGroup';
 import API from '../api';
 
 const TitleButtonPairing = styled.div`
@@ -47,7 +47,7 @@ export const LatestProjects = () => {
   return (
     <SpottedSection>
       <TitleButtonPairing>
-        <SectionTitle>Latest Projects</SectionTitle>
+        <SectionTitle id="latestProjects">Latest Projects</SectionTitle>
         <SecondaryButton>See all projects</SecondaryButton>
       </TitleButtonPairing>
       <ProjectContainer>

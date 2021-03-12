@@ -12,7 +12,7 @@ export const PrimaryButton = styled.button`
     }
     &:focus {
       outline: 0;
-      ${props.theme.mixins.buttonBoxShadow(props.theme.flavors.blueTransparent)};
+      ${props.theme.mixins.boxShadow(props.theme.flavors.blueTransparent)};
     }
   `}
 `;

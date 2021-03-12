@@ -11,7 +11,7 @@ export const SecondaryButton = styled.button`
     }
     &:focus {
       background-color: ${props.theme.flavors.secondaryActive};
-      ${props.theme.mixins.buttonBoxShadow(props.theme.flavors.secondaryShadow)};
+      ${props.theme.mixins.boxShadow(props.theme.flavors.secondaryShadow)};
       outline:0;
     }
 

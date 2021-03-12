@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import SectionTitle from '../components/SectionTitle';
+import SectionTitle from '../components/Text/SectionTitle';
 import BackgroundElephant from '../assets/svg/BackgroundElephant.svg';
 
 const MusicContainer = styled.section`
@@ -51,7 +51,7 @@ const StyledIframe = styled.iframe`
 /* eslint-disable max-len */
 export const Music = () => (
   <MusicContainer>
-    <BackgroundDecoration />
+    <BackgroundDecoration id="Music" />
     <BackgroundImage src={BackgroundElephant} aria-hidden tabindex="-1" />
     <SectionTitle>Music </SectionTitle>
     <IFrameContainer>

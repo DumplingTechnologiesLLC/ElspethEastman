@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
-import Spots from '../assets/svg/BackgroundDivider.svg';
+import Spots from '../../assets/svg/BackgroundDivider.svg';
 
 const StyledSection = styled.section`
   ${(props) => css`
