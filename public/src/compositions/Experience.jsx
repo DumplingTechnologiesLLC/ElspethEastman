@@ -70,7 +70,7 @@ export const Experience = () => {
           <ColoredSection color="bgBlue">
             <ColoredTitle color="textBlue">Voice Credits</ColoredTitle>
             {experience['Voice Credits']?.map((exp) => (
-              <ExperienceLine>
+              <ExperienceLine key={exp.id}>
                 {formatCredit(exp)}
               </ExperienceLine>
             )) ?? <ExperienceLine>Loading</ExperienceLine>}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { css, keyframes, ThemeProvider } from 'styled-components';
+import { css, ThemeProvider } from 'styled-components';
 
 const mixins = {
   transition: (...args) => css`

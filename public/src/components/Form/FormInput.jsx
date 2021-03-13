@@ -10,6 +10,14 @@ const StyledInput = styled.input`
   `}
 `;
 
+const StyledTextArea = styled.textarea`
+  resize: vertical;
+  ${(props) => css`
+    ${props.theme.input.defaultStyling}
+    ${props.error ? props.theme.input.errorStyling : ''}
+  `}
+`;
+
 const StyledLabel = styled.label`
   ${(props) => css`
     ${props.theme.text.contentText}
@@ -37,25 +45,23 @@ export const FormInput = ({
       value={value}
       placeholder={placeholder}
     />
-    {errorMessage ? (<ErrorMessage>errorMesage</ErrorMessage>) : ''}
+    {errorMessage ? (<ErrorMessage>errorMessage</ErrorMessage>) : ''}
   </FormInputContainer>
 );
 
 export const FormTextArea = ({
-  label, type, value, setValue, name, placeholder, errorMessage, hasError,
+  label, value, setValue, name, placeholder, errorMessage, hasError,
 }) => (
   <FormInputContainer>
     <StyledLabel htmlFor={name}>{label}</StyledLabel>
-    <StyledInput
-      as="textarea"
-      type={type}
+    <StyledTextArea
       error={hasError}
       onChange={(e) => setValue(e.target.value)}
       name={name}
       value={value}
       placeholder={placeholder}
     />
-    {errorMessage ? (<ErrorMessage>errorMesage</ErrorMessage>) : ''}
+    {errorMessage ? (<ErrorMessage>errorMessage</ErrorMessage>) : ''}
   </FormInputContainer>
 );
 
@@ -82,7 +88,6 @@ FormInput.defaultProps = {
 
 FormTextArea.propTypes = {
   label: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   value: PropTypes.oneOfType([
     PropTypes.string,

@@ -8,6 +8,9 @@ export const StyledForm = styled.form`
   ${FormInputContainer} + ${FormInputContainer} {
     margin-top: 1em;
   }
+  ${FormInputContainer}:last-of-type {
+    margin-bottom: 1em;
+  }
 `;
 
 export default StyledForm;
