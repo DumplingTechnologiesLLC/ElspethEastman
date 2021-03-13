@@ -1,5 +1,5 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import JumboTitle from '../components/Text/JumboTitle';
 import ColoredText from '../components/Text/ColoredText';
@@ -29,42 +29,54 @@ const PageAnchor = styled.span`
   z-index: -1;
 `;
 
-export const AboveTheFold = () => (
-  <AboveTheFoldContainer>
-    <Column columnCount={2}>
-      <PageAnchor id="PageStart" />
-      <JumboTitle id="PageTitle" shadowText="EASTMAN">
-        HI, I&apos;M
-        {' '}
-        <ColoredText flavor="pink">ELSPETH!</ColoredText>
-      </JumboTitle>
-      <ContentParagraph>
-        I&apos;m a voice actor, composer, and gamer.
-      </ContentParagraph>
-      <ContentParagraph>
-        You can hear me as Tristana in League of Legends, Cadence in Crypt of the NecroDancer, Lunais in Timespinner,
-        and various music videos! I’m also the host of my own show on Twitch and Youtube, where I stream/record even
-        more voice junk on camera.
-      </ContentParagraph>
-      <ContentParagraph>
-        I love meeting new people and undertaking new projects!
-      </ContentParagraph>
-      <ContentParagraph>
-        Let’s do lunch, because lunch is tasty.
-      </ContentParagraph>
-      <AboveTheFoldButtons separated>
-        <PrimaryButton>
-          See my work
-        </PrimaryButton>
-        <SecondaryButton>
-          Get in touch
-        </SecondaryButton>
-      </AboveTheFoldButtons>
-    </Column>
-    <ImageContainer columnCount={2}>
-      <TheHeroImage src={HeroImage} alt="Elspeth Eastman" />
-    </ImageContainer>
-  </AboveTheFoldContainer>
-);
+export const AboveTheFold = ({ setShowContactMe }) => {
+  const scrollToWork = () => {
+    const el = document.querySelector('#latestProjects');
+    el ? el.scrollIntoView({
+      behavior: 'smooth',
+    }) : window.location = '#latestProjects';
+  };
+  return (
+    <AboveTheFoldContainer>
+      <Column columnCount={2}>
+        <PageAnchor id="PageStart" />
+        <JumboTitle id="PageTitle" shadowText="EASTMAN">
+          HI, I&apos;M
+          {' '}
+          <ColoredText flavor="pink">ELSPETH!</ColoredText>
+        </JumboTitle>
+        <ContentParagraph>
+          I&apos;m a voice actor, composer, and gamer.
+        </ContentParagraph>
+        <ContentParagraph>
+          You can hear me as Tristana in League of Legends, Cadence in Crypt of the NecroDancer, Lunais in Timespinner,
+          and various music videos! I’m also the host of my own show on Twitch and Youtube, where I stream/record even
+          more voice junk on camera.
+        </ContentParagraph>
+        <ContentParagraph>
+          I love meeting new people and undertaking new projects!
+        </ContentParagraph>
+        <ContentParagraph>
+          Let’s do lunch, because lunch is tasty.
+        </ContentParagraph>
+        <AboveTheFoldButtons separated>
+          <PrimaryButton onClick={scrollToWork}>
+            See my work
+          </PrimaryButton>
+          <SecondaryButton onClick={() => setShowContactMe(true)}>
+            Get in touch
+          </SecondaryButton>
+        </AboveTheFoldButtons>
+      </Column>
+      <ImageContainer columnCount={2}>
+        <TheHeroImage src={HeroImage} alt="Elspeth Eastman" />
+      </ImageContainer>
+    </AboveTheFoldContainer>
+  );
+};
+
+AboveTheFold.propTypes = {
+  setShowContactMe: PropTypes.func.isRequired,
+};
 
 export default AboveTheFold;
