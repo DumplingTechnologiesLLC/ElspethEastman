@@ -14,11 +14,30 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-
-  const [errors, setErrors] = useState({
+  const [inFlight, setInFlight] = useState(false);
+  const initialErrorState = {
     name: '',
     email: '',
-  });
+  };
+  const [errors, setErrors] = useState(initialErrorState);
+
+  const setNameAndClearErrors = (value) => {
+    setName(value);
+    setErrors({ ...errors, name: '' });
+  };
+
+  const setEmailAndClearErrors = (value) => {
+    setEmail(value);
+    setErrors({ ...errors, email: '' });
+  };
+
+  const closeAndClear = () => {
+    setName('');
+    setEmail('');
+    setMessage('');
+    setErrors(initialErrorState);
+    setContactMeVisibility(false);
+  };
 
   /* eslint-disable-next-line consistent-return */
   const submitForm = async (event) => {
@@ -29,11 +48,13 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
         email: email ? '' : 'Email is required',
       });
     }
+    setInFlight(true);
     const response = await API.submitContactMe({
       name,
       email,
       message,
     });
+    setInFlight(false);
     if (response.ok) {
       // TODO: Toast
       setName('');
@@ -47,7 +68,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
   return (
     <Modal
       showModal={showForm}
-      setShowModal={setContactMeVisibility}
+      setShowModal={closeAndClear}
       title={(
         <div>
           Contact
@@ -65,7 +86,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
             name="Name"
             label="Your Name (Required)"
             type="text"
-            setValue={setName}
+            setValue={setNameAndClearErrors}
             value={name}
           />
           <FormInput
@@ -74,7 +95,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
             name="Email"
             label="Your Email (Required)"
             type="email"
-            setValue={setEmail}
+            setValue={setEmailAndClearErrors}
             value={email}
           />
           <FormTextArea
@@ -83,7 +104,14 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
             setValue={setMessage}
             value={message}
           />
-          <PrimaryButton onClick={(e) => submitForm(e)}>Get in touch</PrimaryButton>
+          <PrimaryButton
+            disabled={inFlight}
+            ariaDisabled={inFlight}
+            onClick={(e) => submitForm(e)}
+          >
+            Get in touch
+
+          </PrimaryButton>
         </StyledForm>
       )}
     />
