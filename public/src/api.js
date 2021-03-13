@@ -34,15 +34,21 @@ class API {
   }
 
   async submitContactMe(data) {
-    const response = await fetch(this.endpoints.contactMe, {
-      method: 'POST',
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data), // body data type must match "Content-Type" header
-    });
-    return response.json();
+    try {
+      const response = await fetch(this.endpoints.contactMe, {
+        method: 'POST',
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // body data type must match "Content-Type" header
+      });
+      return response.json();
+    } catch (error) {
+      return {
+        ok: false,
+      };
+    }
   }
 
   async retrieveExperience() {
