@@ -45,7 +45,7 @@ export const FormInput = ({
       value={value}
       placeholder={placeholder}
     />
-    {errorMessage ? (<ErrorMessage>errorMessage</ErrorMessage>) : ''}
+    {errorMessage ? (<ErrorMessage>{errorMessage}</ErrorMessage>) : ''}
   </FormInputContainer>
 );
 
@@ -61,7 +61,7 @@ export const FormTextArea = ({
       value={value}
       placeholder={placeholder}
     />
-    {errorMessage ? (<ErrorMessage>errorMessage</ErrorMessage>) : ''}
+    {errorMessage ? (<ErrorMessage>{errorMessage}</ErrorMessage>) : ''}
   </FormInputContainer>
 );
 
