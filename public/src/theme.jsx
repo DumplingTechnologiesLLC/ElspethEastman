@@ -100,6 +100,7 @@ export const theme = {
     bgBlue: 'rgba(1, 208, 254, 0.3)',
     modalShadowBlue: 'rgba(0, 44, 54, 0.356)',
     textBlue: '#002C36',
+    footerBlue: '#005F74',
     textYellow: '#585800',
     textPink: '#630063',
     blueTransparent: 'rgba(1, 209, 254, .7)',
@@ -192,7 +193,6 @@ export const theme = {
     sectionTitle: css`
       ${baseTitleStyling}
       ${baseTextStyling}
-      font-size: 25px;
       font-stretch: expanded;
       position: relative;
       display: inline-block;
