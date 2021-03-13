@@ -35,7 +35,7 @@ const ModalBackdrop = styled.div`
       ${props.show ? css`opacity: 1; pointer-events: all;` : 'pointer-events: none;'};
   `}
 `;
-const ModalModalHeader = styled.div`
+const ModalHeader = styled.div`
   display: flex;
   justify-content: space-between;
 `;
@@ -45,11 +45,10 @@ const ModalTitle = styled(SectionTitle)`
     background-color: transparent;
   }
 `;
-const ModalModal = styled.div`
+const ModalBody = styled.div`
   ${(props) => css`
     opacity: 0;
     padding: 2em;
-    min-height: 60%;
     min-width: 400px;
     max-width: 600px;
     width: 100%;
@@ -83,17 +82,17 @@ export const Modal = ({
 }) => (
   <ModalContainer show={showModal}>
     <ModalBackdrop onClick={() => setShowModal(false)} show={showModal} />
-    <ModalModal show={showModal}>
-      <ModalModalHeader>
+    <ModalBody show={showModal}>
+      <ModalHeader>
         <ModalTitle>
           {title}
         </ModalTitle>
         <ModalButton onClick={() => setShowModal(false)}>
           <FontAwesomeIcon icon={faTimes} size="lg" />
         </ModalButton>
-      </ModalModalHeader>
+      </ModalHeader>
       {content}
-    </ModalModal>
+    </ModalBody>
   </ModalContainer>
 );
 
