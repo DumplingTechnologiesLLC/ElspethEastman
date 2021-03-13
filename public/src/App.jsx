@@ -17,7 +17,7 @@ function App() {
       <PageLayout>
         <Navbar handleContactMe={setShowContactMe} />
         <PageContent>
-          <AboveTheFold />
+          <AboveTheFold setShowContactMe={setShowContactMe} />
           <Skills />
           <LatestProjects />
           <Music />
