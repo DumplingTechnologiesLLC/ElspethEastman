@@ -51,6 +51,44 @@ class API {
     }
   }
 
+  async retrieveFooterData() {
+    return {
+      ok: true,
+      stats: [
+        {
+          id: 1,
+          value: '3457 cups',
+          label: 'of coffee',
+          percent: 28,
+        },
+        {
+          id: 1,
+          value: '4257 clips',
+          label: 'recorded',
+          percent: 50,
+        },
+        {
+          id: 1,
+          value: '3744 hours',
+          label: 'streaming',
+          percent: 66,
+        },
+        {
+          id: 1,
+          value: '467 clips',
+          label: 'of bloopers',
+          percent: 33,
+        },
+      ],
+      affiliations: [
+        'Game Audio Network Guild (G.A.N.G.) Professional',
+        'Independent Game Developers Association',
+        '(IGDA) Core Member',
+      ],
+    };
+    // TODO: Wire up
+  }
+
   async retrieveExperience() {
     return {
       'Voice Credits': [
@@ -101,6 +139,8 @@ class API {
         { id: 40, year: '', credit: 'Sleepy Ninja Toast – Halloween Costumes' },
         { id: 41, year: '', credit: 'Intro, Background themes – Rated E With Elspeth' },
       ],
+
+      // TODO Wire up
     };
   }
 }

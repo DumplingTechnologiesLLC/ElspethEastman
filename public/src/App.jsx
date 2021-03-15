@@ -9,6 +9,7 @@ import LatestProjects from './compositions/LatestProjects';
 import Music from './compositions/Music';
 import Experience from './compositions/Experience';
 import ContactMe from './compositions/ContactMe';
+import PageFooter from './compositions/PageFooter';
 
 function App() {
   const [showContactMe, setShowContactMe] = useState(false);
@@ -23,6 +24,7 @@ function App() {
           <Music />
           <Experience />
           <ContactMe setContactMeVisibility={setShowContactMe} showForm={showContactMe} />
+          <PageFooter />
         </PageContent>
       </PageLayout>
     </ElspethTheme>

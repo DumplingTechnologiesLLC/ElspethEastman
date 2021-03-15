@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="62" height="62" viewBox="0 0 62 62">
+  <defs>
+    <style>
+      .social-media--facebook {
+        fill: #fff;
+      }
+
+      .social-media--facebook-2 {
+        fill: #1777f2;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <g transform="translate(-1096 -6709)">
+    <rect data-name="Rectangle 20" class="social-media--facebook" width="56" height="59" rx="10" transform="translate(1099 6712)"/>
+    <path data-name="facebook" class="social-media--facebook-2" d="M54.425,0A7.578,7.578,0,0,1,62,7.575v46.85A7.579,7.579,0,0,1,54.425,62H41.532V38.639H49.6l1.535-10h-9.6V22.142c0-2.737,1.341-5.405,5.641-5.405h4.364V8.219a53.231,53.231,0,0,0-7.748-.676c-7.906,0-13.073,4.792-13.073,13.466v7.625H21.928v10h8.788V62H7.575A7.579,7.579,0,0,1,0,54.425V7.575A7.578,7.578,0,0,1,7.575,0h46.85Z" transform="translate(1096 6709)"/>
+  </g>
+</svg>

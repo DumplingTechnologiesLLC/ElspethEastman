@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="62" height="62" viewBox="0 0 62 62">
+  <defs>
+    <style>
+      .social-media--linkedin {
+        fill: #1777f2;
+        fill-rule: evenodd;
+      }
+
+      .social-media--linkedin-2 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <path class="social-media--linkedin" d="M62,7.75A7.754,7.754,0,0,0,54.25,0H7.75A7.754,7.754,0,0,0,0,7.75v46.5A7.754,7.754,0,0,0,7.75,62h46.5A7.754,7.754,0,0,0,62,54.25Z"/>
+  <rect class="social-media--linkedin-2" width="10.385" height="31.238" transform="translate(7.393 21.635)"/>
+  <path class="social-media--linkedin-2" d="M61.874,54.28c-3.553,0-5.875,2.336-5.875,5.4a5.375,5.375,0,0,0,5.737,5.4H61.8c3.621,0,5.875-2.4,5.875-5.4C67.612,56.616,65.425,54.28,61.874,54.28Z" transform="translate(-49.219 -47.707)"/>
+  <path class="social-media--linkedin-2" d="M214,172.6a10.313,10.313,0,0,0-9.358,5.157v-4.423H194.264c.138,2.93,0,31.237,0,31.237h10.382V187.128a7.1,7.1,0,0,1,.342-2.535,5.682,5.682,0,0,1,5.327-3.8c3.755,0,5.26,2.866,5.26,7.063v16.713h10.383V186.66C225.958,177.064,220.835,172.6,214,172.6Z" transform="translate(-170.74 -151.7)"/>
+</svg>
