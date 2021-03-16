@@ -117,7 +117,6 @@ export const PageFooter = () => {
             >
               <SocialMediaIcon src={Instagram} alt="Instagram icon" />
             </a>
-            <a href=""><SocialMediaIcon src={Linkedin} alt="Linkedin icon" /></a>
             <a
               href="https://soundcloud.com/elspetheastman"
               target="_blank"

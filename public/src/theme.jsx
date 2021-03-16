@@ -2,10 +2,16 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { css, ThemeProvider } from 'styled-components';
 
+const navbarBreakpoint = 700;
+
 const mixins = {
   transition: (...args) => css`
       transition: ${args.map(([property, timing, transition]) => `${property} ${timing} ${transition}`).join(', ')};
   `,
+  navbarBreakpoint: (style) => css`
+  @media screen and (max-width: ${navbarBreakpoint}px) {
+    ${style}
+  }`,
   imageLoadingText: (text, textColor, borderColor) => css`
     &::after {
       display: flex;
@@ -70,6 +76,9 @@ export const theme = {
     position: relative;
     overflow: hidden;
   `,
+  breakpoints: {
+    navbarBreakpoint,
+  },
   input: {
     defaultStyling: css`
       border-radius: 3px;
