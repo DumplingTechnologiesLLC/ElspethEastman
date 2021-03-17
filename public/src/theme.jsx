@@ -68,7 +68,7 @@ const baseContentTextStyling = css`
 `;
 export const theme = {
   maxContentWidth: '1200px',
-  heroImageHeight: '500px',
+  heroImageHeight: 500,
   modalTiming: '.3s',
   spottedSection: css`
     margin-top: 2em;
@@ -78,6 +78,9 @@ export const theme = {
   `,
   breakpoints: {
     navbarBreakpoint,
+    heroMedium: '1080px',
+    heroSmall: '580px',
+    heroXSmal: '420px',
   },
   input: {
     defaultStyling: css`

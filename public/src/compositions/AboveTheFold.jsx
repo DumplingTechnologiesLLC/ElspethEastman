@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import JumboTitle from '../components/Text/JumboTitle';
 import ColoredText from '../components/Text/ColoredText';
 import { Column, Row } from '../components/Layout/Layout';
@@ -16,8 +16,27 @@ const AboveTheFoldContainer = styled(Row)`
   position: relative;
 `;
 const ImageContainer = styled(Column)`
-  display: flex;
-  justify-content: flex-end;
+  ${
+  (props) => css`
+      display: flex;
+      justify-content: flex-end;
+      @media screen and (max-width: ${props.theme.breakpoints.heroMedium}) {
+        justify-content: center;
+      }  
+    `
+}
+`;
+const TextContainer = styled(Column)`
+  ${
+  (props) => css`
+      @media screen and (max-width: ${props.theme.breakpoints.heroMedium}) {
+        min-width: 520px;
+      }
+      @media screen and (max-width: ${props.theme.breakpoints.heroSmall}) {
+        min-width: 320px;
+      }
+    `
+}
 `;
 const AboveTheFoldButtons = styled(ButtonGroup)`
   margin-top: 2em;
@@ -38,7 +57,7 @@ export const AboveTheFold = ({ setShowContactMe }) => {
   };
   return (
     <AboveTheFoldContainer>
-      <Column columnCount={2}>
+      <TextContainer columnCount={2}>
         <PageAnchor id="PageStart" />
         <JumboTitle id="PageTitle" shadowText="EASTMAN">
           HI, I&apos;M
@@ -67,7 +86,7 @@ export const AboveTheFold = ({ setShowContactMe }) => {
             Get in touch
           </SecondaryButton>
         </AboveTheFoldButtons>
-      </Column>
+      </TextContainer>
       <ImageContainer columnCount={2}>
         <TheHeroImage src={HeroImage} alt="Elspeth Eastman" />
       </ImageContainer>

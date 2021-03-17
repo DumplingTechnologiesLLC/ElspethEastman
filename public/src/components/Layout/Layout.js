@@ -8,7 +8,7 @@ export const Row = styled.div`
 export const Column = styled.div`
   ${(props) => css`
     flex: 1;
-    max-width: ${100 / props.columnCount}%;
+    /* max-width: ${100 / props.columnCount}%; */
   `}
 `;
 

@@ -10,7 +10,7 @@ import BackgroundButton from './Buttons/BackgroundButton';
 
 const StyledNav = styled.nav`
   ${(props) => css`
-    z-index: 999;
+    z-index: 99999;
     background-color: ${props.theme.flavors.navbar};
     padding: .5em 1em;
     box-sizing: border-box;
@@ -102,6 +102,7 @@ const StyledNavBrand = styled.img`
 
 export const Navbar = ({ handleContactMe }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [transitioned, setTransitioned] = useState(false);
   const navbarItems = useRef(null);
   const themeContext = useContext(ThemeContext);
   const handleAnchor = (event, link) => {
@@ -152,7 +153,11 @@ export const Navbar = ({ handleContactMe }) => {
       if (window.innerWidth > themeContext.breakpoints.navbarBreakpoint) {
         navbarItems.current.style = '';
         setCollapsed(false);
-        // expandSection();
+        setTransitioned(false);
+      } else if (!transitioned && window.innerWidth < themeContext.breakpoints.navbarBreakpoint) {
+        setTransitioned(true);
+        setCollapsed(true);
+        navbarItems.current.style.height = '0px';
       }
     };
     window.addEventListener('resize', handleResize);
