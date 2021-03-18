@@ -56,6 +56,7 @@ export const Music = () => (
     <SectionTitle>Music </SectionTitle>
     <IFrameContainer>
       <StyledIframe
+        tabIndex="-1"
         color="black"
         width="100%"
         height="500"

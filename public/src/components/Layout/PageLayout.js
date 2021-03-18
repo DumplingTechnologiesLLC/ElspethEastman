@@ -10,7 +10,7 @@ export const PageLayout = styled.div`
   margin: 0 auto;
 `;
 export const PageContent = styled.main`
-  padding: 1em;
+  padding: 1em 1em 0 1em;
   flex: 1;
   ${(props) => css`
     ${props.theme.mixins.navbarBreakpoint(css`

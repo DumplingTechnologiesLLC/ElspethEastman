@@ -3,10 +3,9 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css, ThemeContext } from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
 import NavbarBrandImage from '../assets/NavbarBrand.png';
 import BackgroundButton from './Buttons/BackgroundButton';
+import { ReactComponent as HamburgerMenu } from '../assets/svg/HamburgerMenu.svg';
 
 const StyledNav = styled.nav`
   ${(props) => css`
@@ -87,6 +86,11 @@ const StyledNavbarButton = styled(BackgroundButton)`
   max-width: 40px;
   display: none;
   ${(props) => css`
+    svg {
+      min-height: 30px;
+      max-height:30px;
+      min-width: 30px;
+    }
     fill: ${props.theme.mixins.baseTextColor};
     ${props.theme.mixins.navbarBreakpoint(css`
       display: flex;
@@ -171,7 +175,7 @@ export const Navbar = ({ handleContactMe }) => {
         <StyledNavBrand src={NavbarBrandImage} alt="Brand image" />
       </a>
       <StyledNavbarButton onClick={expandOrCollapse}>
-        <FontAwesomeIcon size="lg" icon={faBars} />
+        <HamburgerMenu />
       </StyledNavbarButton>
       <StyledNavItems collapsed={collapsed} ref={navbarItems}>
         <StyledNavItem>
@@ -195,7 +199,7 @@ export const Navbar = ({ handleContactMe }) => {
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
-          <StyledNavLink onClick={(e) => { e.preventDefault(); handleContactMe(true); }}>
+          <StyledNavLink tabIndex={0} onClick={(e) => { e.preventDefault(); handleContactMe(true); }}>
             Contact Me
           </StyledNavLink>
         </StyledNavItem>

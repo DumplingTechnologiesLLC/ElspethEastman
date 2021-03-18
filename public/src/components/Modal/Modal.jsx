@@ -1,8 +1,7 @@
 import styled, { css } from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import PropTypes from 'prop-types';
+import { ReactComponent as Close } from '../../assets/svg/CloseX.svg';
 import SectionTitle from '../Text/SectionTitle';
 import BackgroundButton from '../Buttons/BackgroundButton';
 
@@ -10,7 +9,7 @@ const ModalContainer = styled.div`
   position: fixed;
   top: 0;
   bottom: 0;
-  z-index: 9999;
+  z-index: 999999;
   right: 0;
   left: 0;
   display: flex;
@@ -75,6 +74,10 @@ const ModalButton = styled(BackgroundButton)`
   justify-content: center;
   align-items: center;
   border-radius: 5px;
+  & svg {
+    min-width: 20px;
+    min-height: 20px;
+  }
 `;
 
 export const Modal = ({
@@ -87,8 +90,8 @@ export const Modal = ({
         <ModalTitle>
           {title}
         </ModalTitle>
-        <ModalButton onClick={() => setShowModal(false)}>
-          <FontAwesomeIcon icon={faTimes} size="lg" />
+        <ModalButton tabIndex={showModal ? '0' : '-1'} onClick={() => setShowModal(false)} aria-label="Close Modal">
+          <Close />
         </ModalButton>
       </ModalHeader>
       {content}

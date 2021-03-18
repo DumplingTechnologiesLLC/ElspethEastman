@@ -6,6 +6,15 @@ import Spots from '../../assets/svg/BackgroundDivider.svg';
 const StyledSection = styled.section`
   ${(props) => css`
     ${props.theme.spottedSection}
+    @media screen and (max-width: ${props.theme.breakpoints.heroSmall}) {
+      padding-left: 1em;
+      padding-right: 1em;
+      padding-top: 5em;
+    }
+    @media screen and (max-width: ${props.theme.breakpoints.heroXSmall}) {
+      padding-left: 0em;
+      padding-right: 0em;
+    }
   `}
 `;
 const BackgroundImage = styled.img`

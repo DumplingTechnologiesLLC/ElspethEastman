@@ -11,7 +11,7 @@ export const JumboTitle = styled.h1`
           font-size: 68px;
           bottom: 10px;
         }
-        @media screen and (max-width: ${props.theme.breakpoints.heroXSmal}) {
+        @media screen and (max-width: ${props.theme.breakpoints.heroXSmall}) {
           display: none;
         }
       }

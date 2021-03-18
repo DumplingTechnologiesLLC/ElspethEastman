@@ -27,6 +27,7 @@ const ImageContainer = styled(Column)`
 }
 `;
 const TextContainer = styled(Column)`
+  display: flex;
   ${
   (props) => css`
       @media screen and (max-width: ${props.theme.breakpoints.heroMedium}) {
@@ -48,6 +49,8 @@ const PageAnchor = styled.span`
   z-index: -1;
 `;
 
+const ContentContainer = styled.div``;
+
 export const AboveTheFold = ({ setShowContactMe }) => {
   const scrollToWork = () => {
     const el = document.querySelector('#latestProjects');
@@ -58,34 +61,37 @@ export const AboveTheFold = ({ setShowContactMe }) => {
   return (
     <AboveTheFoldContainer>
       <TextContainer columnCount={2}>
-        <PageAnchor id="PageStart" />
-        <JumboTitle id="PageTitle" shadowText="EASTMAN">
-          HI, I&apos;M
-          {' '}
-          <ColoredText flavor="pink">ELSPETH!</ColoredText>
-        </JumboTitle>
-        <ContentParagraph>
-          I&apos;m a voice actor, composer, and gamer.
-        </ContentParagraph>
-        <ContentParagraph>
-          You can hear me as Tristana in League of Legends, Cadence in Crypt of the NecroDancer, Lunais in Timespinner,
-          and various music videos! I’m also the host of my own show on Twitch and Youtube, where I stream/record even
-          more voice junk on camera.
-        </ContentParagraph>
-        <ContentParagraph>
-          I love meeting new people and undertaking new projects!
-        </ContentParagraph>
-        <ContentParagraph>
-          Let’s do lunch, because lunch is tasty.
-        </ContentParagraph>
-        <AboveTheFoldButtons separated>
-          <PrimaryButton onClick={scrollToWork}>
-            See my work
-          </PrimaryButton>
-          <SecondaryButton onClick={() => setShowContactMe(true)}>
-            Get in touch
-          </SecondaryButton>
-        </AboveTheFoldButtons>
+        <PageAnchor tabIndex="-1" aria-hidden id="PageStart" />
+        <ContentContainer>
+          <JumboTitle id="PageTitle" shadowText="EASTMAN">
+            HI, I&apos;M
+            {' '}
+            <ColoredText flavor="pink">ELSPETH!</ColoredText>
+          </JumboTitle>
+          <ContentParagraph>
+            I&apos;m a voice actor, composer, and gamer.
+          </ContentParagraph>
+          <ContentParagraph>
+            You can hear me as Tristana in League of Legends,
+            Cadence in Crypt of the NecroDancer, Lunais in Timespinner,
+            and various music videos! I’m also the host of my own show on Twitch and Youtube, where I stream/record even
+            more voice junk on camera.
+          </ContentParagraph>
+          <ContentParagraph>
+            I love meeting new people and undertaking new projects!
+          </ContentParagraph>
+          <ContentParagraph>
+            Let’s do lunch, because lunch is tasty.
+          </ContentParagraph>
+          <AboveTheFoldButtons separated>
+            <PrimaryButton onClick={scrollToWork}>
+              See my work
+            </PrimaryButton>
+            <SecondaryButton onClick={() => setShowContactMe(true)}>
+              Get in touch
+            </SecondaryButton>
+          </AboveTheFoldButtons>
+        </ContentContainer>
       </TextContainer>
       <ImageContainer columnCount={2}>
         <TheHeroImage src={HeroImage} alt="Elspeth Eastman" />

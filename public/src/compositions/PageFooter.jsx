@@ -111,6 +111,7 @@ export const PageFooter = () => {
           <FooterSubTitle>Find me on social media</FooterSubTitle>
           <SocialMedia>
             <a
+              tabIndex="0"
               href="https://www.instagram.com/elspetheastman/?hl=en"
               target="_blank"
               rel="noreferrer"

@@ -4,8 +4,6 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createGlobalStyle } from 'styled-components'
-import Montserrat from './assets/Montserrat/Montserrat-Regular.woff';
-import Dolcissimo from './assets/Dolcissimo/Dolcissimo.woff';
 import './fonts.css';
 
 const GlobalStyle = createGlobalStyle`
@@ -15,8 +13,7 @@ const GlobalStyle = createGlobalStyle`
   }
   
 `
-
-
+window.addEventListener('keypress', (e) => console.log(e.target))
 ReactDOM.render(
   <React.StrictMode>
     <GlobalStyle />

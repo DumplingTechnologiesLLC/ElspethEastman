@@ -79,40 +79,43 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
         </div>
     )}
       content={(
-        <StyledForm>
-          <FormInput
-            hasError={Boolean(errors.name)}
-            errorMessage={errors.name}
-            name="Name"
-            label="Your Name (Required)"
-            type="text"
-            setValue={setNameAndClearErrors}
-            value={name}
-          />
-          <FormInput
-            hasError={Boolean(errors.email)}
-            errorMessage={errors.email}
-            name="Email"
-            label="Your Email (Required)"
-            type="email"
-            setValue={setEmailAndClearErrors}
-            value={email}
-          />
-          <FormTextArea
-            name="Message"
-            label="Your Message"
-            setValue={setMessage}
-            value={message}
-          />
-          <PrimaryButton
-            disabled={inFlight}
-            ariaDisabled={inFlight}
-            onClick={(e) => submitForm(e)}
-          >
-            Get in touch
+        showForm
+          ? (
+            <StyledForm>
+              <FormInput
+                hasError={Boolean(errors.name)}
+                errorMessage={errors.name}
+                name="Name"
+                label="Your Name (Required)"
+                type="text"
+                setValue={setNameAndClearErrors}
+                value={name}
+              />
+              <FormInput
+                hasError={Boolean(errors.email)}
+                errorMessage={errors.email}
+                name="Email"
+                label="Your Email (Required)"
+                type="email"
+                setValue={setEmailAndClearErrors}
+                value={email}
+              />
+              <FormTextArea
+                name="Message"
+                label="Your Message"
+                setValue={setMessage}
+                value={message}
+              />
+              <PrimaryButton
+                disabled={inFlight}
+                ariaDisabled={inFlight}
+                onClick={(e) => submitForm(e)}
+              >
+                Get in touch
 
-          </PrimaryButton>
-        </StyledForm>
+              </PrimaryButton>
+            </StyledForm>
+          ) : ''
       )}
     />
   );

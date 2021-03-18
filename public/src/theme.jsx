@@ -3,6 +3,15 @@ import { PropTypes } from 'prop-types';
 import { css, ThemeProvider } from 'styled-components';
 
 const navbarBreakpoint = 700;
+const imageBackgroundColor = '#f7f7f7';
+const baseTextColor = '#292929';
+const inputShadowColor = 'rgba(1, 208, 254, 0.493)';
+const inputErrorShadowColor = 'rgba(249, 98, 126, 0.644)';
+const inputBorderColor = '#87EAFF';
+const error = '#F9627D';
+const errorText = '#800c21';
+const buttonAnimationTiming = '.15s';
+const buttonAnimationAlgorithm = 'ease-in';
 
 const mixins = {
   transition: (...args) => css`
@@ -24,7 +33,7 @@ const mixins = {
       height: 100%;
       text-align: center;
       color: ${textColor};
-      background-color: #f7f7f7;
+      background-color: ${imageBackgroundColor};
       border: 1px solid ${borderColor};
       font-family: 'Montserrat';
       content: '${text}';
@@ -35,13 +44,8 @@ const mixins = {
   `,
 };
 
-const baseTextColor = '#292929';
-const error = '#F9627D';
-const errorText = '#800c21';
-const buttonAnimationTiming = '.15s';
-const buttonAnimationAlgorithm = 'ease-in';
 const baseTextStyling = css`
-  color: #292929;
+  color: ${baseTextColor};
 `;
 const smallFontSize = css`
   font-size: .8em
@@ -80,12 +84,12 @@ export const theme = {
     navbarBreakpoint,
     heroMedium: '1080px',
     heroSmall: '580px',
-    heroXSmal: '420px',
+    heroXSmall: '420px',
   },
   input: {
     defaultStyling: css`
       border-radius: 3px;
-      border: 1px solid #87EAFF;
+      border: 1px solid ${inputBorderColor};
       width: 100%;
       ${normalFontSize}
       padding: .5em .5em;
@@ -94,23 +98,27 @@ export const theme = {
       ${mixins.transition(['box-shadow', '.2s', 'ease-out'])}
       &:focus {
         outline: 0;
-        ${mixins.boxShadow('rgba(1, 208, 254, 0.493)')}
+        ${mixins.boxShadow(inputShadowColor)}
       }
     `,
     errorStyling: css`
       border-color: ${error};
       &:focus {
         outline: 0;
-        ${mixins.boxShadow('rgba(249, 98, 126, 0.644)')}
+        ${mixins.boxShadow(inputErrorShadowColor)}
       }
     `,
   },
   flavors: {
     green: '#00fd9a',
     baseTextColor,
+    inputBorderColor,
+    inputShadowColor,
+    inputErrorShadowColor,
+    imageBackgroundColor,
     blue: '#01d1fe',
     bgBlue: 'rgba(1, 208, 254, 0.3)',
-    modalShadowBlue: 'rgba(0, 44, 54, 0.356)',
+    modalShadowBlue: 'rgb(79 102 202 / 36%)',
     textBlue: '#002C36',
     footerBlue: '#005F74',
     textYellow: '#585800',

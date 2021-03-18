@@ -8,16 +8,39 @@ import Elephant from '../assets/elephant.png';
 
 const SkillDescriptionContainer = styled(Column)`
   text-align: center;
+  min-width: 420px;
+  ${(props) => css`
+    @media screen and (max-width: ${props.theme.breakpoints.heroSmall}) {
+      min-width: 200px;
+    }
+  `}
 `;
 
 const PieContainer = styled(Column)`
   position: relative;
   display: flex;
   justify-content:center;
+
+`;
+
+const PieTextContainer = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  font-weight: bold;
+  pointer-events: none;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const SkillSvg = styled.svg`
-  height:400px;
+  max-height:400px;
+  min-height: 200px;
+  height: 100%;
   ${(props) => css`
     & text {
         fill: white;
@@ -27,6 +50,9 @@ const SkillSvg = styled.svg`
         pointer-events: none;
         ${props.theme.mixins.transition(['opacity', '.3s', 'ease-out'])};
       }
+    @media screen and (max-width: ${props.theme.breakpoints.heroSmall}) {
+      max-height: 300px;
+    }
 
   `}
 `;
@@ -37,9 +63,9 @@ const SkillPie = styled.path`
     ${props.theme.mixins.transition(['fill', '.3s', 'ease-out'])};
     ${props.active ? css`
       fill: ${props.theme.flavors.blue};
-      & + text {
+      /* & + text {
         opacity: 0;
-      }
+      } */
     ` : css`
       fill: ${props.theme.flavors.pie};
       &:hover {
@@ -53,18 +79,23 @@ const SkillPie = styled.path`
 `;
 
 export const Skills = () => {
+  const lookup = {
+    voiceActing: 'Voice Acting',
+    streaming: 'Streaming',
+    gameDevelopment: 'Game Development',
+  };
   const displayedText = {
-    'Voice Acting': `
+    [lookup.voiceActing]: `
       Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
       dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
       kasdgubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
     `,
-    Streaming: `
+    [lookup.streaming]: `
       Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et 
       dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
       kasdgubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
     `,
-    'Game Development': `
+    [lookup.gameDevelopment]: `
       Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
       dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
       kasdgubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
@@ -76,26 +107,32 @@ export const Skills = () => {
       <Row>
         <PieContainer columnCount={2}>
           {/* eslint-disable max-len */}
-
+          <PieTextContainer>
+            <ContentParagraph as="span">Select One</ContentParagraph>
+          </PieTextContainer>
           <SkillSvg x="0px" y="0px" viewBox="0 0 500 500">
             <g>
               <SkillPie
-                active={displayedValue === 'Voice Acting'}
-                onClick={() => setDisplayedValue('Voice Acting')}
-                d="M251.36,414.95c-0.01-22.93-0.01-45.86,0-68.8c0-4.94,0.52-5.31,5.37-5.6c9.21-0.57,18.08-2.57,26.77-5.82
-                c21.68-8.1,37.13-22.9,46.96-43.56c11.17-23.48,12.33-47.41,1.92-71.57c-0.74-1.73-1.44-3.48-2.23-5.18
-                c-2.08-4.45-1.77-5.45,2.39-7.85c17.88-10.3,35.75-20.61,53.63-30.91c22.02-12.69,44.05-25.38,66.08-38.05
-                c5.96-3.42,6.02-3.3,9.39,2.68c10.2,18.08,17.03,37.45,21.48,57.62c4.99,22.62,6.74,45.43,5.67,68.73
-                c-1.48,32.18-10.48,62.05-24.12,90.75c-13.86,29.16-33.93,53.62-58.11,74.87c-27.96,24.57-60.33,40.76-96.05,50.24
-                c-11.11,2.95-22.76,3.94-34.22,5.48c-6.6,0.89-13.28,1.32-19.93,1.52c-4.64,0.13-4.98-0.52-4.98-5.4
-                C251.35,461.04,251.36,437.99,251.36,414.95z"
+                aria-label={lookup.streaming}
+                tabIndex="0"
+                active={displayedValue === lookup.streaming}
+                onClick={() => setDisplayedValue(lookup.streaming)}
+                d="M240.83,489.39c-18.91,0.07-37.21-3.48-55.41-8.36c-14.66-3.93-28.77-9.49-42.08-16.25c-17.07-8.67-33.7-18.59-48.22-31.45
+                c-21.03-18.62-38.86-39.75-52.88-64.24c-10.89-19.02-18.55-39.08-23.82-60.25c-3.08-12.38-5.44-24.88-6.44-37.55
+                c-0.85-10.8-1.56-21.77-0.66-32.53c1.83-22,4.71-43.98,12.81-64.73c4.84-12.4,10.72-24.4,16.36-36.47
+                c2.02-4.32,3.27-4.45,7.28-2.15c27.25,15.68,54.52,31.35,81.77,47.04c12.76,7.35,25.5,14.73,38.24,22.1
+                c2.81,1.62,3.78,3.75,2.18,6.89c-5.2,10.22-8.09,21-9.27,32.48c-2.33,22.66,4.23,42.54,17.57,60.42
+                c11.58,15.51,26.72,26.21,45.55,31.14c6.6,1.73,13.46,2.52,20.23,3.51c2.78,0.4,3.5,1.81,3.49,4.33
+                c-0.03,47.26-0.02,94.51-0.03,141.77C247.51,489.39,247.14,489.59,240.83,489.39z"
               />
-              <text transform="translate(340 320)">
-                <tspan x="0" y="0">Voice Acting</tspan>
+              <text transform="translate(50 320)">
+                <tspan x="0" y="0">{lookup.streaming}</tspan>
               </text>
               <SkillPie
-                active={displayedValue === 'Game Development'}
-                onClick={() => setDisplayedValue('Game Development')}
+                tabIndex="0"
+                aria-label={lookup.gameDevelopment}
+                active={displayedValue === lookup.gameDevelopment}
+                onClick={() => setDisplayedValue(lookup.gameDevelopment)}
                 d="M454,128.42c-0.86,1.03-1.45,2.23-2.4,2.8c-13.42,7.96-26.85,15.91-40.36,23.72c-17.07,9.86-34.22,19.58-51.32,29.38
                 c-10.28,5.89-20.53,11.86-30.82,17.74c-3.06,1.75-4.58-0.71-6.12-2.6c-3.71-4.55-7-9.49-11.02-13.74
                 c-12.84-13.61-28.67-21.5-47.16-24.73c-23.01-4.02-43.99,0.97-63.48,13.07c-10.18,6.32-17.85,15.36-24.52,25.22
@@ -106,24 +143,27 @@ export const Skills = () => {
                 c13.76,6.75,26.65,15.27,38.33,25.4c6.35,5.51,13.05,10.63,19.19,16.35c10.98,10.23,19.77,22.34,28.37,34.55
                 c2.86,4.06,5.48,8.3,8.18,12.48C453.04,126.33,453.4,127.24,454,128.42z"
               />
-              <text id="Game_Development" transform="translate(270 80)">
-                <tspan x="-45" y="0">Game</tspan>
-                <tspan x="-78.309" y="27">Development</tspan>
+              <text transform="translate(270 80)">
+                <tspan x="-45" y="0">{lookup.gameDevelopment.split(' ')[0]}</tspan>
+                <tspan x="-78.309" y="27">{lookup.gameDevelopment.split(' ')[1]}</tspan>
               </text>
               <SkillPie
-                active={displayedValue === 'Streaming'}
-                onClick={() => setDisplayedValue('Streaming')}
-                d="M240.83,489.39c-18.91,0.07-37.21-3.48-55.41-8.36c-14.66-3.93-28.77-9.49-42.08-16.25c-17.07-8.67-33.7-18.59-48.22-31.45
-                c-21.03-18.62-38.86-39.75-52.88-64.24c-10.89-19.02-18.55-39.08-23.82-60.25c-3.08-12.38-5.44-24.88-6.44-37.55
-                c-0.85-10.8-1.56-21.77-0.66-32.53c1.83-22,4.71-43.98,12.81-64.73c4.84-12.4,10.72-24.4,16.36-36.47
-                c2.02-4.32,3.27-4.45,7.28-2.15c27.25,15.68,54.52,31.35,81.77,47.04c12.76,7.35,25.5,14.73,38.24,22.1
-                c2.81,1.62,3.78,3.75,2.18,6.89c-5.2,10.22-8.09,21-9.27,32.48c-2.33,22.66,4.23,42.54,17.57,60.42
-                c11.58,15.51,26.72,26.21,45.55,31.14c6.6,1.73,13.46,2.52,20.23,3.51c2.78,0.4,3.5,1.81,3.49,4.33
-                c-0.03,47.26-0.02,94.51-0.03,141.77C247.51,489.39,247.14,489.59,240.83,489.39z"
+                tabIndex="0"
+                aria-label={lookup.voiceActing}
+                active={displayedValue === lookup.voiceActing}
+                onClick={() => setDisplayedValue(lookup.voiceActing)}
+                d="M251.36,414.95c-0.01-22.93-0.01-45.86,0-68.8c0-4.94,0.52-5.31,5.37-5.6c9.21-0.57,18.08-2.57,26.77-5.82
+                c21.68-8.1,37.13-22.9,46.96-43.56c11.17-23.48,12.33-47.41,1.92-71.57c-0.74-1.73-1.44-3.48-2.23-5.18
+                c-2.08-4.45-1.77-5.45,2.39-7.85c17.88-10.3,35.75-20.61,53.63-30.91c22.02-12.69,44.05-25.38,66.08-38.05
+                c5.96-3.42,6.02-3.3,9.39,2.68c10.2,18.08,17.03,37.45,21.48,57.62c4.99,22.62,6.74,45.43,5.67,68.73
+                c-1.48,32.18-10.48,62.05-24.12,90.75c-13.86,29.16-33.93,53.62-58.11,74.87c-27.96,24.57-60.33,40.76-96.05,50.24
+                c-11.11,2.95-22.76,3.94-34.22,5.48c-6.6,0.89-13.28,1.32-19.93,1.52c-4.64,0.13-4.98-0.52-4.98-5.4
+                C251.35,461.04,251.36,437.99,251.36,414.95z"
               />
-              <text transform="translate(50 320)">
-                <tspan x="0" y="0">Streaming</tspan>
+              <text transform="translate(340 320)">
+                <tspan x="0" y="0">{lookup.voiceActing}</tspan>
               </text>
+
             </g>
             <image
               width="1904"
