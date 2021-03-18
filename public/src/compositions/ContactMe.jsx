@@ -83,6 +83,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
           ? (
             <StyledForm>
               <FormInput
+                autoFocus
                 hasError={Boolean(errors.name)}
                 errorMessage={errors.name}
                 name="Name"

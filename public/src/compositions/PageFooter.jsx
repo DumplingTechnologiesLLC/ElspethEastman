@@ -1,18 +1,18 @@
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import API from '../api';
 import CircularLoadingBar from '../components/CircularLoadingBar';
 import StyledFooter, { FooterContent, FooterTitle, FooterSubTitle } from '../components/Layout/StyledFooter';
 import Instagram from '../assets/svg/Instagram.svg';
-import Linkedin from '../assets/svg/Linkedin.svg';
 import Soundcloud from '../assets/svg/Soundcloud.svg';
 import Twitter from '../assets/svg/Twitter.svg';
 import Youtube from '../assets/svg/Youtube.svg';
 
 const LoadingContainer = styled.div`
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   justify-content: space-evenly;
   width: 100%;
@@ -22,6 +22,7 @@ const AffiliationsAndLinks = styled.div`
   display: flex;
   padding-top: 2em;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-evenly;
   width: 100%;
 `;
@@ -29,16 +30,23 @@ const AffiliationsAndLinks = styled.div`
 const Affiliations = styled.div`
   display: flex;
   flex-direction: column;
+  min-width: 200px;
 `;
 const SocialMediaContainer = styled.div`
   display: flex;
   
   flex-direction: column;
+  ${(props) => css`
+    @media screen and (max-width: ${props.theme.breakpoints.heroSmall}) {
+      margin-top: 1em;
+    }
+  `}
 `;
 const SocialMedia = styled.div`
   display: flex;
   flex-direction: row;
   padding-top: .5em;
+  min-width: 200px;
   justify-content: space-between;
 `;
 const SocialMediaIcon = styled.img`

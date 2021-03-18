@@ -84,10 +84,16 @@ export const AboveTheFold = ({ setShowContactMe }) => {
             Let’s do lunch, because lunch is tasty.
           </ContentParagraph>
           <AboveTheFoldButtons separated>
-            <PrimaryButton onClick={scrollToWork}>
+            <PrimaryButton
+              onKeyUp={(e) => (e.key === 'Enter' ? scrollToWork() : null)}
+              onClick={scrollToWork}
+            >
               See my work
             </PrimaryButton>
-            <SecondaryButton onClick={() => setShowContactMe(true)}>
+            <SecondaryButton
+              onClick={() => setShowContactMe(true)}
+              onKeyUp={(e) => (e.key === 'Enter' ? setShowContactMe(true) : null)}
+            >
               Get in touch
             </SecondaryButton>
           </AboveTheFoldButtons>

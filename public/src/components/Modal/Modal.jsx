@@ -1,9 +1,10 @@
 import styled, { css } from 'styled-components';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ReactComponent as Close } from '../../assets/svg/CloseX.svg';
 import SectionTitle from '../Text/SectionTitle';
 import BackgroundButton from '../Buttons/BackgroundButton';
+import uuid from '../../utils';
 
 const ModalContainer = styled.div`
   position: fixed;
@@ -82,22 +83,60 @@ const ModalButton = styled(BackgroundButton)`
 
 export const Modal = ({
   showModal, setShowModal, title, content,
-}) => (
-  <ModalContainer show={showModal}>
-    <ModalBackdrop onClick={() => setShowModal(false)} show={showModal} />
-    <ModalBody show={showModal}>
-      <ModalHeader>
-        <ModalTitle>
-          {title}
-        </ModalTitle>
-        <ModalButton tabIndex={showModal ? '0' : '-1'} onClick={() => setShowModal(false)} aria-label="Close Modal">
-          <Close />
-        </ModalButton>
-      </ModalHeader>
-      {content}
-    </ModalBody>
-  </ModalContainer>
-);
+}) => {
+  /* eslint-disable no-unused-vars */
+
+  const modal = useRef(null);
+  useEffect(() => {
+    const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const captureFocus = (e) => {
+      const focusableContent = modal.current.querySelectorAll(focusableElements);
+      const firstFocusableElement = focusableContent[0];
+      const lastFocusableElement = focusableContent[focusableContent.length - 1];
+      const isTabPressed = e.key === 'Tab' || e.keyCode === 9;
+
+      if (!isTabPressed) {
+        return;
+      }
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusableElement) {
+          lastFocusableElement.focus(); // add focus for the last focusable element
+          e.preventDefault();
+        }
+      } else if (document.activeElement === lastFocusableElement) {
+        firstFocusableElement.focus(); // add focus for the first focusable element
+        e.preventDefault();
+      }
+    };
+    document.addEventListener('keydown', captureFocus);
+
+    return () => {
+      document.removeEventListener('keydown', captureFocus);
+    };
+  });
+  const [_uid, ...rest] = useState(uuid('modal'));
+  return (
+    <ModalContainer show={showModal}>
+      <ModalBackdrop onClick={() => setShowModal(false)} show={showModal} />
+      <ModalBody
+        show={showModal}
+        role="dialog"
+        aria-labelledby={`${_uid}modalDialogTitle`}
+        ref={modal}
+      >
+        <ModalHeader>
+          <ModalTitle id={`${_uid}modalDialogTitle`}>
+            {title}
+          </ModalTitle>
+          <ModalButton tabIndex={showModal ? '0' : '-1'} onClick={() => setShowModal(false)} aria-label="Close Modal">
+            <Close />
+          </ModalButton>
+        </ModalHeader>
+        {content}
+      </ModalBody>
+    </ModalContainer>
+  );
+};
 
 Modal.propTypes = {
   showModal: PropTypes.bool.isRequired,

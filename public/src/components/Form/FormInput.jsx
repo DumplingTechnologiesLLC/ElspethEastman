@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import FormInputContainer from './FormInputContainer';
@@ -33,41 +33,59 @@ const ErrorMessage = styled.span`
 `;
 
 export const FormInput = ({
-  label, type, value, setValue, name, placeholder, errorMessage, hasError,
-}) => (
-  <FormInputContainer>
-    <StyledLabel htmlFor={name}>{label}</StyledLabel>
-    <StyledInput
-      type={type}
-      error={hasError}
-      onChange={(e) => setValue(e.target.value)}
-      name={name}
-      value={value}
-      placeholder={placeholder}
-    />
-    {errorMessage ? (<ErrorMessage>{errorMessage}</ErrorMessage>) : ''}
-  </FormInputContainer>
-);
+  autoFocus, label, type, value, setValue, name, placeholder, errorMessage, hasError,
+}) => {
+  const inputEl = useRef(null);
+  useEffect(() => {
+    if (autoFocus) {
+      inputEl.current.focus();
+    }
+  });
+  return (
+    <FormInputContainer>
+      <StyledLabel htmlFor={name}>{label}</StyledLabel>
+      <StyledInput
+        ref={inputEl}
+        type={type}
+        error={hasError}
+        onChange={(e) => setValue(e.target.value)}
+        name={name}
+        value={value}
+        placeholder={placeholder}
+      />
+      {errorMessage ? (<ErrorMessage>{errorMessage}</ErrorMessage>) : ''}
+    </FormInputContainer>
+  );
+};
 
 export const FormTextArea = ({
-  label, value, setValue, name, placeholder, errorMessage, hasError,
-}) => (
-  <FormInputContainer>
-    <StyledLabel htmlFor={name}>{label}</StyledLabel>
-    <StyledTextArea
-      error={hasError}
-      onChange={(e) => setValue(e.target.value)}
-      name={name}
-      value={value}
-      placeholder={placeholder}
-    />
-    {errorMessage ? (<ErrorMessage>{errorMessage}</ErrorMessage>) : ''}
-  </FormInputContainer>
-);
+  autoFocus, label, value, setValue, name, placeholder, errorMessage, hasError,
+}) => {
+  const inputEl = useRef(null);
+  useEffect(() => {
+    if (autoFocus) {
+      inputEl.current.focus();
+    }
+  });
+  return (
+    <FormInputContainer>
+      <StyledLabel htmlFor={name}>{label}</StyledLabel>
+      <StyledTextArea
+        error={hasError}
+        onChange={(e) => setValue(e.target.value)}
+        name={name}
+        value={value}
+        placeholder={placeholder}
+      />
+      {errorMessage ? (<ErrorMessage>{errorMessage}</ErrorMessage>) : ''}
+    </FormInputContainer>
+  );
+};
 
 FormInput.propTypes = {
   label: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
+  autoFocus: PropTypes.bool,
   placeholder: PropTypes.string,
   value: PropTypes.oneOfType([
     PropTypes.string,
@@ -84,11 +102,13 @@ FormInput.defaultProps = {
   placeholder: '',
   hasError: false,
   errorMessage: '',
+  autoFocus: false,
 };
 
 FormTextArea.propTypes = {
   label: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
+  autoFocus: PropTypes.bool,
   value: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
@@ -104,6 +124,7 @@ FormTextArea.defaultProps = {
   placeholder: '',
   hasError: false,
   errorMessage: '',
+  autoFocus: false,
 };
 
 export default FormInput;

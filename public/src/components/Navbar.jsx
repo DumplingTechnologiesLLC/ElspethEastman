@@ -168,38 +168,69 @@ export const Navbar = ({ handleContactMe }) => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
+    /**
+     * We don't care about the values used above firing another version of the hook since the window
+     * resize handles that
+     */
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
   return (
     <StyledNav>
-      <a onClick={(e) => handleAnchor(e, '#PageStart')} href="#PageStart">
+      <a
+        onClick={(e) => handleAnchor(e, '#PageStart')}
+        onKeyUp={(e) => (e.key === 'Enter' ? handleAnchor(e, '#PageStart') : null)}
+        href="#PageStart"
+      >
         <StyledNavBrand src={NavbarBrandImage} alt="Brand image" />
       </a>
-      <StyledNavbarButton onClick={expandOrCollapse}>
+      <StyledNavbarButton
+        onClick={expandOrCollapse}
+        onKeyUp={(e) => (e.key === 'Enter' ? expandOrCollapse() : null)}
+      >
         <HamburgerMenu />
       </StyledNavbarButton>
       <StyledNavItems collapsed={collapsed} ref={navbarItems}>
         <StyledNavItem>
-          <StyledNavLink onClick={(e) => handleAnchor(e, '/#PageStart')} href="/#PageStart">
+          <StyledNavLink
+            onClick={(e) => handleAnchor(e, '/#PageStart')}
+            onKeyUp={(e) => (e.key === 'Enter' ? handleAnchor(e, '#PageStart') : null)}
+            href="/#PageStart"
+          >
             About Me
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
-          <StyledNavLink onClick={(e) => handleAnchor(e, '/#latestProjects')} href="/#latestProjects">
+          <StyledNavLink
+            onClick={(e) => handleAnchor(e, '/#latestProjects')}
+            onKeyUp={(e) => (e.key === 'Enter' ? handleAnchor(e, '/#latestProjects') : null)}
+            href="/#latestProjects"
+          >
             Latest Projects
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
-          <StyledNavLink onClick={(e) => handleAnchor(e, '/#Music')} href="/#Music">
+          <StyledNavLink
+            onClick={(e) => handleAnchor(e, '/#Music')}
+            onKeyUp={(e) => (e.key === 'Enter' ? handleAnchor(e, '/#Music') : null)}
+            href="/#Music"
+          >
             Reels &amp; Music
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
-          <StyledNavLink onClick={(e) => handleAnchor(e, '/#Experience')} href="/#Experience">
+          <StyledNavLink
+            onClick={(e) => handleAnchor(e, '/#Experience')}
+            onKeyUp={(e) => (e.key === 'Enter' ? handleAnchor(e, '/#Experience') : null)}
+            href="/#Experience"
+          >
             Experience
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
-          <StyledNavLink tabIndex={0} onClick={(e) => { e.preventDefault(); handleContactMe(true); }}>
+          <StyledNavLink
+            tabIndex="0"
+            onClick={(e) => { e.preventDefault(); handleContactMe(true); }}
+          >
             Contact Me
           </StyledNavLink>
         </StyledNavItem>

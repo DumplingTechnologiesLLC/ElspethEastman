@@ -19,10 +19,11 @@ const ColoredSection = styled.div`
 const Row = styled.div`
   display: flex;
   min-width: 100%;
+  flex-wrap: wrap;
 `;
 const Column = styled.div`
   flex: 1;
-  min-width: 50%;
+  min-width: max(50%, 300px);
   display: flex;
   flex-direction: column;
 `;
