@@ -5,7 +5,7 @@ import JumboTitle from '../components/Text/JumboTitle';
 import ColoredText from '../components/Text/ColoredText';
 import { Column, Row } from '../components/Layout/Layout';
 import ContentParagraph from '../components/Text/ContentParagraph';
-import HeroImage from '../assets/hero.webp';
+import HeroImage from '../assets/hero2.webp';
 import TheHeroImage from '../components/HeroImage';
 import ButtonGroup from '../components/Buttons/ButtonGroup';
 import PrimaryButton from '../components/Buttons/PrimaryButton';
@@ -69,7 +69,7 @@ export const AboveTheFold = ({ onGetInTouch }) => {
           <JumboTitle id="PageTitle" shadowText="EASTMAN">
             HI, I&apos;M
             {' '}
-            <ColoredText flavor="pink">ELSPETH!</ColoredText>
+            <ColoredText flavor="titlePink">ELSPETH!</ColoredText>
           </JumboTitle>
           <ContentParagraph>
             I&apos;m a voice actor, composer, and gamer.

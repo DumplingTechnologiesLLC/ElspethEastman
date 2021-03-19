@@ -18,6 +18,19 @@ const TitleButtonPairing = styled.div`
     ${SecondaryButton} + ${SectionTitle} {
       margin-left: ${props.theme.spacing.md};
     }
+    @media screen and (max-width: ${props.theme.breakpoints.latestProjects}) {
+      ${SectionTitle} {
+        margin-bottom: ${props.theme.spacing.sm};
+      }
+      ${SectionTitle} + ${SecondaryButton} {
+        margin-left: 0;
+        width: 100%;
+        margin-bottom: ${props.theme.spacing.md};
+      }
+      ${SecondaryButton} + ${SectionTitle} {
+        margin-left: 0;
+      }
+    }
   `}
 `;
 const CenteredButtonGroup = styled(ButtonGroup)`
@@ -41,7 +54,7 @@ export const LatestProjects = () => {
    */
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
-    API.retrieveProjects(currentPage).then((results) => {
+    API.retrievePaginatedProjects(currentPage).then((results) => {
       setLoadedProjects(loadedProjects.concat(results));
     });
   }, [currentPage]);

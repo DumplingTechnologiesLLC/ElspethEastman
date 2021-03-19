@@ -44,7 +44,8 @@ const ModalBody = styled.div`
   ${(props) => css`
     opacity: 0;
     padding: 2em;
-    min-width: 400px;
+    min-width: 100px;
+    margin: 0 ${props.theme.spacing.md};
     max-width: 600px;
     width: 100%;
     border-radius: 5px;

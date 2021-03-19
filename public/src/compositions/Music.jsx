@@ -58,6 +58,7 @@ export const Music = () => (
     <SectionTitle>Music </SectionTitle>
     <IFrameContainer>
       <StyledIframe
+        title="My soundcloud"
         tabIndex="-1"
         color="black"
         width="100%"

@@ -96,6 +96,7 @@ export const theme = {
   spacing,
   breakpoints: {
     navbarBreakpoint,
+    latestProjects: '455px',
     heroMedium: '1080px',
     heroSmall: '580px',
     heroXSmall: '420px',
@@ -138,6 +139,7 @@ export const theme = {
     navbar: 'white',
     background: 'white',
     secondary: 'white',
+    titlePink: '#e300b3',
     error,
     errorText,
     textBlue: '#002C36',

@@ -113,6 +113,7 @@ export const Skills = () => {
             <g>
               <SkillPie
                 aria-label={lookup.streaming}
+                role="button"
                 tabIndex="0"
                 active={displayedValue === lookup.streaming}
                 onClick={() => setDisplayedValue(lookup.streaming)}
@@ -130,6 +131,7 @@ export const Skills = () => {
               <SkillPie
                 tabIndex="0"
                 aria-label={lookup.gameDevelopment}
+                role="button"
                 active={displayedValue === lookup.gameDevelopment}
                 onClick={() => setDisplayedValue(lookup.gameDevelopment)}
                 d="M454,128.42c-0.86,1.03-1.45,2.23-2.4,2.8c-13.42,7.96-26.85,15.91-40.36,23.72c-17.07,9.86-34.22,19.58-51.32,29.38
@@ -149,6 +151,7 @@ export const Skills = () => {
               <SkillPie
                 tabIndex="0"
                 aria-label={lookup.voiceActing}
+                role="button"
                 active={displayedValue === lookup.voiceActing}
                 onClick={() => setDisplayedValue(lookup.voiceActing)}
                 d="M251.36,414.95c-0.01-22.93-0.01-45.86,0-68.8c0-4.94,0.52-5.31,5.37-5.6c9.21-0.57,18.08-2.57,26.77-5.82
