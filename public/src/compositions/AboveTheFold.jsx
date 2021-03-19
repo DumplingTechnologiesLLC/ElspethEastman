@@ -5,7 +5,7 @@ import JumboTitle from '../components/Text/JumboTitle';
 import ColoredText from '../components/Text/ColoredText';
 import { Column, Row } from '../components/Layout/Layout';
 import ContentParagraph from '../components/Text/ContentParagraph';
-import HeroImage from '../assets/hero.png';
+import HeroImage from '../assets/hero.webp';
 import TheHeroImage from '../components/HeroImage';
 import ButtonGroup from '../components/Buttons/ButtonGroup';
 import PrimaryButton from '../components/Buttons/PrimaryButton';
@@ -40,7 +40,10 @@ const TextContainer = styled(Column)`
 }
 `;
 const AboveTheFoldButtons = styled(ButtonGroup)`
-  margin-top: 2em;
+  ${(props) => css`
+    margin-top: ${props.theme.spacing.xl};
+  
+  `}
 `;
 const PageAnchor = styled.span`
   position: absolute;
@@ -51,7 +54,7 @@ const PageAnchor = styled.span`
 
 const ContentContainer = styled.div``;
 
-export const AboveTheFold = ({ setShowContactMe }) => {
+export const AboveTheFold = ({ onGetInTouch }) => {
   const scrollToWork = () => {
     const el = document.querySelector('#latestProjects');
     el ? el.scrollIntoView({
@@ -91,8 +94,8 @@ export const AboveTheFold = ({ setShowContactMe }) => {
               See my work
             </PrimaryButton>
             <SecondaryButton
-              onClick={() => setShowContactMe(true)}
-              onKeyUp={(e) => (e.key === 'Enter' ? setShowContactMe(true) : null)}
+              onClick={() => onGetInTouch(true)}
+              onKeyUp={(e) => (e.key === 'Enter' ? onGetInTouch(true) : null)}
             >
               Get in touch
             </SecondaryButton>
@@ -107,7 +110,7 @@ export const AboveTheFold = ({ setShowContactMe }) => {
 };
 
 AboveTheFold.propTypes = {
-  setShowContactMe: PropTypes.func.isRequired,
+  onGetInTouch: PropTypes.func.isRequired,
 };
 
 export default AboveTheFold;

@@ -12,18 +12,18 @@ import ContactMe from './compositions/ContactMe';
 import PageFooter from './compositions/PageFooter';
 
 function App() {
-  const [showContactMe, setShowContactMe] = useState(false);
+  const [showContactMe, onContactMe] = useState(false);
   return (
     <ElspethTheme>
       <PageLayout>
-        <Navbar handleContactMe={setShowContactMe} />
+        <Navbar handleContactMe={onContactMe} />
         <PageContent>
-          <AboveTheFold setShowContactMe={setShowContactMe} />
+          <AboveTheFold onGetInTouch={onContactMe} />
           <Skills />
           <LatestProjects />
           <Music />
           <Experience />
-          <ContactMe setContactMeVisibility={setShowContactMe} showForm={showContactMe} />
+          <ContactMe setContactMeVisibility={onContactMe} showForm={showContactMe} />
           <PageFooter />
         </PageContent>
       </PageLayout>

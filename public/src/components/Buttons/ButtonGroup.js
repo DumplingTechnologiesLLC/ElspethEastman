@@ -10,10 +10,10 @@ export const ButtonGroup = styled.div`
       ${
   props.vertical
     ? css`
-      margin-top: ${props.theme.buttonGroup.spacing}
+      margin-top: ${props.theme.spacing.xs}
     `
     : css`
-      margin-left: ${props.theme.buttonGroup.spacing}
+      margin-left: ${props.theme.spacing.xs}
     `};
       }
     ` : ''}

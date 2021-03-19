@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css, ThemeContext } from 'styled-components';
-import NavbarBrandImage from '../assets/NavbarBrand.png';
+import NavbarBrandImage from '../assets/NavbarBrand.webp';
 import BackgroundButton from './Buttons/BackgroundButton';
 import { ReactComponent as HamburgerMenu } from '../assets/svg/HamburgerMenu.svg';
 
@@ -11,7 +11,7 @@ const StyledNav = styled.nav`
   ${(props) => css`
     z-index: 99999;
     background-color: ${props.theme.flavors.navbar};
-    padding: .5em 1em;
+    padding: ${props.theme.spacing.sm} ${props.theme.spacing.md};
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
@@ -34,8 +34,8 @@ const StyledNavItems = styled.ul`
   padding: 0;
   ${(props) => css`
   ${props.theme.mixins.transition(['height', '.3s', 'ease-out'])};
-  overflow: hidden;
   ${props.theme.mixins.navbarBreakpoint(css`
+    overflow: hidden;
     transform-origin: top center;
     min-width: 100%;
     flex-direction: column;
@@ -44,11 +44,11 @@ const StyledNavItems = styled.ul`
 `;
 
 const StyledNavItem = styled.li`
-  padding: 0 .5em;
   cursor: pointer;
   ${(props) => css`
+    padding: 0 ${props.theme.spacing.sm};
     ${props.theme.mixins.navbarBreakpoint(css`
-      padding: .5em;
+      padding: ${props.theme.spacing.sm};
     `)}
   `}
 `;

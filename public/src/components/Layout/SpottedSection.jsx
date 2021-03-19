@@ -7,9 +7,9 @@ const StyledSection = styled.section`
   ${(props) => css`
     ${props.theme.spottedSection}
     @media screen and (max-width: ${props.theme.breakpoints.heroSmall}) {
-      padding-left: 1em;
-      padding-right: 1em;
-      padding-top: 5em;
+      padding-left: ${props.theme.spacing.md};
+      padding-right: ${props.theme.spacing.md};
+      padding-top: ${props.theme.spacing.xxl};
     }
     @media screen and (max-width: ${props.theme.breakpoints.heroXSmall}) {
       padding-left: 0em;

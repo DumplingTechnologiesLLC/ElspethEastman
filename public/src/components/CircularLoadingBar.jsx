@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import PropTypes from 'prop-types';
 import { FooterContent } from './Layout/StyledFooter';
 
@@ -11,11 +11,10 @@ const LoadingContainer = styled.div`
   text-align: center;
 `;
 const LabelContainer = styled.div`
+  ${(props) => css`
+    ${props.theme.fixedOrAbsoluteFullCoverage}
+  `}
   position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
   width: 100%;
   height: ${canvasDimension}px;
   display: flex;

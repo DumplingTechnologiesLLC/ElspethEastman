@@ -12,7 +12,12 @@ const error = '#F9627D';
 const errorText = '#800c21';
 const buttonAnimationTiming = '.15s';
 const buttonAnimationAlgorithm = 'ease-in';
-
+const fixedOrAbsoluteFullCoverage = css`
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+`;
 const mixins = {
   transition: (...args) => css`
       transition: ${args.map(([property, timing, transition]) => `${property} ${timing} ${transition}`).join(', ')};
@@ -25,10 +30,7 @@ const mixins = {
     &::after {
       display: flex;
       position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      left: 0;
+      ${fixedOrAbsoluteFullCoverage}
       width: 100%;
       height: 100%;
       text-align: center;
@@ -44,6 +46,16 @@ const mixins = {
   `,
 };
 
+const spacing = {
+  jumbo: '10em',
+  xxl: '5em',
+  xl: '2em',
+  lg: '1.25em',
+  md: '1em',
+  sm: '.5em',
+  xs: '.25em',
+  tiny: '.1em',
+};
 const baseTextStyling = css`
   color: ${baseTextColor};
 `;
@@ -74,12 +86,14 @@ export const theme = {
   maxContentWidth: '1200px',
   heroImageHeight: 500,
   modalTiming: '.3s',
+  fixedOrAbsoluteFullCoverage,
   spottedSection: css`
-    margin-top: 2em;
-    padding: 10em 2em 0 2em;
+    margin-top: ${spacing.xl};
+    padding: ${spacing.jumbo} ${spacing.xl} 0 ${spacing.xl};
     position: relative;
     overflow: hidden;
   `,
+  spacing,
   breakpoints: {
     navbarBreakpoint,
     heroMedium: '1080px',
@@ -92,9 +106,9 @@ export const theme = {
       border: 1px solid ${inputBorderColor};
       width: 100%;
       ${normalFontSize}
-      padding: .5em .5em;
+      padding: ${spacing.sm} ${spacing.sm};
       box-sizing: border-box;
-      margin-top: .25em;
+      margin-top: ${spacing.xs};
       ${mixins.transition(['box-shadow', '.2s', 'ease-out'])}
       &:focus {
         outline: 0;
@@ -110,18 +124,13 @@ export const theme = {
     `,
   },
   flavors: {
-    green: '#00fd9a',
     baseTextColor,
     inputBorderColor,
     inputShadowColor,
     inputErrorShadowColor,
     imageBackgroundColor,
-    blue: '#01d1fe',
-    bgBlue: 'rgba(1, 208, 254, 0.3)',
     modalShadowBlue: 'rgb(79 102 202 / 36%)',
-    textBlue: '#002C36',
     footerBlue: '#005F74',
-    textYellow: '#585800',
     textPink: '#630063',
     blueTransparent: 'rgba(1, 209, 254, .7)',
     secondaryActive: '#f1f1f1',
@@ -131,23 +140,27 @@ export const theme = {
     secondary: 'white',
     error,
     errorText,
+    textBlue: '#002C36',
     midBlue: '#00B3D9',
+    textYellow: '#585800',
+    textGreen: '#02311f',
+    blue: '#01d1fe',
     pink: '#ff9bff',
-    bgPink: 'rgba(255, 155, 255, 0.3)',
     yellow: '#feff8a',
+    green: '#00fd9a',
+    bgGreen: 'rgba(2, 219, 136, 0.342)',
+    bgBlue: 'rgba(1, 208, 254, 0.3)',
     bgYellow: 'rgba(253, 255, 138, 0.3)',
+    bgPink: 'rgba(255, 155, 255, 0.3)',
     pie: '#007A94',
     pieHover: '#0098B8',
-  },
-  buttonGroup: {
-    spacing: '.25em',
   },
   button: {
     defaultStyling: css`
       cursor: pointer;
       width: 100%; 
       font-weight: 900;
-      padding: .5em 1em;
+      padding: ${spacing.sm} ${spacing.md};
       border-radius: 0;
       border-width: 1px;
       border-style: solid;

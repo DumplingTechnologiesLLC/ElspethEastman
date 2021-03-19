@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 export const StyledFooter = styled.footer`
   ${(props) => css`
     background-color: ${props.theme.flavors.footerBlue};
-    padding: 1em;
+    padding: ${props.theme.spacing.md};
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -30,7 +30,7 @@ export const FooterContent = styled.p`
     ${props.theme.text.normalFontSize};
     color: ${props.theme.navbar};
     ${props.theme.text.baseContentFont};
-    margin: .25em 0;
+    margin: ${props.theme.spacing.xs} 0;
   `}
 `;
 

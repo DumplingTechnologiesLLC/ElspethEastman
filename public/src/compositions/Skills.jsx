@@ -4,7 +4,7 @@ import ContentParagraph from '../components/Text/ContentParagraph';
 import ContentTitle from '../components/Text/ContentTitle';
 import { Column, Row } from '../components/Layout/Layout';
 import SpottedSection from '../components/Layout/SpottedSection';
-import Elephant from '../assets/elephant.png';
+import Elephant from '../assets/elephant.webp';
 
 const SkillDescriptionContainer = styled(Column)`
   text-align: center;
@@ -25,13 +25,12 @@ const PieContainer = styled(Column)`
 
 const PieTextContainer = styled.div`
   position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
+  ${(props) => css`
+    ${props.theme.fixedOrAbsoluteFullCoverage}
+  `}
   z-index: 1;
   font-weight: bold;
   pointer-events: none;
-  bottom: 0;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import SpottedSection from '../components/Layout/SpottedSection';
 import SectionTitle from '../components/Text/SectionTitle';
 import SecondaryButton from '../components/Buttons/SecondaryButton';
@@ -8,15 +8,17 @@ import ButtonGroup from '../components/Buttons/ButtonGroup';
 import API from '../api';
 
 const TitleButtonPairing = styled.div`
-  & ${SecondaryButton} {
-    width: auto;
-  }
-  ${SectionTitle} + ${SecondaryButton} {
-    margin-left: 1em;
-  }
-  ${SecondaryButton} + ${SectionTitle} {
-    margin-left: 1em;
-  }
+  ${(props) => css`
+    & ${SecondaryButton} {
+      width: auto;
+    }
+    ${SectionTitle} + ${SecondaryButton} {
+      margin-left: ${props.theme.spacing.md};
+    }
+    ${SecondaryButton} + ${SectionTitle} {
+      margin-left: ${props.theme.spacing.md};
+    }
+  `}
 `;
 const CenteredButtonGroup = styled(ButtonGroup)`
   margin: 0 auto;

@@ -9,16 +9,16 @@ const StyledTitle = styled.span`
   `}
 `;
 const TitleLine = styled.div`
-  height: 2px;
-  & + ${StyledTitle} {
-    margin-left: .5em;
-  }
-  ${StyledTitle} + & {
-    margin-left: .5em;
-  }
-  border-radius: 8px;
-  flex: 1;
   ${(props) => css`
+    height: 2px;
+    & + ${StyledTitle} {
+      margin-left: ${props.theme.spacing.sm};
+    }
+    ${StyledTitle} + & {
+      margin-left: ${props.theme.spacing.sm};
+    }
+    border-radius: 8px;
+    flex: 1;
     background-color: ${props.theme.flavors.pink};
   `}
 `;
@@ -43,20 +43,24 @@ const VideoThumbnail = styled.img`
     max-width: 480px;
     width: 100%;
     cursor: pointer;
-    margin-top: 1em;
+    margin-top: ${props.theme.spacing.lg};
     
     position: relative;
     ${props.theme.mixins.imageLoadingText('Loading', props.theme.flavors.pink, props.theme.flavors.pink)}
   `}
 `;
 const ComponentContainer = styled.div`
-  margin-bottom: 2em;
-  width: 480px;
+  ${(props) => css`
+    margin-bottom: ${props.theme.spacing.xl};
+    width: 480px;
+  `}
 `;
 const StyledIframe = styled.iframe`
-  margin-top: 1em;
-  height: 270px;
-  width: 100%;
+  ${(props) => css`
+    margin-top: ${props.theme.spacing.lg};
+    height: 270px;
+    width: 100%;
+  `}
 `;
 const VideoThumbnailContainer = styled.div`
   position: relative;
@@ -64,10 +68,9 @@ const VideoThumbnailContainer = styled.div`
 const StyledSVGContainer = styled.div`
   cursor: pointer;
   position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
+  ${(props) => css`
+    ${props.theme.fixedOrAbsoluteFullCoverage}
+  `}
   width: 100%;
   height: 100%;
   z-index: 1;

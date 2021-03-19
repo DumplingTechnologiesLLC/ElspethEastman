@@ -6,13 +6,15 @@ import ContentParagraph from '../components/Text/ContentParagraph';
 import SectionTitleUnderText from '../components/Text/SectionTitleUnderText';
 
 const ExperienceContainer = styled.section`
-  margin-top: 10em;
+  ${(props) => css`
+    margin-top: ${props.theme.spacing.jumbo};  
+  `}
 `;
 
 const ColoredSection = styled.div`
   flex: 1;
-  padding: 1em;
   ${(props) => css`
+    padding: ${props.theme.spacing.md};
     background-color: ${props.theme.flavors[props.color] ?? props.theme.flavors.background};
   `}
 `;
@@ -44,7 +46,20 @@ const ExperienceLine = styled(ContentParagraph)`
 export const Experience = () => {
   const [experience, setExperience] = useState({});
   const [experienceLoaded, setExperienceLoaded] = useState(false);
+  const lookup = {
+    voiceCredits: 'Voice Credits',
+    musicGames: 'Music - Games',
+    musicMiscellaneous: 'Music - Miscellaneous',
+    streamingCredits: 'Streaming Credits',
+  };
   const formatCredit = (credit) => (credit.year ? `(${credit.year}) ${credit.credit}` : credit.credit);
+
+  /* eslint-disable no-confusing-arrow */
+  const showExperience = (experiences) => experiences?.length ? experiences.map((exp) => (
+    <ExperienceLine>
+      {formatCredit(exp)}
+    </ExperienceLine>
+  )) : <ExperienceLine>Coming soon!</ExperienceLine>;
 
   useEffect(() => {
     if (!experienceLoaded) {
@@ -69,30 +84,34 @@ export const Experience = () => {
       <Row>
         <Column>
           <ColoredSection color="bgBlue">
-            <ColoredTitle color="textBlue">Voice Credits</ColoredTitle>
-            {experience['Voice Credits']?.map((exp) => (
-              <ExperienceLine key={exp.id}>
-                {formatCredit(exp)}
-              </ExperienceLine>
-            )) ?? <ExperienceLine>Loading</ExperienceLine>}
+            <ColoredTitle color="textBlue">{lookup.voiceCredits}</ColoredTitle>
+            {experienceLoaded
+              ? showExperience(experience[lookup.voiceCredits])
+              : <ExperienceLine>Loading</ExperienceLine>}
           </ColoredSection>
         </Column>
         <Column>
           <ColoredSection color="bgYellow">
-            <ColoredTitle color="textYellow">Music - Games</ColoredTitle>
-            {experience['Music - Games']?.map((exp) => (
-              <ExperienceLine>
-                {formatCredit(exp)}
-              </ExperienceLine>
-            )) ?? <ExperienceLine>Loading</ExperienceLine>}
+            <ColoredTitle color="textYellow">{lookup.musicGames}</ColoredTitle>
+            {experienceLoaded
+              ? showExperience(experience[lookup.musicGames])
+              : <ExperienceLine>Loading</ExperienceLine>}
           </ColoredSection>
+        </Column>
+        <Column>
           <ColoredSection color="bgPink">
-            <ColoredTitle color="textPink">Music - Miscellaneous</ColoredTitle>
-            {experience['Music - Miscellaneous']?.map((exp) => (
-              <ExperienceLine>
-                {formatCredit(exp)}
-              </ExperienceLine>
-            )) ?? <ExperienceLine>Loading</ExperienceLine>}
+            <ColoredTitle color="textPink">{lookup.musicMiscellaneous}</ColoredTitle>
+            {experienceLoaded
+              ? showExperience(experience[lookup.musicMiscellaneous])
+              : <ExperienceLine>Loading</ExperienceLine>}
+          </ColoredSection>
+        </Column>
+        <Column>
+          <ColoredSection color="bgGreen">
+            <ColoredTitle color="textGreen">{lookup.streamingCredits}</ColoredTitle>
+            {experienceLoaded
+              ? showExperience(experience[lookup.streamingCredits])
+              : <ExperienceLine>Loading</ExperienceLine>}
           </ColoredSection>
         </Column>
       </Row>

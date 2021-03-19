@@ -14,6 +14,12 @@ module.exports = {
           },
         ],
       },
+      {
+        test: /\.(webp)$/i,
+        loaders: [
+          'webp-loader',
+        ],
+      },
     ],
     rules: [
       {

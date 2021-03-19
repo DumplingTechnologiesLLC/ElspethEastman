@@ -4,10 +4,12 @@ import SectionTitle from '../components/Text/SectionTitle';
 import BackgroundElephant from '../assets/svg/BackgroundElephant.svg';
 
 const MusicContainer = styled.section`
-  position: relative;
-  min-height: 650px;
-  overflow: hidden;
-  padding:  8em 2em 0 2em;
+  ${(props) => css`
+    position: relative;
+    min-height: 650px;
+    overflow: hidden;
+    padding:  8em ${props.theme.spacing.xl} 0 ${props.theme.spacing.xl};
+  `}
 `;
 const BackgroundDecoration = styled.div`
   ${(props) => css`

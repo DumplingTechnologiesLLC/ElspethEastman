@@ -8,15 +8,13 @@ import uuid from '../../utils';
 
 const ModalContainer = styled.div`
   position: fixed;
-  top: 0;
-  bottom: 0;
+ 
   z-index: 999999;
-  right: 0;
-  left: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   ${(props) => css`
+    ${props.theme.fixedOrAbsoluteFullCoverage}
     ${props.show ? css`pointer-events: all;` : css`pointer-events: none;`};
   `}
 `;
@@ -24,10 +22,7 @@ const ModalContainer = styled.div`
 const ModalBackdrop = styled.div`
   ${(props) => css`
       position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      ${props.theme.fixedOrAbsoluteFullCoverage}
       opacity: 0;
       z-index: 1;
       background-color: ${props.theme.flavors.bgBlue};

@@ -19,12 +19,14 @@ const LoadingContainer = styled.div`
 `;
 
 const AffiliationsAndLinks = styled.div`
-  display: flex;
-  padding-top: 2em;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  width: 100%;
+  ${(props) => css`
+    display: flex;
+    padding-top: ${props.theme.spacing.xl};
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    width: 100%;
+  `}
 `;
 
 const Affiliations = styled.div`
@@ -38,16 +40,18 @@ const SocialMediaContainer = styled.div`
   flex-direction: column;
   ${(props) => css`
     @media screen and (max-width: ${props.theme.breakpoints.heroSmall}) {
-      margin-top: 1em;
+      margin-top: ${props.theme.spacing.md};
     }
   `}
 `;
 const SocialMedia = styled.div`
-  display: flex;
-  flex-direction: row;
-  padding-top: .5em;
-  min-width: 200px;
-  justify-content: space-between;
+  ${(props) => css`
+    display: flex;
+    flex-direction: row;
+    padding-top: ${props.theme.spacing.sm};
+    min-width: 200px;
+    justify-content: space-between;
+  `}
 `;
 const SocialMediaIcon = styled.img`
   height: 40px;
