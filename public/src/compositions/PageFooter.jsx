@@ -1,6 +1,6 @@
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import styled, { css } from 'styled-components';
 import API from '../api';
 import CircularLoadingBar from '../components/CircularLoadingBar';
@@ -9,6 +9,7 @@ import Instagram from '../assets/svg/Instagram.svg';
 import Soundcloud from '../assets/svg/Soundcloud.svg';
 import Twitter from '../assets/svg/Twitter.svg';
 import Youtube from '../assets/svg/Youtube.svg';
+import { ToastContext } from '../components/ToastManager';
 
 const LoadingContainer = styled.div`
   display: flex;
@@ -64,6 +65,8 @@ export const PageFooter = () => {
   });
   const [inFlight, setInFlight] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const { toast, flavors } = useContext(ToastContext);
+
   useEffect(() => {
     const errorState = {
       stats: [],
@@ -78,16 +81,29 @@ export const PageFooter = () => {
         if (response.ok) {
           setFooterData(response);
         } else {
+          toast(
+            'Error',
+            'Failed to load footer details',
+            flavors.error,
+          );
           setFooterData(errorState);
         }
       } catch (err) {
         setInFlight(false);
         setFooterData(errorState);
         setLoaded(true);
-        // TODO Toast
+        toast(
+          'Error',
+          'Failed to load footer details',
+          flavors.error,
+        );
       }
     };
     retrieveFooter();
+  /**
+   * We don't care about this hook firing every time toast references change. Not important.
+   */
+  /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
   const showStats = () => {
     if (inFlight || !loaded) {

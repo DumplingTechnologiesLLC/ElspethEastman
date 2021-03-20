@@ -73,7 +73,6 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
         'Failed to submit form. Please try again later.',
         flavors.error,
       );
-      // TODO: Toast
     }
   };
 

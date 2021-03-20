@@ -90,19 +90,19 @@ class API {
           percent: 28,
         },
         {
-          id: 1,
+          id: 2,
           value: '4257 clips',
           label: 'recorded',
           percent: 50,
         },
         {
-          id: 1,
+          id: 3,
           value: '3744 hours',
           label: 'streaming',
           percent: 66,
         },
         {
-          id: 1,
+          id: 4,
           value: '467 clips',
           label: 'of bloopers',
           percent: 33,

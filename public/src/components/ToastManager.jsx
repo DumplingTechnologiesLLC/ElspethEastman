@@ -54,6 +54,7 @@ const ToastRack = styled.div`
   right: 0;
   top: 0;
   bottom: 0;
+  pointer-events: none;
   width: 300px;
   display: flex;
   flex-direction: column;
@@ -127,9 +128,9 @@ export const ToastManager = ({ children }) => {
     }];
 
     setAvailableToastId(availableToastId + 1);
+    setForceRerender(toasts.current.length);
     setTimeout(() => {
       toasts.current.splice(0, 1);
-      console.log(toasts);
       setForceRerender(toasts.current.length);
     }, time ?? defaultTime);
   };

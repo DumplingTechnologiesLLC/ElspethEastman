@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css, ThemeContext } from 'styled-components';
+import { useHistory, Link } from 'react-router-dom';
 import NavbarBrandImage from '../assets/NavbarBrand.webp';
 import BackgroundButton from './Buttons/BackgroundButton';
 import { ReactComponent as HamburgerMenu } from '../assets/svg/HamburgerMenu.svg';
@@ -54,22 +55,22 @@ const StyledNavItem = styled.li`
 `;
 
 const StyledNavLink = styled.a`
-  ${(props) => css`
-    ${props.theme.text.baseContentTextStyling}
+  ${({ theme }) => css`
+    ${theme.text.baseContentTextStyling}
     text-decoration: none;
     position: relative;
     &:visited {
-      color: ${props.theme.flavors.baseTextColor};
+      color: ${theme.flavors.baseTextColor};
     }
     &::after {
       position: absolute;
       content: ' ';
       left: 0;
       right: 0;
-      ${props.theme.mixins.transition(['transform', '.2s', 'ease-out'])};
+      ${theme.mixins.transition(['transform', '.2s', 'ease-out'])};
       bottom: -2px;
       height: 2px;
-      background-color: ${props.theme.flavors.blue};
+      background-color: ${theme.flavors.blue};
       transform: scaleX(0);
       transform-origin: center center;
     }
@@ -105,8 +106,10 @@ const StyledNavBrand = styled.img`
 `;
 
 export const Navbar = ({ handleContactMe }) => {
+  const history = useHistory();
   const [collapsed, setCollapsed] = useState(false);
   const [transitioned, setTransitioned] = useState(false);
+
   const navbarItems = useRef(null);
   const themeContext = useContext(ThemeContext);
   const handleAnchor = (event, link) => {
@@ -114,7 +117,7 @@ export const Navbar = ({ handleContactMe }) => {
     const el = document.querySelector(link.substring(1, link.length));
     el ? el.scrollIntoView({
       behavior: 'smooth',
-    }) : window.location = link;
+    }) : history.push(link);
   };
 
   const collapseSection = () => {
@@ -177,7 +180,7 @@ export const Navbar = ({ handleContactMe }) => {
   return (
     <StyledNav>
       <a
-        onClick={(e) => handleAnchor(e, '#PageStart')}
+        onClick={(e) => handleAnchor(e, '/#PageStart')}
         onKeyUp={(e) => (e.key === 'Enter' ? handleAnchor(e, '#PageStart') : null)}
         href="#PageStart"
       >
@@ -192,36 +195,40 @@ export const Navbar = ({ handleContactMe }) => {
       <StyledNavItems collapsed={collapsed} ref={navbarItems}>
         <StyledNavItem>
           <StyledNavLink
+            as={Link}
             onClick={(e) => handleAnchor(e, '/#PageStart')}
-            onKeyUp={(e) => (e.key === 'Enter' ? handleAnchor(e, '#PageStart') : null)}
-            href="/#PageStart"
+            onKeyUp={(e) => (e.key === 'Enter' ? handleAnchor(e, '/#PageStart') : null)}
+            to="/#PageStart"
           >
             About Me
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
           <StyledNavLink
+            as={Link}
             onClick={(e) => handleAnchor(e, '/#latestProjects')}
             onKeyUp={(e) => (e.key === 'Enter' ? handleAnchor(e, '/#latestProjects') : null)}
-            href="/#latestProjects"
+            to="/#latestProjects"
           >
             Latest Projects
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
           <StyledNavLink
+            as={Link}
             onClick={(e) => handleAnchor(e, '/#Music')}
             onKeyUp={(e) => (e.key === 'Enter' ? handleAnchor(e, '/#Music') : null)}
-            href="/#Music"
+            to="/#Music"
           >
             Reels &amp; Music
           </StyledNavLink>
         </StyledNavItem>
         <StyledNavItem>
           <StyledNavLink
+            as={Link}
             onClick={(e) => handleAnchor(e, '/#Experience')}
             onKeyUp={(e) => (e.key === 'Enter' ? handleAnchor(e, '/#Experience') : null)}
-            href="/#Experience"
+            to="/#Experience"
           >
             Experience
           </StyledNavLink>

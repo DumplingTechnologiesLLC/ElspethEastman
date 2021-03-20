@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import SectionTitle from '../components/Text/SectionTitle';
+import SectionTitle from './Text/SectionTitle';
 import BackgroundElephant from '../assets/svg/BackgroundElephant.svg';
 
 const MusicContainer = styled.section`

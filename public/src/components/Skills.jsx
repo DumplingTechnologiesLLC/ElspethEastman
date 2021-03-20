@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
-import ContentParagraph from '../components/Text/ContentParagraph';
-import ContentTitle from '../components/Text/ContentTitle';
-import { Column, Row } from '../components/Layout/Layout';
-import SpottedSection from '../components/Layout/SpottedSection';
+import ContentParagraph from './Text/ContentParagraph';
+import ContentTitle from './Text/ContentTitle';
+import { Column, Row } from './Layout/Layout';
+import SpottedSection from './Layout/SpottedSection';
 import Elephant from '../assets/elephant.webp';
 
 const SkillDescriptionContainer = styled(Column)`

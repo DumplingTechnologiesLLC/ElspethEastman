@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
-import SectionTitle from '../components/Text/SectionTitle';
+import SectionTitle from './Text/SectionTitle';
 import API from '../api';
-import ContentParagraph from '../components/Text/ContentParagraph';
-import SectionTitleUnderText from '../components/Text/SectionTitleUnderText';
+import ContentParagraph from './Text/ContentParagraph';
+import SectionTitleUnderText from './Text/SectionTitleUnderText';
 
 const ExperienceContainer = styled.section`
   ${(props) => css`
@@ -56,7 +56,7 @@ export const Experience = () => {
 
   /* eslint-disable no-confusing-arrow */
   const showExperience = (experiences) => experiences?.length ? experiences.map((exp) => (
-    <ExperienceLine>
+    <ExperienceLine key={exp?.id}>
       {formatCredit(exp)}
     </ExperienceLine>
   )) : <ExperienceLine>Coming soon!</ExperienceLine>;

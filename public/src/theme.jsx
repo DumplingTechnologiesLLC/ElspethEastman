@@ -121,9 +121,9 @@ export const theme = {
   spacing,
   mixins,
   stacking: {
-    navbar: 9999,
-    modal: 100,
-    toasts: 101,
+    navbar: 100,
+    modal: 101,
+    toasts: 102,
   },
   toasts: {
     toast: css`
@@ -134,6 +134,7 @@ export const theme = {
       background-color: white;
       border-radius: ${toastBorderRadius};
       position: relative;
+      animation-fill-mode: forwards;
     `,
     toastCap: css`
       position: absolute;

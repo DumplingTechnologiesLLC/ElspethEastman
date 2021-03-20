@@ -10,6 +10,12 @@ export const PageLayout = styled.div`
   margin: 0 auto;
   position: relative;
 `;
+export const WrappedCenteredContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+`;
 export const PageContent = styled.main`
   flex: 1;
   ${(props) => css`
