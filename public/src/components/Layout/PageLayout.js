@@ -8,6 +8,7 @@ export const PageLayout = styled.div`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
+  position: relative;
 `;
 export const PageContent = styled.main`
   flex: 1;

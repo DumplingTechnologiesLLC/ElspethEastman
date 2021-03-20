@@ -9,11 +9,11 @@ import uuid from '../../utils';
 const ModalContainer = styled.div`
   position: fixed;
  
-  z-index: 999999;
   display: flex;
   justify-content: center;
   align-items: center;
   ${(props) => css`
+    z-index: ${props.theme.stacking.modal};
     ${props.theme.fixedOrAbsoluteFullCoverage}
     ${props.show ? css`pointer-events: all;` : css`pointer-events: none;`};
   `}

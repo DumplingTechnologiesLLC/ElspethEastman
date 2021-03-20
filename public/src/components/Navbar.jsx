@@ -9,7 +9,7 @@ import { ReactComponent as HamburgerMenu } from '../assets/svg/HamburgerMenu.svg
 
 const StyledNav = styled.nav`
   ${(props) => css`
-    z-index: 99999;
+    z-index: ${props.theme.stacking.navbar};
     background-color: ${props.theme.flavors.navbar};
     padding: ${props.theme.spacing.sm} ${props.theme.spacing.md};
     box-sizing: border-box;

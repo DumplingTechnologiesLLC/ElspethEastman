@@ -10,22 +10,25 @@ import Music from './compositions/Music';
 import Experience from './compositions/Experience';
 import ContactMe from './compositions/ContactMe';
 import PageFooter from './compositions/PageFooter';
+import ToastManager from './components/ToastManager';
 
 function App() {
   const [showContactMe, onContactMe] = useState(false);
   return (
     <ElspethTheme>
       <PageLayout>
-        <Navbar handleContactMe={onContactMe} />
-        <PageContent>
-          <AboveTheFold onGetInTouch={onContactMe} />
-          <Skills />
-          <LatestProjects />
-          <Music />
-          <Experience />
-          <ContactMe setContactMeVisibility={onContactMe} showForm={showContactMe} />
-          <PageFooter />
-        </PageContent>
+        <ToastManager>
+          <Navbar handleContactMe={onContactMe} />
+          <PageContent>
+            <AboveTheFold onGetInTouch={onContactMe} />
+            <Skills />
+            <LatestProjects />
+            <Music />
+            <Experience />
+            <ContactMe setContactMeVisibility={onContactMe} showForm={showContactMe} />
+            <PageFooter />
+          </PageContent>
+        </ToastManager>
       </PageLayout>
     </ElspethTheme>
   );

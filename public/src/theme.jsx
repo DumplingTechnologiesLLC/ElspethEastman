@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { css, ThemeProvider } from 'styled-components';
+import { css, ThemeProvider, keyframes } from 'styled-components';
 
 const navbarBreakpoint = 700;
 const imageBackgroundColor = '#f7f7f7';
@@ -8,6 +8,7 @@ const baseTextColor = '#292929';
 const inputShadowColor = 'rgba(1, 208, 254, 0.493)';
 const inputErrorShadowColor = 'rgba(249, 98, 126, 0.644)';
 const inputBorderColor = '#87EAFF';
+const toastBorderRadius = '3px';
 const error = '#F9627D';
 const errorText = '#800c21';
 const buttonAnimationTiming = '.15s';
@@ -24,7 +25,7 @@ const mixins = {
   `,
   navbarBreakpoint: (style) => css`
   @media screen and (max-width: ${navbarBreakpoint}px) {
-    ${style}
+    ${style};
   }`,
   imageLoadingText: (text, textColor, borderColor) => css`
     &::after {
@@ -79,9 +80,32 @@ const baseTitleStyling = css`
   font-weight: bold;
 `;
 const baseContentTextStyling = css`
-  ${baseContentFont}
-  ${baseTextStyling}
+  ${baseContentFont};
+  ${baseTextStyling};
 `;
+
+const animations = {
+  styledtoast: keyframes`
+      0% {
+        transform: translateY(20px)
+      }
+      100% {
+        transform: translateY(0px)
+      }
+    `,
+  cancelled: keyframes`
+      0% {
+        transform: translateX(0px);
+      }
+      90% {
+        transform: translateX(0px);
+      }
+      100% {
+        transform: translateX(400px);
+      }
+    `,
+};
+
 export const theme = {
   maxContentWidth: '1200px',
   heroImageHeight: 500,
@@ -93,7 +117,33 @@ export const theme = {
     position: relative;
     overflow: hidden;
   `,
+  animations,
   spacing,
+  mixins,
+  stacking: {
+    navbar: 9999,
+    modal: 100,
+    toasts: 101,
+  },
+  toasts: {
+    toast: css`
+      ${mixins.boxShadow('rgba(0,0,0,0.1)')}
+      box-sizing: border-box;
+      display: flex;
+      padding: ${spacing.sm} ${spacing.sm} ${spacing.sm} ${spacing.lg};
+      background-color: white;
+      border-radius: ${toastBorderRadius};
+      position: relative;
+    `,
+    toastCap: css`
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 12px;
+      border-radius: ${toastBorderRadius} 0 0 ${toastBorderRadius};
+    `,
+  },
   breakpoints: {
     navbarBreakpoint,
     latestProjects: '455px',
@@ -142,6 +192,12 @@ export const theme = {
     titlePink: '#e300b3',
     error,
     errorText,
+    toasts: {
+      info: '#01d1fe',
+      error: '#b80975',
+      warning: '#feff8a',
+      success: '#00cf80',
+    },
     textBlue: '#002C36',
     midBlue: '#00B3D9',
     textYellow: '#585800',
@@ -243,9 +299,7 @@ export const theme = {
       ${normalFontSize}
     `,
   },
-  animations: {
-  },
-  mixins,
+
 };
 
 export const ElspethTheme = ({ children }) => (

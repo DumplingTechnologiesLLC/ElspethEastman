@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 
 import ColoredText from '../components/Text/ColoredText';
@@ -9,12 +9,15 @@ import FormInput, { FormTextArea } from '../components/Form/FormInput';
 import StyledForm from '../components/Form/StyledForm';
 import PrimaryButton from '../components/Buttons/PrimaryButton';
 import Modal from '../components/Modal/Modal';
+import { ToastContext } from '../components/ToastManager';
 
 export const ContactMe = ({ showForm, setContactMeVisibility }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [inFlight, setInFlight] = useState(false);
+  const { toast, flavors } = useContext(ToastContext);
+
   const initialErrorState = {
     name: '',
     email: '',
@@ -56,11 +59,20 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
     });
     setInFlight(false);
     if (response.ok) {
-      // TODO: Toast
+      toast(
+        'Success!',
+        'Submitted form. I\'ll be in touch soon!',
+        flavors.success,
+      );
       setName('');
       setEmail('');
       setMessage('');
     } else {
+      toast(
+        'Error',
+        'Failed to submit form. Please try again later.',
+        flavors.error,
+      );
       // TODO: Toast
     }
   };
