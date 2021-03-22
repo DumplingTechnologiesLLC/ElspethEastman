@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import styled, { css } from 'styled-components';
 import SectionTitle from './Text/SectionTitle';
 import API from '../api';
 import ContentParagraph from './Text/ContentParagraph';
 import SectionTitleUnderText from './Text/SectionTitleUnderText';
+import { ReactComponent as ExternalLink } from '../assets/svg/ExternalLink.svg';
+import { ToastContext } from './ToastManager';
 
 const ExperienceContainer = styled.section`
   ${(props) => css`
@@ -38,36 +40,65 @@ const ColoredTitle = styled.h3`
 `;
 
 const ExperienceLine = styled(ContentParagraph)`
-  ${(props) => css`
-    ${props.theme.text.mediumContentText}
+  ${({ theme }) => css`
+    ${theme.text.mediumContentText};
+    display: block;
+    text-decoration: none;
+    margin-bottom: ${theme.spacing.md};
+    svg {
+      height: 1em;
+    }
+    fill: ${theme.flavors.baseTextColor};
   `}
 `;
 
 export const Experience = () => {
   const [experience, setExperience] = useState({});
   const [experienceLoaded, setExperienceLoaded] = useState(false);
+  const { toast, flavors } = useContext(ToastContext);
   const lookup = {
     voiceCredits: 'Voice Credits',
     musicGames: 'Music - Games',
     musicMiscellaneous: 'Music - Miscellaneous',
     streamingCredits: 'Streaming Credits',
   };
-  const formatCredit = (credit) => (credit.year ? `(${credit.year}) ${credit.credit}` : credit.credit);
+  const formatCredit = (credit) => (credit.year ? `${credit.year} ${credit.credit}` : credit.credit);
 
   /* eslint-disable no-confusing-arrow */
   const showExperience = (experiences) => experiences?.length ? experiences.map((exp) => (
-    <ExperienceLine key={exp?.id}>
+    <ExperienceLine key={exp?.id} as={exp?.link ? 'a' : 'p'} href={exp?.link ? exp.link : undefined}>
       {formatCredit(exp)}
+      {exp?.link ? <ExternalLink /> : ''}
     </ExperienceLine>
   )) : <ExperienceLine>Coming soon!</ExperienceLine>;
 
   useEffect(() => {
     if (!experienceLoaded) {
       API.retrieveExperience().then((results) => {
-        setExperience(results);
+        if (results !== null) {
+          setExperience(results);
+          setExperienceLoaded(true);
+        } else {
+          setExperienceLoaded(true);
+          toast(
+            'Error',
+            'Failed to load experience list',
+            flavors.error,
+          );
+        }
+      }).catch(() => {
         setExperienceLoaded(true);
+        toast(
+          'Error',
+          'Failed to load experience list',
+          flavors.error,
+        );
       });
     }
+  /**
+   * We don't want this hook firing every time the reference for toast changes.
+   */
+  /* eslint-disable react-hooks/exhaustive-deps */
   }, [experienceLoaded]);
   const year = new Date().getFullYear();
   return (
