@@ -4,14 +4,24 @@ from django.db import models
 
 
 class Experience(models.Model):
-    VOICE_CREDITS = 'Voice Credits',
-    MUSIC_GAMES = 'Music - Games',
+    VOICE_CREDITS = 'Voice Credits'
+    MUSIC_GAMES = 'Music - Games'
+    MUSIC_MISCELLANEOUS = 'Music - Miscellaneous'
+    STREAMING_CREDITS = 'Streaming - Credits'
     CHOICES = (
-
+        (VOICE_CREDITS, VOICE_CREDITS),
+        (MUSIC_GAMES, MUSIC_GAMES),
+        (MUSIC_MISCELLANEOUS, MUSIC_MISCELLANEOUS),
+        (STREAMING_CREDITS, STREAMING_CREDITS),
     )
-    year = models.IntegerField("Year")
+    year = models.IntegerField("Year", blank=True, null=True)
+    link = models.CharField('Link', null=True, blank=True, max_length=400)
     tba = models.BooleanField("TBA Year", default=False)
     credit = models.CharField("Credit", max_length=2000)
+    category = models.CharField("Category", choices=CHOICES, max_length=30)
+
+    def __str__(self):
+        return f"{self.get_category_display()}: {'TBA' if self.tba else self.year if self.year is not None else ''} {self.credit}"
 
 
 class FooterStat(models.Model):
@@ -19,17 +29,35 @@ class FooterStat(models.Model):
     label = models.CharField("Label", max_length=200)
     percent = models.IntegerField("Percent")
 
+    def __str__(self):
+        return f"{self.value} {self.label} | {self.percent}%"
+
 
 class Affiliations(models.Model):
     affiliation = models.CharField("Affiliation", max_length=2000)
+    link = models.CharField(blank=True, max_length=400, null=True)
+
+    class Meta:
+        verbose_name_plural = "Affiliations"
+        verbose_name = "Affiliation"
+
+    def __str__(self):
+        return self.affiliation
 
 
 class Project(models.Model):
     src = models.CharField("Source", max_length=200)
     title = models.CharField("Title", max_length=1000)
 
+    def __str__(self):
+        return self.title
+
 
 class Skills(models.Model):
     game_development = models.TextField()
     streaming = models.TextField()
     voice_acting = models.TextField()
+
+    class Meta:
+        verbose_name_plural = "Skills"
+        verbose_name = "Skill"

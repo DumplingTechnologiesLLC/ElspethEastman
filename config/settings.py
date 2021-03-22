@@ -11,7 +11,19 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import environ
+PROJECT_ROOT = environ.Path(__file__) - 2
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, True),
+    HEROKU=(bool, False)
+)
 
+SECRET_KEY = env("SECRET_KEY")
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = env("DEBUG")
+HEROKU = env("HEROKU")
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,12 +32,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ode7l%^$aron*ltf17jmb%65qcg9drqbd&_o!p6b96g^g3fj)f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -37,7 +47,10 @@ DEFAULT_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 )
-THIRD_PARTY_APPS = (,)
+THIRD_PARTY_APPS = (
+    "rest_framework",
+)
+
 CUSTOM_APPS = (
     'core',
 )
@@ -52,12 +65,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates', os.path.join(PROJECT_ROOT, 'public')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,6 +98,10 @@ DATABASES = {
 }
 
 
+if DEBUG:
+    THIRD_PARTY_APPS += ("corsheaders",)
+    MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware',)
+    CORS_ALLOW_ALL_ORIGINS = True
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
@@ -115,7 +133,10 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
+    os.path.join(PROJECT_ROOT, 'public', 'build', 'static')
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
