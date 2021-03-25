@@ -97,11 +97,18 @@ DATABASES = {
     }
 }
 
+CONTACT_EMAIL = env('CONTACT_EMAIL')
 
 if DEBUG:
     THIRD_PARTY_APPS += ("corsheaders",)
     MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware',)
     CORS_ALLOW_ALL_ORIGINS = True
+else:
+    EMAIL_HOST = 'smtp.mailgun.org'
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+    EMAIL_USE_TLS = True
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 

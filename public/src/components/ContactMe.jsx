@@ -1,15 +1,15 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import ColoredText from '../components/Text/ColoredText';
+import ColoredText from './Text/ColoredText';
 
-import SectionTitleUnderText from '../components/Text/SectionTitleUnderText';
+import SectionTitleUnderText from './Text/SectionTitleUnderText';
 import API from '../api';
-import FormInput, { FormTextArea } from '../components/Form/FormInput';
-import StyledForm from '../components/Form/StyledForm';
-import PrimaryButton from '../components/Buttons/PrimaryButton';
-import Modal from '../components/Modal/Modal';
-import { ToastContext } from '../components/ToastManager';
+import FormInput, { FormTextArea } from './Form/FormInput';
+import StyledForm from './Form/StyledForm';
+import PrimaryButton from './Buttons/PrimaryButton';
+import Modal from './Modal/Modal';
+import { ToastContext } from './ToastManager';
 
 export const ContactMe = ({ showForm, setContactMeVisibility }) => {
   const [name, setName] = useState('');
@@ -17,10 +17,12 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
   const [message, setMessage] = useState('');
   const [inFlight, setInFlight] = useState(false);
   const { toast, flavors } = useContext(ToastContext);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   const initialErrorState = {
     name: '',
     email: '',
+    message: '',
   };
   const [errors, setErrors] = useState(initialErrorState);
 
@@ -35,12 +37,17 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
   };
 
   const closeAndClear = () => {
+    setInitialLoad(true);
     setName('');
     setEmail('');
     setMessage('');
     setErrors(initialErrorState);
     setContactMeVisibility(false);
   };
+
+  useEffect(() => {
+    setInitialLoad(false);
+  }, [initialLoad]);
 
   /* eslint-disable-next-line consistent-return */
   const submitForm = async (event) => {
@@ -49,30 +56,45 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
       return setErrors({
         name: name ? '' : 'Name is required',
         email: email ? '' : 'Email is required',
+        message: message ? '' : 'Message is required',
       });
     }
     setInFlight(true);
-    const response = await API.submitContactMe({
-      name,
-      email,
-      message,
-    });
-    setInFlight(false);
-    if (response.ok) {
-      toast(
-        'Success!',
-        'Submitted form. I\'ll be in touch soon!',
-        flavors.success,
-      );
-      setName('');
-      setEmail('');
-      setMessage('');
-    } else {
+    try {
+      const response = await API.submitContactMe({
+        name,
+        email,
+        message,
+      });
+
+      if (response?.ok) {
+        toast(
+          'Success!',
+          'Submitted form. I\'ll be in touch soon!',
+          flavors.success,
+        );
+        setName('');
+        setEmail('');
+        setMessage('');
+      } else {
+        setErrors({
+          ...initialErrorState,
+          ...response,
+        });
+        toast(
+          'Error',
+          'Failed to submit form. Please try again later.',
+          flavors.error,
+        );
+      }
+    } catch (error) {
       toast(
         'Error',
         'Failed to submit form. Please try again later.',
         flavors.error,
       );
+    } finally {
+      setInFlight(false);
     }
   };
 
@@ -94,7 +116,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
           ? (
             <StyledForm>
               <FormInput
-                autoFocus
+                autoFocus={initialLoad}
                 hasError={Boolean(errors.name)}
                 errorMessage={errors.name}
                 name="Name"
@@ -113,7 +135,9 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
                 value={email}
               />
               <FormTextArea
-                name="Message"
+                hasError={Boolean(errors.message)}
+                errorMessage={errors.message}
+                name="Message (Required)"
                 label="Your Message"
                 setValue={setMessage}
                 value={message}

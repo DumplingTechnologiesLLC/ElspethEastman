@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from core.models import (
-    Experience,
+    Affiliations, Contact, Experience,
     FooterStat,
     Project,
     Skills
@@ -37,6 +37,17 @@ class ExperienceSerializer(serializers.ModelSerializer):
         )
 
 
+class AffiliationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Affiliations
+        fields = (
+            'id',
+            'affiliation',
+            'link'
+        )
+
+
 class FooterStatSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -56,4 +67,27 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = (
             'src',
             'title'
+        )
+
+
+class ContactSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Contact
+        fields = (
+            'id',
+            'name',
+            'email',
+            'message'
+        )
+
+
+class SkillsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Skills
+        fields = (
+            'game_development',
+            'streaming',
+            'voice_acting',
         )

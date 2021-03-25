@@ -25,6 +25,7 @@ const TitleLine = styled.div`
 const TitleContainer = styled.div`
   display: flex;
   align-items: center;
+  text-align: center;
   width: 100%;
 `;
 const VideoTitle = ({ title }) => (
@@ -42,8 +43,9 @@ const VideoThumbnail = styled.img`
   ${(props) => css`
     max-width: 480px;
     width: 100%;
+    
     cursor: pointer;
-    margin-top: ${props.theme.spacing.lg};
+    margin-top: -45px;
     
     position: relative;
     ${props.theme.mixins.imageLoadingText('Loading', props.theme.flavors.pink, props.theme.flavors.pink)}
@@ -64,6 +66,11 @@ const StyledIframe = styled.iframe`
 `;
 const VideoThumbnailContainer = styled.div`
   position: relative;
+  overflow:hidden;
+  height:270px;
+  ${({ theme }) => css`
+    margin-top: ${theme.spacing.lg};
+  `}
 `;
 const StyledSVGContainer = styled.div`
   cursor: pointer;
@@ -126,7 +133,7 @@ export const YoutubeComponent = ({ src, title }) => {
             <VideoThumbnail
               tabIndex="-1"
               aria-roledescription="Button for loading video"
-              src={`https://img.youtube.com/vi/${src}/mqdefault.jpg`}
+              src={`https://img.youtube.com/vi/${src}/hqdefault.jpg`}
               alt={`Select this thumbnail to load ${title}`}
               onClick={() => setVideoLoaded(true)}
               onKeyUp={(e) => (e.key === 'Enter' ? setVideoLoaded(true) : null)}

@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled, { css } from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import API from '../api';
 import ContentParagraph from './Text/ContentParagraph';
 import ContentTitle from './Text/ContentTitle';
 import { Column, Row } from './Layout/Layout';
 import SpottedSection from './Layout/SpottedSection';
 import Elephant from '../assets/elephant.webp';
+import { ToastContext } from './ToastManager';
 
 const SkillDescriptionContainer = styled(Column)`
   text-align: center;
@@ -78,29 +82,46 @@ const SkillPie = styled.path`
 `;
 
 export const Skills = () => {
-  const lookup = {
-    voiceActing: 'Voice Acting',
-    streaming: 'Streaming',
-    gameDevelopment: 'Game Development',
+  const [displayedValue, setDisplayedValue] = useState('');
+  const [skillsLoaded, setSkillsLoaded] = useState(false);
+  const [skills, setSkills] = useState({});
+  const { toast, flavors } = useContext(ToastContext);
+  const [lookup, setLookup] = useState({});
+
+  const retrieveSkill = (skill) => {
+    if (skillsLoaded) {
+      return skills[lookup[skill]] ?? 'Skills failed to load...';
+    }
+    return (<FontAwesomeIcon size="lg" icon={faSpinner} pulse />);
   };
-  const displayedText = {
-    [lookup.voiceActing]: `
-      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-      dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
-      kasdgubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-    `,
-    [lookup.streaming]: `
-      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et 
-      dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
-      kasdgubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-    `,
-    [lookup.gameDevelopment]: `
-      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-      dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
-      kasdgubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-    `,
-  };
-  const [displayedValue, setDisplayedValue] = useState('Voice Acting');
+  useEffect(() => {
+    if (!skillsLoaded) {
+      API.retrieveSkills().then((results) => {
+        if (results !== null) {
+          setSkills(results.data);
+          setLookup(results.lookup);
+          setDisplayedValue(results.lookup.voice_acting);
+          setSkillsLoaded(true);
+        } else {
+          setSkillsLoaded(true);
+          toast(
+            'Error',
+            'Failed to load skills',
+            flavors.error,
+          );
+        }
+      }).catch(() => {
+        setSkillsLoaded(true);
+        toast(
+          'Error',
+          'Failed to load skills',
+          flavors.error,
+        );
+      });
+    }
+  /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, []);
+
   return (
     <SpottedSection>
       <Row>
@@ -130,10 +151,10 @@ export const Skills = () => {
               </text>
               <SkillPie
                 tabIndex="0"
-                aria-label={lookup.gameDevelopment}
+                aria-label={lookup.game_development}
                 role="button"
-                active={displayedValue === lookup.gameDevelopment}
-                onClick={() => setDisplayedValue(lookup.gameDevelopment)}
+                active={displayedValue === lookup.game_development}
+                onClick={() => setDisplayedValue(lookup.game_development)}
                 d="M454,128.42c-0.86,1.03-1.45,2.23-2.4,2.8c-13.42,7.96-26.85,15.91-40.36,23.72c-17.07,9.86-34.22,19.58-51.32,29.38
                 c-10.28,5.89-20.53,11.86-30.82,17.74c-3.06,1.75-4.58-0.71-6.12-2.6c-3.71-4.55-7-9.49-11.02-13.74
                 c-12.84-13.61-28.67-21.5-47.16-24.73c-23.01-4.02-43.99,0.97-63.48,13.07c-10.18,6.32-17.85,15.36-24.52,25.22
@@ -145,15 +166,15 @@ export const Skills = () => {
                 c2.86,4.06,5.48,8.3,8.18,12.48C453.04,126.33,453.4,127.24,454,128.42z"
               />
               <text transform="translate(270 80)">
-                <tspan x="-45" y="0">{lookup.gameDevelopment.split(' ')[0]}</tspan>
-                <tspan x="-78.309" y="27">{lookup.gameDevelopment.split(' ')[1]}</tspan>
+                <tspan x="-45" y="0">{lookup.game_development?.split(' ')?.[0] ?? ''}</tspan>
+                <tspan x="-78.309" y="27">{lookup.game_development?.split(' ')?.[1] ?? 'Loading'}</tspan>
               </text>
               <SkillPie
                 tabIndex="0"
-                aria-label={lookup.voiceActing}
+                aria-label={lookup.voice_acting}
                 role="button"
-                active={displayedValue === lookup.voiceActing}
-                onClick={() => setDisplayedValue(lookup.voiceActing)}
+                active={displayedValue === lookup.voice_acting}
+                onClick={() => setDisplayedValue(lookup.voice_acting)}
                 d="M251.36,414.95c-0.01-22.93-0.01-45.86,0-68.8c0-4.94,0.52-5.31,5.37-5.6c9.21-0.57,18.08-2.57,26.77-5.82
                 c21.68-8.1,37.13-22.9,46.96-43.56c11.17-23.48,12.33-47.41,1.92-71.57c-0.74-1.73-1.44-3.48-2.23-5.18
                 c-2.08-4.45-1.77-5.45,2.39-7.85c17.88-10.3,35.75-20.61,53.63-30.91c22.02-12.69,44.05-25.38,66.08-38.05
@@ -163,7 +184,7 @@ export const Skills = () => {
                 C251.35,461.04,251.36,437.99,251.36,414.95z"
               />
               <text transform="translate(340 320)">
-                <tspan x="0" y="0">{lookup.voiceActing}</tspan>
+                <tspan x="0" y="0">{lookup.voice_acting}</tspan>
               </text>
 
             </g>
@@ -178,7 +199,7 @@ export const Skills = () => {
         <SkillDescriptionContainer columnCount={2}>
           <ContentTitle>{displayedValue}</ContentTitle>
           <ContentParagraph>
-            {displayedText[displayedValue]}
+            {retrieveSkill(displayedValue)}
           </ContentParagraph>
         </SkillDescriptionContainer>
       </Row>

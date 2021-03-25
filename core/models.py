@@ -3,6 +3,15 @@ from django.db import models
 # Create your models here.
 
 
+class Contact(models.Model):
+    name = models.CharField('Name', max_length=2000)
+    email = models.EmailField('Email')
+    message = models.TextField('Message')
+
+    def __str__(self):
+        return f'{self.name} - {self.email}'
+
+
 class Experience(models.Model):
     VOICE_CREDITS = 'Voice Credits'
     MUSIC_GAMES = 'Music - Games'
@@ -21,7 +30,7 @@ class Experience(models.Model):
     category = models.CharField("Category", choices=CHOICES, max_length=30)
 
     def __str__(self):
-        return f"{self.get_category_display()}: {'TBA' if self.tba else self.year if self.year is not None else ''} {self.credit}"
+        return f"{self.get_category_display()}: {'TBA' if self.tba else self.year if self.year is not None else ''} {self.credit}"  # noqa
 
 
 class FooterStat(models.Model):

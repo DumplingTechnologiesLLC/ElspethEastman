@@ -14,6 +14,13 @@ export const SecondaryButton = styled.button`
       ${props.theme.mixins.boxShadow(props.theme.flavors.secondaryShadow)};
       outline:0;
     }
+    &:disabled {
+      cursor: not-allowed;  
+      opacity: .5;
+      &:hover {
+        background-color: ${props.theme.flavors.secondary};
+      }
+    }
 
   `}
 `;

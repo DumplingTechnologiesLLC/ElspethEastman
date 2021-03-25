@@ -91,17 +91,16 @@ export const Modal = ({
       const lastFocusableElement = focusableContent[focusableContent.length - 1];
       const isTabPressed = e.key === 'Tab' || e.keyCode === 9;
 
-      if (!isTabPressed) {
-        return;
-      }
-      if (e.shiftKey) {
-        if (document.activeElement === firstFocusableElement) {
-          lastFocusableElement.focus(); // add focus for the last focusable element
+      if (isTabPressed) {
+        if (e.shiftKey) {
+          if (document.activeElement === firstFocusableElement) {
+            lastFocusableElement.focus(); // add focus for the last focusable element
+            e.preventDefault();
+          }
+        } else if (document.activeElement === lastFocusableElement) {
+          firstFocusableElement.focus(); // add focus for the first focusable element
           e.preventDefault();
         }
-      } else if (document.activeElement === lastFocusableElement) {
-        firstFocusableElement.focus(); // add focus for the first focusable element
-        e.preventDefault();
       }
     };
     document.addEventListener('keydown', captureFocus);

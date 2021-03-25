@@ -19,16 +19,25 @@ const StyledTextArea = styled.textarea`
 `;
 
 const StyledLabel = styled.label`
-  ${(props) => css`
-    ${props.theme.text.contentText}
+  ${({ theme }) => css`
+    ${theme.text.contentText}
+  `}
+`;
+
+const ErrorList = styled.ul`
+  padding-left: 0;
+  margin: 0;
+  ${({ theme }) => css`
+    color: ${theme.flavors.errorText};
+    margin-left: ${theme.spacing.md};
   `}
 `;
 
 const ErrorMessage = styled.span`
-  ${(props) => css`
-    ${props.theme.text.baseContentFont};
-    ${props.theme.text.smallFontSize};
-    color: ${props.theme.flavors.errorText};
+  ${({ theme }) => css`
+    ${theme.text.baseContentFont};
+    ${theme.text.smallFontSize};
+    color: ${theme.flavors.errorText};
   `}
 `;
 
@@ -41,6 +50,19 @@ export const FormInput = ({
       inputEl.current.focus();
     }
   });
+  const formatErrorMessages = () => {
+    if (errorMessage) {
+      if (Array.isArray(errorMessage)) {
+        return (
+          <ErrorList>
+            {errorMessage.map((error) => (<li key={error}><ErrorMessage>{error}</ErrorMessage></li>))}
+          </ErrorList>
+        );
+      }
+      return (<ErrorMessage>{errorMessage}</ErrorMessage>);
+    }
+    return '';
+  };
   return (
     <FormInputContainer>
       <StyledLabel htmlFor={name}>{label}</StyledLabel>
@@ -53,7 +75,7 @@ export const FormInput = ({
         value={value}
         placeholder={placeholder}
       />
-      {errorMessage ? (<ErrorMessage>{errorMessage}</ErrorMessage>) : ''}
+      {formatErrorMessages()}
     </FormInputContainer>
   );
 };
@@ -67,6 +89,19 @@ export const FormTextArea = ({
       inputEl.current.focus();
     }
   });
+  const formatErrorMessages = () => {
+    if (errorMessage) {
+      if (Array.isArray(errorMessage)) {
+        return (
+          <ErrorList>
+            {errorMessage.map((error) => (<li key={error}><ErrorMessage>{error}</ErrorMessage></li>))}
+          </ErrorList>
+        );
+      }
+      return (<ErrorMessage>{errorMessage}</ErrorMessage>);
+    }
+    return '';
+  };
   return (
     <FormInputContainer>
       <StyledLabel htmlFor={name}>{label}</StyledLabel>
@@ -77,7 +112,7 @@ export const FormTextArea = ({
         value={value}
         placeholder={placeholder}
       />
-      {errorMessage ? (<ErrorMessage>{errorMessage}</ErrorMessage>) : ''}
+      {formatErrorMessages()}
     </FormInputContainer>
   );
 };
@@ -95,7 +130,12 @@ FormInput.propTypes = {
   setValue: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   hasError: PropTypes.bool,
-  errorMessage: PropTypes.string,
+  errorMessage: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf([
+      PropTypes.string,
+    ]),
+  ]),
 };
 
 FormInput.defaultProps = {
@@ -117,7 +157,12 @@ FormTextArea.propTypes = {
   setValue: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   hasError: PropTypes.bool,
-  errorMessage: PropTypes.string,
+  errorMessage: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf([
+      PropTypes.string,
+    ]),
+  ]),
 };
 
 FormTextArea.defaultProps = {
