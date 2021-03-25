@@ -23,6 +23,7 @@ export const LatestProjects = () => {
   const { toast, flavors } = useContext(ToastContext);
   const [currentPage, setCurrentPage] = useState(1);
   const history = useHistory();
+  const [totalPages, setTotalPages] = useState(0);
   /**
    * Disabled because we don't really care about loadedProjects here being stale at the time of useEffect since it
    * gets clobbered regardless, and the only thing we are interested in watching is currentPage which tells us when
@@ -39,7 +40,8 @@ export const LatestProjects = () => {
           flavors.error,
         );
       } else {
-        setLoadedProjects(loadedProjects.concat(results));
+        setLoadedProjects(loadedProjects.concat(results.data));
+        setTotalPages(results.pages);
       }
     }).catch(() => {
       setLoaded(true);
@@ -70,7 +72,14 @@ export const LatestProjects = () => {
         ) : ''}
       </WrappedCenteredContent>
       <CenteredButtonGroup>
-        <SecondaryButton onClick={() => setCurrentPage(currentPage + 1)}>Load more</SecondaryButton>
+        <SecondaryButton
+          aria-disabled={currentPage >= totalPages}
+          disabled={currentPage >= totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
+          Load more
+
+        </SecondaryButton>
         <SecondaryButton>See all projects</SecondaryButton>
       </CenteredButtonGroup>
     </SpottedSection>

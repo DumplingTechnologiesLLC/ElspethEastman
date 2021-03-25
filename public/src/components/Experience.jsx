@@ -66,7 +66,12 @@ export const Experience = () => {
 
   /* eslint-disable no-confusing-arrow */
   const showExperience = (experiences) => experiences?.length ? experiences.map((exp) => (
-    <ExperienceLine key={exp?.id} as={exp?.link ? 'a' : 'p'} href={exp?.link ? exp.link : undefined}>
+    <ExperienceLine
+      key={exp?.id}
+      as={exp?.link ? 'a' : 'p'}
+      href={exp?.link ? exp.link : undefined}
+      target={exp?.link ? '_blank' : undefined}
+    >
       {formatCredit(exp)}
       {exp?.link ? <ExternalLink /> : ''}
     </ExperienceLine>

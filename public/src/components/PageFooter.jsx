@@ -3,13 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState, useContext } from 'react';
 import styled, { css } from 'styled-components';
 import API from '../api';
-import CircularLoadingBar from '../components/CircularLoadingBar';
-import StyledFooter, { FooterContent, FooterTitle, FooterSubTitle } from '../components/Layout/StyledFooter';
+import CircularLoadingBar from './CircularLoadingBar';
+import StyledFooter, {
+  FooterContent, FooterContentLink, FooterTitle, FooterSubTitle,
+} from './Layout/StyledFooter';
 import Instagram from '../assets/svg/Instagram.svg';
 import Soundcloud from '../assets/svg/Soundcloud.svg';
 import Twitter from '../assets/svg/Twitter.svg';
 import Youtube from '../assets/svg/Youtube.svg';
-import { ToastContext } from '../components/ToastManager';
+import { ToastContext } from './ToastManager';
 
 const LoadingContainer = styled.div`
   display: flex;
@@ -78,16 +80,7 @@ export const PageFooter = () => {
         const response = await API.retrieveFooterData();
         setLoaded(true);
         setInFlight(false);
-        if (response.ok) {
-          setFooterData(response);
-        } else {
-          toast(
-            'Error',
-            'Failed to load footer details',
-            flavors.error,
-          );
-          setFooterData(errorState);
-        }
+        setFooterData(response);
       } catch (err) {
         setInFlight(false);
         setFooterData(errorState);
@@ -121,7 +114,7 @@ export const PageFooter = () => {
       return (<FontAwesomeIcon size="lg" icon={faSpinner} pulse />);
     }
     return footerData.affiliations.map((affiliation) => (
-      <FooterContent key={affiliation}>{affiliation}</FooterContent>
+      <FooterContentLink key={affiliation.id} href={affiliation.link}>{affiliation.affiliation}</FooterContentLink>
     ));
   };
   return (

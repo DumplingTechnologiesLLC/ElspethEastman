@@ -21,7 +21,7 @@ export const AllProjects = () => {
       if (results === null) {
         toast(
           'Error',
-          'Failed to load next page of projects',
+          'Failed to load projects',
           flavors.error,
         );
       } else {
@@ -31,7 +31,7 @@ export const AllProjects = () => {
       setLoaded(true);
       toast(
         'Error',
-        'Failed to load next page of projects',
+        'Failed to load projects',
         flavors.error,
       );
     });

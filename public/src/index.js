@@ -13,7 +13,6 @@ const GlobalStyle = createGlobalStyle`
   }
   
 `
-window.addEventListener('keypress', (e) => console.log(e.target))
 ReactDOM.render(
   <React.StrictMode>
     <GlobalStyle />
