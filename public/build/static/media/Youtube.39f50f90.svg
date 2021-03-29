@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="62" height="62" viewBox="0 0 62 62">
+  <defs>
+    <style>
+      .social-media--youtube-1 {
+        fill: #fff;
+        stroke: #707070;
+      }
+
+      .social-media--youtube-2 {
+        fill: #1777f2;
+        fill-rule: evenodd;
+      }
+
+      .social-media--youtube-3 {
+        stroke: none;
+      }
+
+      .social-media--youtube-4 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <g data-name="Rectangle 21" class="social-media--youtube-1" transform="translate(7 9)">
+    <rect class="social-media--youtube-3" width="50" height="47"/>
+    <rect class="social-media--youtube-4" x="0.5" y="0.5" width="49" height="46"/>
+  </g>
+  <path data-name="Path 83" class="social-media--youtube-2" d="M222.9,205.461v2.827l0,9.3,11.176-6.04-6.138-3.338Z" transform="translate(-196.175 -180.989)"/>
+  <path data-name="Path 84" class="social-media--youtube-2" d="M70.053,16H23.946A7.975,7.975,0,0,0,16,23.946V70.053A7.975,7.975,0,0,0,23.946,78H70.053A7.975,7.975,0,0,0,78,70.054V23.946A7.975,7.975,0,0,0,70.053,16ZM67.667,45.958v2.668a69.614,69.614,0,0,1-.4,6.986s-.4,2.973-1.638,4.281a5.781,5.781,0,0,1-4.14,1.83c-5.795.433-14.487.45-14.487.45s-10.758-.105-14.07-.435c-.917-.179-2.986-.124-4.565-1.843-1.237-1.307-1.629-4.283-1.629-4.283a69.947,69.947,0,0,1-.4-6.986V45.354a69.871,69.871,0,0,1,.4-6.982s.4-2.975,1.635-4.284a5.708,5.708,0,0,1,4.145-1.795c5.788-.436,14.475-.405,14.475-.405h.019s8.684-.031,14.479.4A5.751,5.751,0,0,1,65.631,34.1c1.241,1.307,1.632,4.275,1.632,4.275a69.37,69.37,0,0,1,.4,6.976Z" transform="translate(-16 -16)"/>
+</svg>

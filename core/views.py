@@ -2,6 +2,7 @@ from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from core.models import Affiliations, Contact, Experience, FooterStat, Project, Skills
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
+from django.views import View
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from core.serializers import (
@@ -153,3 +154,9 @@ class ExperienceViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(data={"message": "success"}, status=status.HTTP_200_OK)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Client(View):
+
+    def get(self, request):
+        return render(request, 'build/index.html', {})
