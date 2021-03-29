@@ -1,4 +1,5 @@
 import ENDPOINTS from './endpoints';
+import { getCookie } from './utils';
 
 class API {
   constructor() {
@@ -51,10 +52,12 @@ class API {
 
   async submitContactMe(data) {
     try {
+      const csrftoken = getCookie('csrftoken');
       const response = await fetch(this.endpoints.contactMe, {
         method: 'POST',
         cache: 'no-cache',
         headers: {
+          'X-CSRFToken': csrftoken,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),

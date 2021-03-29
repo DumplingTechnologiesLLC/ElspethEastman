@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="66.549" height="66.549" viewBox="0 0 66.549 66.549">
+  <defs>
+    <style>
+      .social-media--instagram-1 {
+        fill: #fff;
+      }
+
+      .social-media--instagram-2 {
+        fill: #1777f2;
+      }
+    </style>
+  </defs>
+  <rect data-name="Rectangle 22" class="social-media--instagram-1" width="43" height="55" transform="translate(15.274 4.274)"/>
+  <circle data-name="Ellipse 2" class="social-media--instagram-2" cx="6" cy="6" r="6" transform="translate(27.274 27.274)"/>
+  <path data-name="Path 85" class="social-media--instagram-2" d="M50.136,3H22.407A19.433,19.433,0,0,0,3,22.413V50.142A19.433,19.433,0,0,0,22.413,69.549H50.142A19.433,19.433,0,0,0,69.549,50.136V22.407A19.433,19.433,0,0,0,50.136,3ZM36.274,52.912A16.637,16.637,0,1,1,52.912,36.274,16.654,16.654,0,0,1,36.274,52.912Zm19.41-33.274a2.773,2.773,0,1,1,2.773-2.773A2.774,2.774,0,0,1,55.684,19.637Z" transform="translate(-3 -3)"/>
+</svg>
