@@ -45,8 +45,7 @@ const VideoThumbnail = styled.img`
     width: 100%;
     
     cursor: pointer;
-    margin-top: -45px;
-    
+    clip-path: inset(13% 0 13% 0);
     position: relative;
     ${props.theme.mixins.imageLoadingText('Loading', props.theme.flavors.pink, props.theme.flavors.pink)}
   `}
@@ -67,9 +66,8 @@ const StyledIframe = styled.iframe`
 const VideoThumbnailContainer = styled.div`
   position: relative;
   overflow:hidden;
-  height:270px;
   ${({ theme }) => css`
-    margin-top: ${theme.spacing.lg};
+    margin-top: -1.25em;
   `}
 `;
 const StyledSVGContainer = styled.div`

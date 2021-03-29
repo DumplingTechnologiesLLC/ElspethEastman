@@ -67,7 +67,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
         message,
       });
 
-      if (response?.ok) {
+      if (response.status === 200) {
         toast(
           'Success!',
           'Submitted form. I\'ll be in touch soon!',
@@ -79,7 +79,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
       } else {
         setErrors({
           ...initialErrorState,
-          ...response,
+          ...response.data,
         });
         toast(
           'Error',
