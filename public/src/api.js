@@ -62,7 +62,10 @@ class API {
         },
         body: JSON.stringify(data),
       });
-      return response.json();
+      return {
+        status: response.status,
+        data: response.json(),
+      };
     } catch (error) {
       return null;
     }
