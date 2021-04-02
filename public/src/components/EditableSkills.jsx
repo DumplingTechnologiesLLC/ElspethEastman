@@ -1,95 +1,94 @@
 import React, { useState, useEffect, useContext } from 'react';
-import styled, { css } from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import styled from 'styled-components';
 import API from '../api';
 import ContentParagraph from './Text/ContentParagraph';
-import ContentTitle from './Text/ContentTitle';
-import { Column, Row } from './Layout/Layout';
+import { Row } from './Layout/Layout';
 import SpottedSection from './Layout/SpottedSection';
 import Elephant from '../assets/elephant.webp';
 import { ToastContext } from './ToastManager';
+import {
+  SkillDescriptionContainer,
+  PieContainer,
+  PieTextContainer,
+  SkillSvg,
+  SkillPie,
+} from './Skills';
+import { FormTextArea } from './Form/FormInput';
+import PrimaryButton from './Buttons/PrimaryButton';
+import ButtonGroup from './Buttons/ButtonGroup';
+import WarningButton from './Buttons/WarningButton';
 
-export const SkillDescriptionContainer = styled(Column)`
-  text-align: center;
-  min-width: 420px;
-  ${(props) => css`
-    @media screen and (max-width: ${props.theme.breakpoints.heroSmall}) {
-      min-width: 200px;
-    }
-  `}
-`;
-
-export const PieContainer = styled(Column)`
-  position: relative;
-  display: flex;
-  justify-content:center;
-
-`;
-
-export const PieTextContainer = styled.div`
-  position: absolute;
-  ${(props) => css`
-    ${props.theme.fixedOrAbsoluteFullCoverage}
-  `}
-  z-index: 1;
-  font-weight: bold;
-  pointer-events: none;
-  display: flex;
-  justify-content: center;
+const SkillFormContainer = styled(SkillDescriptionContainer)`
   align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  display: flex;
+  textarea {
+    min-height: 150px;
+  }
+  ${ButtonGroup} {
+    margin-top: ${({ theme }) => theme.spacing.md}
+  }
 `;
-
-export const SkillSvg = styled.svg`
-  max-height:400px;
-  min-height: 200px;
-  height: 100%;
-  ${(props) => css`
-    & text {
-        fill: white;
-        font-family: 'Montserrat';
-        font-size: 1.1em;
-        font-weight: bold;
-        pointer-events: none;
-        ${props.theme.mixins.transition(['opacity', '.3s', 'ease-out'])};
-      }
-    @media screen and (max-width: ${props.theme.breakpoints.heroSmall}) {
-      max-height: 300px;
-    }
-
-  `}
-`;
-
-export const SkillPie = styled.path`
-  ${(props) => css`
-    cursor: pointer;
-    ${props.theme.mixins.transition(['fill', '.3s', 'ease-out'])};
-    ${props.active ? css`
-      fill: ${props.theme.flavors.blue};
-    ` : css`
-      fill: ${props.theme.flavors.pie};
-      &:hover {
-        fill: ${props.theme.flavors.pieHover};
-        & + text {
-          opacity: 1;
-        }
-      }
-    `}
-  `}
-`;
-
-export const Skills = () => {
+export const EditableSkills = () => {
   const [displayedValue, setDisplayedValue] = useState('');
   const [skillsLoaded, setSkillsLoaded] = useState(false);
   const [skills, setSkills] = useState({});
   const { toast, flavors } = useContext(ToastContext);
   const [lookup, setLookup] = useState({});
+  const [updatedSkills, setUpdatedSkills] = useState({});
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
+  const updateValue = (skill, value) => {
+    setUpdatedSkills({
+      ...updatedSkills,
+      [lookup[skill]]: value,
+    });
+  };
   const retrieveSkill = (skill) => {
     if (skillsLoaded) {
-      return skills[lookup[skill]] ?? 'Skills failed to load...';
+      return updatedSkills[lookup[skill]] ?? skills[lookup[skill]] ?? 'Skills failed to load...';
     }
     return (<FontAwesomeIcon size="lg" icon={faSpinner} pulse />);
+  };
+  const submitSkills = async () => {
+    setSubmitting(true);
+    const response = await API.updateSkills({
+      ...skills,
+      ...updatedSkills,
+    });
+    setSubmitting(false);
+    if (response === null || response.status !== 200) {
+      if (response.status === 403) {
+        toast(
+          'Error',
+          'Your session has expired. Please log in again',
+          flavors.error,
+        );
+        return;
+      }
+      toast(
+        'Error',
+        `There was an issue updating skills. ${
+          response === null
+            ? 'There was a network error.'
+            : `${
+              Object.keys(response.data).join(', ')
+            } contain${Object.keys(response.data).length > 1 ? '' : 's'} errors`}`,
+        flavors.error,
+      );
+      setErrors(response === null ? {} : response.data);
+    } else {
+      toast(
+        'Success',
+        'Successfully updated skills',
+        flavors.success,
+      );
+      setSkills(response.data);
+    }
   };
   useEffect(() => {
     if (!skillsLoaded) {
@@ -193,15 +192,29 @@ export const Skills = () => {
             />
           </SkillSvg>
         </PieContainer>
-        <SkillDescriptionContainer columnCount={2}>
-          <ContentTitle>{displayedValue}</ContentTitle>
-          <ContentParagraph>
-            {retrieveSkill(displayedValue)}
-          </ContentParagraph>
-        </SkillDescriptionContainer>
+        <SkillFormContainer columnCount={2}>
+          <FormTextArea
+            name={displayedValue}
+            setValue={(event) => updateValue(displayedValue, event)}
+            value={retrieveSkill(displayedValue)}
+            label={displayedValue}
+            hasError={typeof errors[lookup[displayedValue]] !== 'undefined'}
+            errorMessage={errors[lookup[displayedValue]]}
+          />
+          <ButtonGroup>
+            <WarningButton onClick={() => setUpdatedSkills(skills)}>Reset Changes</WarningButton>
+            <PrimaryButton
+              onClick={submitSkills}
+              disabled={submitting}
+              aria-disabled={submitting}
+            >
+              Save All Changes
+            </PrimaryButton>
+          </ButtonGroup>
+        </SkillFormContainer>
       </Row>
     </SpottedSection>
   );
 };
 
-export default Skills;
+export default EditableSkills;

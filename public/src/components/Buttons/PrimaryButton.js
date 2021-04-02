@@ -1,17 +1,15 @@
 import styled, { css } from 'styled-components';
+import Button from './Button';
 
-export const PrimaryButton = styled.button`
+export const PrimaryButton = styled(Button)`
   ${(props) => css`
-    ${props.theme.button.defaultStyling};
     background-color: ${props.theme.flavors.blue};
     border-color: ${props.theme.flavors.blue};
     &:hover {
-      outline: 0;
       border-color: ${props.theme.flavors.midBlue};
       background-color: ${props.theme.flavors.midBlue};
     }
     &:focus {
-      outline: 0;
       ${props.theme.mixins.boxShadow(props.theme.flavors.blueTransparent)};
     }
   `}

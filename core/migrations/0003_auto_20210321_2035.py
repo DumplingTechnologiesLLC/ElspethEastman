@@ -390,21 +390,17 @@ def generate_affiliations(apps, schema_editor):
 def generate_skills(apps, schema_editor):
     Skills = apps.get_model('core', 'Skills')
     Skills.objects.create(
-        game_development="""
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-        labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
-        et ea rebum. Stet clita kasdgubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-        """,
-        streaming="""
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-        labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
-        et ea rebum. Stet clita kasdgubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-        """,
-        voice_acting="""
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-        labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
-        et ea rebum. Stet clita kasdgubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-        """
+        game_development="""My first digital audio workstation was Cakewalk in 1997! I've also acted as a game composer
+         in Double Fine's 2019 Amnesia Fortnight, and as a featured composer/contributor in Aaron Mark's The Complete
+          Guide to Game Audio! I was a member of the Game Audio Network Guild from 2011 to 2015, and an alumni of the
+           Game Developers Conference in 2011, 2012, and 2016!""",
+        streaming="""I'm a partnered streamer for almost seven years on Twitch and a Twitch Ambassador since 2018! My
+         channel has over 34 million views, I've worked with brands like Logitech, Coca-Cola, Xfinity, Mountain Dew,
+          Intel, Spotify, and more, plus I've raised over $100,000 for charity!""",
+        voice_acting="""I've been voice actor since 2012, starting with Cadence in Crypt of the NecroDancer. I was
+         among the first round of signed Creative Artists Agency content creators, and I've hosted the "Voice Acting
+         From Your Closet" panel at MAGFest 2016, as well as the TwitchCon 2016/2017 Voice Actors panel. I'm also the
+         creator and voice of Nickel the Pig on-stream."""
     )
 
 
