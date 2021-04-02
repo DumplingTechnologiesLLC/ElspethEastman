@@ -1,8 +1,6 @@
 import React, { useState, useContext } from 'react';
 import styled, { css, ThemeContext } from 'styled-components';
 import { useHistory } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPhotoVideo } from '@fortawesome/free-solid-svg-icons';
 import { ReactComponent as Mail } from '../assets/svg/mail.svg';
 import { ReactComponent as CMSIcon } from '../assets/svg/cms.svg';
 import BackgroundButton from './Buttons/BackgroundButton';
@@ -54,24 +52,13 @@ const SidebarItem = styled.li`
     align-items: center;
   `};
 `;
-const FontAwesomeContainer = styled.span`
-  height: 40px;
-  display: flex;
-  align-items: center;
-  svg {
-    ${({ theme }) => css`
-      font-size: 25px;
-    `}
-  }
-`;
+
 const CMS_KEY = 'cms';
-const PROJECTS_KEY = 'cmsProjects';
 const MAIL_KEY = 'mail';
 
 export const Sidebar = () => {
   const history = useHistory();
   const [active, setActive] = useState(routesReverseLookup[history.location.pathname]);
-  const themeContext = useContext(ThemeContext);
   const navigate = (path, key) => {
     history.push(path);
     setActive(key);
@@ -82,13 +69,6 @@ export const Sidebar = () => {
         <SidebarItem>
           <SidebarButton active={active === CMS_KEY} onClick={() => navigate(routes[CMS_KEY], CMS_KEY)}>
             <CMSIcon />
-          </SidebarButton>
-        </SidebarItem>
-        <SidebarItem>
-          <SidebarButton active={active === PROJECTS_KEY} onClick={() => navigate(routes[PROJECTS_KEY], PROJECTS_KEY)}>
-            <FontAwesomeContainer>
-              <FontAwesomeIcon icon={faPhotoVideo} size="lg" color={themeContext.flavors.textPink} />
-            </FontAwesomeContainer>
           </SidebarButton>
         </SidebarItem>
         <SidebarItem>

@@ -109,6 +109,7 @@ const animations = {
 export const theme = {
   maxContentWidth: '1200px',
   heroImageHeight: 500,
+  videoSize: '480px',
   modalTiming: '.3s',
   fixedOrAbsoluteFullCoverage,
   spottedSection: css`

@@ -3,7 +3,6 @@ export const routes = {
   home: '/',
   cms: '/cms',
   mail: '/cms/messages',
-  cmsProjects: '/cms/projects',
   logout: '/logout',
 };
 

@@ -42,7 +42,9 @@ const ErrorMessage = styled.span`
 `;
 
 export const FormInput = ({
-  autoFocus, label, type, value, setValue, name, placeholder, errorMessage, hasError,
+  autoFocus, label, type, value, onChange,
+  name, placeholder, errorMessage, hasError,
+  inputCaps,
 }) => {
   const inputEl = useRef(null);
   useEffect(() => {
@@ -66,11 +68,12 @@ export const FormInput = ({
   return (
     <FormInputContainer>
       <StyledLabel htmlFor={name}>{label}</StyledLabel>
+      {inputCaps}
       <StyledInput
         ref={inputEl}
         type={type}
         error={hasError}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         name={name}
         value={value}
         placeholder={placeholder}
@@ -81,7 +84,7 @@ export const FormInput = ({
 };
 
 export const FormTextArea = ({
-  autoFocus, label, value, setValue, name, placeholder, errorMessage, hasError,
+  autoFocus, label, value, onChange, name, placeholder, errorMessage, hasError,
 }) => {
   const inputEl = useRef(null);
   useEffect(() => {
@@ -110,7 +113,7 @@ export const FormTextArea = ({
       <StyledLabel htmlFor={name}>{label}</StyledLabel>
       <StyledTextArea
         error={hasError}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         name={name}
         value={value}
         placeholder={placeholder}
@@ -130,7 +133,7 @@ FormInput.propTypes = {
     PropTypes.number,
     PropTypes.bool,
   ]).isRequired,
-  setValue: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   hasError: PropTypes.bool,
   errorMessage: PropTypes.oneOfType([
@@ -139,6 +142,7 @@ FormInput.propTypes = {
       PropTypes.string,
     ]),
   ]),
+  inputCaps: PropTypes.node,
 };
 
 FormInput.defaultProps = {
@@ -146,6 +150,7 @@ FormInput.defaultProps = {
   hasError: false,
   errorMessage: '',
   autoFocus: false,
+  inputCaps: null,
 };
 
 FormTextArea.propTypes = {
@@ -157,7 +162,7 @@ FormTextArea.propTypes = {
     PropTypes.number,
     PropTypes.bool,
   ]).isRequired,
-  setValue: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   hasError: PropTypes.bool,
   errorMessage: PropTypes.oneOfType([

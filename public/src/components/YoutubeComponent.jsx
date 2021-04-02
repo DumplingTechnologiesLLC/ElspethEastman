@@ -40,20 +40,21 @@ VideoTitle.propTypes = {
 };
 
 const VideoThumbnail = styled.img`
-  ${(props) => css`
-    max-width: 480px;
+  ${({ theme }) => css`
+    max-width: ${theme.videoSize}
     width: 100%;
     
     cursor: pointer;
     clip-path: inset(13% 0 13% 0);
     position: relative;
-    ${props.theme.mixins.imageLoadingText('Loading', props.theme.flavors.pink, props.theme.flavors.pink)}
+    ${theme.mixins.imageLoadingText('Loading', theme.flavors.pink, theme.flavors.pink)}
   `}
 `;
 const ComponentContainer = styled.div`
-  ${(props) => css`
-    margin-bottom: ${props.theme.spacing.xl};
-    width: 480px;
+  ${({ theme }) => css`
+    margin-bottom: ${theme.spacing.xl};
+    max-width: ${theme.videoSize}
+    width: 100%;
   `}
 `;
 const StyledIframe = styled.iframe`

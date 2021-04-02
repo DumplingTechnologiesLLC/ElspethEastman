@@ -122,7 +122,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
                 name="Name"
                 label="Your Name (Required)"
                 type="text"
-                setValue={setNameAndClearErrors}
+                onChange={setNameAndClearErrors}
                 value={name}
               />
               <FormInput
@@ -131,7 +131,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
                 name="Email"
                 label="Your Email (Required)"
                 type="email"
-                setValue={setEmailAndClearErrors}
+                onChange={setEmailAndClearErrors}
                 value={email}
               />
               <FormTextArea
@@ -139,7 +139,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
                 errorMessage={errors.message}
                 name="Message (Required)"
                 label="Your Message"
-                setValue={setMessage}
+                onChange={setMessage}
                 value={message}
               />
               <PrimaryButton
