@@ -9,6 +9,7 @@ import SecondaryButton from './Buttons/SecondaryButton';
 import FormInput from './Form/FormInput';
 import StyledForm from './Form/StyledForm';
 import YoutubeComponent from './YoutubeComponent';
+import DangerButton from './Buttons/DangerButton';
 
 const EditableYoutubeForm = styled.div`
   width: 100%;
@@ -33,15 +34,17 @@ const CustomButtonGroup = styled(ButtonGroup)`
   `}
 `;
 
-export const EditableYoutubeComponent = ({ src, title }) => {
+export const EditableYoutubeComponent = ({
+  src, title, onSrcChange, onTitleChange,
+}) => {
   const [preview, setPreviewState] = useState(false);
   return (
     <EditableYoutubeForm>
       {preview ? <YoutubeComponent src={src} title={title} />
         : (
           <StyledForm>
-            <FormInput label="Title" value={title} name={`${title}-title`} />
-            <FormInput label="Video Source" value={src} name={`${title}-source`} />
+            <FormInput onChange={onTitleChange} label="Title" value={title} name={`${title}-title`} />
+            <FormInput onChange={onSrcChange} label="Video Source" value={src} name={`${title}-source`} />
           </StyledForm>
         )}
       <CustomButtonGroup toggled={preview}>
@@ -51,6 +54,9 @@ export const EditableYoutubeComponent = ({ src, title }) => {
           {' '}
           <FontAwesomeIcon icon={faSave} />
         </PrimaryButton>
+        <DangerButton>
+          Delete
+        </DangerButton>
       </CustomButtonGroup>
     </EditableYoutubeForm>
   );
@@ -59,6 +65,8 @@ export const EditableYoutubeComponent = ({ src, title }) => {
 EditableYoutubeComponent.propTypes = {
   src: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
+  onSrcChange: PropTypes.func.isRequired,
+  onTitleChange: PropTypes.func.isRequired,
 };
 
 export default EditableYoutubeComponent;

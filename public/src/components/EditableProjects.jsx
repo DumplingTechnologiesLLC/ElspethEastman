@@ -36,11 +36,16 @@ export const EditableProjects = () => {
         flavors.error,
       );
     });
-  /**
-   * We don't care about this hook firing every time toast references change. Not important.
-   */
-  /* eslint-disable react-hooks/exhaustive-deps */
+    /**
+     * We don't care about this hook firing every time toast references change. Not important.
+     */
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
+  const handleChange = (value, key, index) => {
+    const updatedProjects = loadedProjects.slice();
+    updatedProjects[index][key] = value;
+    setLoadedProjects(updatedProjects);
+  };
   return (
     <SpottedSection>
       <TitleButtonPairing>
@@ -54,7 +59,9 @@ export const EditableProjects = () => {
       <WrappedCenteredContent>
         {loadedProjects.map((project, index) => (
           <EditableYoutubeComponent
-            key={project.src}
+            onSrcChange={(value) => handleChange(value, 'src', index)}
+            onTitleChange={(value) => handleChange(value, 'title', index)}
+            key={project.id}
             src={project.src}
             title={project.title}
           />
