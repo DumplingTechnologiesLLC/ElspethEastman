@@ -195,7 +195,7 @@ export const EditableSkills = () => {
         <SkillFormContainer columnCount={2}>
           <FormTextArea
             name={displayedValue}
-            setValue={(event) => updateValue(displayedValue, event)}
+            onChange={(event) => updateValue(displayedValue, event)}
             value={retrieveSkill(displayedValue)}
             label={displayedValue}
             hasError={typeof errors[lookup[displayedValue]] !== 'undefined'}

@@ -22,6 +22,9 @@ const NavbarTitle = styled.h1`
     ${theme.text.baseTitleStyling};
     color: #292929;
     display:inline-block;
+    @media screen and (max-width: 579px) {
+      font-size: 16px;
+    }
   `}
 `;
 

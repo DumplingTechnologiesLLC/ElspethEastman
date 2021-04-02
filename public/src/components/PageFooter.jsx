@@ -102,7 +102,7 @@ export const PageFooter = () => {
     if (inFlight || !loaded) {
       return (<FontAwesomeIcon size="6x" icon={faSpinner} pulse />);
     }
-    if (loaded && !footerData.stats.length) {
+    if (loaded && !footerData?.stats?.length) {
       return (<FooterContent>Failed to load stats.</FooterContent>);
     }
     return footerData.stats.map((stat) => (

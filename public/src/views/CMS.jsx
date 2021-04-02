@@ -9,6 +9,9 @@ import EditableSkills from '../components/EditableSkills';
 import CMSNavbar from '../components/CMSNavbar';
 import Sidebar from '../components/Sidebar';
 import routes from '../routes';
+import LatestProjects from '../components/LatestProjects';
+import Music from '../components/Music';
+import EditableProjects from '../components/EditableProjects';
 
 const StyledCMSContent = styled.div`
   padding: 0 50px;
@@ -27,7 +30,7 @@ const StyledCMSMainContent = styled.div`
   `}
 `;
 
-const AboveTheFoldContainer = styled.div`
+const DisabledSectionContainer = styled.div`
   pointer-events: none;
   opacity: .5;
 `;
@@ -42,10 +45,14 @@ export const CMS = () => {
         <Switch>
           <Route exact path={routes.cms}>
             <StyledCMSMainContent>
-              <AboveTheFoldContainer>
+              <DisabledSectionContainer>
                 <AboveTheFold onGetInTouch={mockFunction} scrollToWork={mockFunction} />
-              </AboveTheFoldContainer>
+              </DisabledSectionContainer>
               <EditableSkills />
+              <EditableProjects />
+              <DisabledSectionContainer>
+                <Music />
+              </DisabledSectionContainer>
             </StyledCMSMainContent>
           </Route>
           <Route path={routes.mail}>
