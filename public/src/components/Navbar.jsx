@@ -8,7 +8,7 @@ import NavbarBrandImage from '../assets/NavbarBrand.webp';
 import BackgroundButton from './Buttons/BackgroundButton';
 import { ReactComponent as HamburgerMenu } from '../assets/svg/HamburgerMenu.svg';
 
-const StyledNav = styled.nav`
+export const StyledNav = styled.nav`
   ${(props) => css`
     z-index: ${props.theme.stacking.navbar};
     background-color: ${props.theme.flavors.navbar};
@@ -28,7 +28,7 @@ const StyledNav = styled.nav`
   `}
 `;
 
-const StyledNavItems = styled.ul`
+export const StyledNavItems = styled.ul`
   list-style: none;
   display: flex;
   margin: 0;
@@ -44,7 +44,7 @@ const StyledNavItems = styled.ul`
   `}
 `;
 
-const StyledNavItem = styled.li`
+export const StyledNavItem = styled.li`
   cursor: pointer;
   ${(props) => css`
     padding: 0 ${props.theme.spacing.sm};
@@ -54,7 +54,7 @@ const StyledNavItem = styled.li`
   `}
 `;
 
-const StyledNavLink = styled.a`
+export const StyledNavLink = styled.a`
   ${({ theme }) => css`
     ${theme.text.baseContentTextStyling}
     text-decoration: none;
@@ -83,7 +83,7 @@ const StyledNavLink = styled.a`
   `}
 `;
 
-const StyledNavbarButton = styled(BackgroundButton)`
+export const StyledNavbarButton = styled(BackgroundButton)`
   max-width: 40px;
   display: none;
   ${(props) => css`
@@ -101,7 +101,7 @@ const StyledNavbarButton = styled(BackgroundButton)`
   `}
 `;
 
-const StyledNavBrand = styled.img`
+export const StyledNavBrand = styled.img`
   height: 80px;
 `;
 

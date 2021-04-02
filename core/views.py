@@ -3,7 +3,7 @@ from core.models import Affiliations, Contact, Experience, FooterStat, Project, 
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.views import View
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 from core.serializers import (
     AffiliationSerializer, ContactSerializer, ExperienceSerializer, ExperienceCreationSerializer,
@@ -34,7 +34,12 @@ class ContactViewSet(viewsets.ModelViewSet):
         )
 
 
-class SkillViewSet(viewsets.ModelViewSet):
+class SkillViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet
+):
     model = Skills
     serializer_class = SkillsSerializer
 
@@ -62,6 +67,16 @@ class SkillViewSet(viewsets.ModelViewSet):
             'data': self.get_serializer(queryset).data,
             'lookup': lookup
         })
+
+    def patch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        item = self.get_queryset()
+        serializer = self.get_serializer(data=request.data, instance=item)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        item = serializer.save()
+        return Response(self.get_serializer(item).data)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

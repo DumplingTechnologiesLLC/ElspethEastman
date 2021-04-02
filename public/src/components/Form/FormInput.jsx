@@ -5,7 +5,7 @@ import FormInputContainer from './FormInputContainer';
 
 const StyledInput = styled.input`
   ${(props) => css`
-    ${props.theme.input.defaultStyling}
+    ${props.theme.input.defaultStyling};
     ${props.error ? props.theme.input.errorStyling : ''}
   `}
 `;
@@ -13,7 +13,7 @@ const StyledInput = styled.input`
 const StyledTextArea = styled.textarea`
   resize: vertical;
   ${(props) => css`
-    ${props.theme.input.defaultStyling}
+    ${props.theme.input.defaultStyling};
     ${props.error ? props.theme.input.errorStyling : ''}
   `}
 `;
@@ -92,11 +92,14 @@ export const FormTextArea = ({
   const formatErrorMessages = () => {
     if (errorMessage) {
       if (Array.isArray(errorMessage)) {
-        return (
-          <ErrorList>
-            {errorMessage.map((error) => (<li key={error}><ErrorMessage>{error}</ErrorMessage></li>))}
-          </ErrorList>
-        );
+        if (errorMessage.length > 1) {
+          return (
+            <ErrorList>
+              {errorMessage.map((error) => (<li key={error}><ErrorMessage>{error}</ErrorMessage></li>))}
+            </ErrorList>
+          );
+        }
+        return (<ErrorMessage>{errorMessage[0]}</ErrorMessage>);
       }
       return (<ErrorMessage>{errorMessage}</ErrorMessage>);
     }

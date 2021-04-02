@@ -14,6 +14,7 @@ import PageFooter from './components/PageFooter';
 import ToastManager from './components/ToastManager';
 import AllProjects from './views/AllProjects';
 import routes from './routes';
+import CMS from './views/CMS';
 
 function App() {
   const [showContactMe, onContactMe] = useState(false);
@@ -42,24 +43,33 @@ function App() {
   return (
     <Router>
       <ElspethTheme>
-
-        <PageLayout>
-          <ToastManager>
-            <Navbar handleContactMe={onContactMe} />
-            <PageContent>
-              <Switch>
-                <Route exact path={routes.home}>
+        <ToastManager>
+          <Switch>
+            <Route exact path={routes.home}>
+              <PageLayout>
+                <Navbar handleContactMe={onContactMe} />
+                <PageContent>
                   <HomePage key="1" onContactMe={onContactMe} />
-                </Route>
-                <Route path={routes.projects}>
+                  <ContactMe setContactMeVisibility={onContactMe} showForm={showContactMe} />
+                  <PageFooter />
+                </PageContent>
+              </PageLayout>
+            </Route>
+            <Route path={routes.projects}>
+              <PageLayout>
+                <Navbar handleContactMe={onContactMe} />
+                <PageContent>
                   <AllProjects />
-                </Route>
-              </Switch>
-              <ContactMe setContactMeVisibility={onContactMe} showForm={showContactMe} />
-              <PageFooter />
-            </PageContent>
-          </ToastManager>
-        </PageLayout>
+                  <ContactMe setContactMeVisibility={onContactMe} showForm={showContactMe} />
+                  <PageFooter />
+                </PageContent>
+              </PageLayout>
+            </Route>
+            <Route path={routes.cms}>
+              <CMS />
+            </Route>
+          </Switch>
+        </ToastManager>
       </ElspethTheme>
     </Router>
   );

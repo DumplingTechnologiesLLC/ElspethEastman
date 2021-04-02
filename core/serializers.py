@@ -84,6 +84,16 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class SkillsSerializer(serializers.ModelSerializer):
 
+    def validate(self, data):
+        if data.get('game_development', None) is None or data['game_development'] == '':
+            raise serializers.ValidationError(
+                "Game Development cannot be blank.")
+        if data.get('streaming', None) is None or data['streaming'] == '':
+            raise serializers.ValidationError("Streaming cannot be blank.")
+        if data.get('voice_acting', None) is None or data['voice_acting'] == '':
+            raise serializers.ValidationError("Voice Acting cannot be blank.")
+        return data
+
     class Meta:
         model = Skills
         fields = (
