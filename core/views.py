@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.views import View
 from rest_framework import viewsets, status, mixins
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from core.serializers import (
     AffiliationSerializer, ContactSerializer, ExperienceSerializer, ExperienceCreationSerializer,
@@ -86,12 +87,45 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Project.objects.all().order_by('id')
 
+    @action(detail=False, methods=['PATCH'], name='Update a group of projects at once')
+    def batch_update(self, request):
+        validated_serializers = []
+        for item in request.data:
+            try:
+                django_item = self.model.objects.get(pk=item['id'])
+            except Project.DoesNotExist:
+                return Response({
+                    'error': f'An item with id "{django_item.get("id", None)}" called "{django_item.get("title", "Title not found")}" does not exist'},
+                    status=status.HTTP_404_NOT_FOUND)
+            serializer = self.get_serializer(django_item, data=item)
+            if not serializer.is_valid():
+                return Response({
+                    'error': 'There was a problem with your submission.',
+                    'errors': serializer.errors,
+                    'id': item.get('id')
+                }, status=status.HTTP_400_BAD_REQUEST)
+            validated_serializers.append(serializer)
+        for serializer in validated_serializers:
+            serializer.save()
+        return Response({'message': 'Success, all projects updated'})
+
+    def patch(self, request, pk,):
+        project = self.get_object(pk)
+        serializer = self.get_serializer(project, data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        item = serializer.save()
+        return Response(self.get_serializer(item).data)
+
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         return Response(self.get_serializer(queryset, many=True).data,)
 
 
-class PaginatedProjectViewSet(viewsets.ModelViewSet):
+class PaginatedProjectViewSet(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
     model = Project
     serializer_class = ProjectSerializer
     PAGE_SIZE = 4
