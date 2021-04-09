@@ -9,7 +9,6 @@ import EditableSkills from '../components/EditableSkills';
 import CMSNavbar from '../components/CMSNavbar';
 import Sidebar from '../components/Sidebar';
 import routes from '../routes';
-import LatestProjects from '../components/LatestProjects';
 import Music from '../components/Music';
 import EditableProjects from '../components/EditableProjects';
 

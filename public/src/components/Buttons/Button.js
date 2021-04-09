@@ -9,6 +9,11 @@ export const Button = styled.button`
     &:focus {
       outline: 0;
     }
+    &:disabled {
+      opacity: .8;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
   `}
 `;
 
