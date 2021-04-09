@@ -28,6 +28,7 @@ class Endpoints {
       projects: {
         paginated: `${this.baseEndpoints.projects}/paginated/`,
         list: `${this.baseEndpoints.projects}/list/`,
+        update: `${this.baseEndpoints.projects}/`,
       },
       experience: {
         list: `${this.baseEndpoints.experience}/`,
