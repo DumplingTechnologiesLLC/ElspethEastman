@@ -42,7 +42,7 @@ export const PieTextContainer = styled.div`
 
 export const SkillSvg = styled.svg`
   max-height:400px;
-  min-height: 200px;
+  min-height: 250px;
   height: 100%;
   ${(props) => css`
     & text {
