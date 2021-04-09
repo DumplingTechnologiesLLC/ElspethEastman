@@ -27,6 +27,9 @@ const TitleContainer = styled.div`
   align-items: center;
   text-align: center;
   width: 100%;
+  ${({ theme }) => css`
+    max-width: ${theme.videoSize};
+  `}
 `;
 const VideoTitle = ({ title }) => (
   <TitleContainer>
@@ -41,7 +44,7 @@ VideoTitle.propTypes = {
 
 const VideoThumbnail = styled.img`
   ${({ theme }) => css`
-    max-width: ${theme.videoSize}
+    max-width: ${theme.videoSize};
     width: 100%;
     
     cursor: pointer;

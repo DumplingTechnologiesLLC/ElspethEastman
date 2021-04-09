@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import API from '../api';
 import ContentParagraph from './Text/ContentParagraph';
@@ -52,7 +50,7 @@ export const EditableSkills = () => {
     if (skillsLoaded) {
       return updatedSkills[lookup[skill]] ?? skills[lookup[skill]] ?? 'Skills failed to load...';
     }
-    return (<FontAwesomeIcon size="lg" icon={faSpinner} pulse />);
+    return ('Loading...');
   };
   const submitSkills = async () => {
     setSubmitting(true);

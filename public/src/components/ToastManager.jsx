@@ -1,4 +1,6 @@
-import React, { createContext, useRef, useState } from 'react';
+import React, {
+  createContext, useMemo, useRef, useState,
+} from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import ContentParagraph from './Text/ContentParagraph';
@@ -107,7 +109,6 @@ Toast.propTypes = {
 export const ToastContext = createContext();
 export const ToastManager = ({ children }) => {
   const toasts = useRef([]);
-  const [availableToastId, setAvailableToastId] = useState(0);
   /**
    * We don't care about forceRerender, we just need to toggle it to force rerender
    */
@@ -118,16 +119,14 @@ export const ToastManager = ({ children }) => {
 
   /* eslint-disable no-underscore-dangle */
   const _toast = (title, content, flavor, time) => {
-    const usedId = availableToastId;
     toasts.current = [...toasts.current, {
       title,
       content,
       flavor,
       time: time ?? defaultTime,
-      id: usedId,
+      id: Date.now(),
     }];
 
-    setAvailableToastId(availableToastId + 1);
     setForceRerender(toasts.current.length);
     setTimeout(() => {
       toasts.current.splice(0, 1);
@@ -135,7 +134,7 @@ export const ToastManager = ({ children }) => {
     }, time ?? defaultTime);
   };
 
-  const contextData = {
+  const contextData = useMemo(() => ({
     flavors: {
       info: 'info',
       warning: 'warning',
@@ -143,11 +142,18 @@ export const ToastManager = ({ children }) => {
       error: 'error',
     },
     toast: _toast,
-  };
+  /**
+   * Disabled because we don't want this to rerender despite the fact that toast is updating every time internally
+   * due to the ticking id
+   */
+  /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }), []);
   return (
     <>
       <ToastContext.Provider value={contextData}>
-        {children}
+        <div key="staticStringToPreventRe">
+          {children}
+        </div>
       </ToastContext.Provider>
       <ToastRack>
         {toasts.current.map((toast) => (

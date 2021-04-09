@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import styled, { css } from 'styled-components';
 import ButtonGroup from './Buttons/ButtonGroup';
 import PrimaryButton from './Buttons/PrimaryButton';
@@ -35,27 +35,59 @@ const CustomButtonGroup = styled(ButtonGroup)`
 `;
 
 export const EditableYoutubeComponent = ({
-  src, title, onSrcChange, onTitleChange,
+  src, title, onSrcChange, onTitleChange, onSubmit, inFlight, errors,
 }) => {
   const [preview, setPreviewState] = useState(false);
+
+  const saveText = () => (inFlight ? (
+    <FontAwesomeIcon icon={faSpinner} pulse />
+  ) : (
+    <span>
+      Save
+      {' '}
+      <FontAwesomeIcon icon={faSave} />
+    </span>
+  ));
+
+  const deleteText = () => (inFlight ? (
+    <FontAwesomeIcon icon={faSpinner} pulse />
+  ) : (
+    <span>
+      Delete
+    </span>
+  ));
   return (
     <EditableYoutubeForm>
       {preview ? <YoutubeComponent src={src} title={title} />
         : (
           <StyledForm>
-            <FormInput onChange={onTitleChange} label="Title" value={title} name={`${title}-title`} />
-            <FormInput onChange={onSrcChange} label="Video Source" value={src} name={`${title}-source`} />
+            <FormInput
+              hasError={typeof errors.title !== 'undefined'}
+              errorMessage={errors.title ?? ''}
+              type="text"
+              onChange={onTitleChange}
+              label="Title"
+              value={title}
+              name={`${title}-title`}
+            />
+            <FormInput
+              hasError={typeof errors.src !== 'undefined'}
+              errorMessage={errors.src ?? ''}
+              type="text"
+              onChange={onSrcChange}
+              label="Video Source"
+              value={src}
+              name={`${title}-source`}
+            />
           </StyledForm>
         )}
       <CustomButtonGroup toggled={preview}>
         <SecondaryButton onClick={() => setPreviewState(!preview)}>{preview ? 'View Form' : 'Preview'}</SecondaryButton>
-        <PrimaryButton>
-          Save
-          {' '}
-          <FontAwesomeIcon icon={faSave} />
+        <PrimaryButton onClick={onSubmit} disabled={inFlight}>
+          { saveText() }
         </PrimaryButton>
-        <DangerButton>
-          Delete
+        <DangerButton disabled={inFlight}>
+          { deleteText() }
         </DangerButton>
       </CustomButtonGroup>
     </EditableYoutubeForm>
@@ -67,6 +99,14 @@ EditableYoutubeComponent.propTypes = {
   title: PropTypes.string.isRequired,
   onSrcChange: PropTypes.func.isRequired,
   onTitleChange: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  inFlight: PropTypes.bool.isRequired,
+  /**
+   * Disabled because errors is an object that contains the errors for both inputs, and we validate all
+   * properties used
+   */
+  /* eslint-disable-next-line react/forbid-prop-types */
+  errors: PropTypes.object.isRequired,
 };
 
 export default EditableYoutubeComponent;
