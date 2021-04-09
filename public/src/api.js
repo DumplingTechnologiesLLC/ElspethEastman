@@ -57,7 +57,50 @@ class API {
     }
   }
 
-  /* eslint-disable class-methods-use-this */
+  async updateAllProjects(data) {
+    try {
+      const csrftoken = getCookie('csrftoken');
+      const response = await fetch(`${this.endpoints.projects.list}batch_update/`, {
+        method: 'PATCH',
+        cache: 'no-cache',
+        headers: {
+          'X-CSRFToken': csrftoken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      const returnData = await response.json();
+      return {
+        status: response.status,
+        data: returnData,
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async updateProject(data, id) {
+    try {
+      const csrftoken = getCookie('csrftoken');
+      const response = await fetch(`${this.endpoints.projects.list}${id}/`, {
+        method: 'PATCH',
+        cache: 'no-cache',
+        headers: {
+          'X-CSRFToken': csrftoken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      const returnData = await response.json();
+      return {
+        status: response.status,
+        data: returnData,
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
   async retrievePaginatedProjects(page) {
     try {
       const response = await fetch(
