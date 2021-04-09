@@ -3,6 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
+  ignorePatterns: ['./build/static/js/**'],
   extends: ['plugin:react/recommended', 'airbnb', 'react-app'],
   parserOptions: {
     ecmaFeatures: {
