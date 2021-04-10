@@ -15,7 +15,7 @@ import {
   StyledNavLink,
   StyledNavbarButton,
   StyledNavBrand,
-} from '@Components/Navbar';
+} from '@Components/LandingPage/Navbar';
 
 const NavbarTitle = styled.h1`
   ${({ theme }) => css`

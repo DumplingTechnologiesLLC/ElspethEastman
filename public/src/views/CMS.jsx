@@ -4,11 +4,11 @@ import {
   Route,
 } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import AboveTheFold from '@Components/AboveTheFold';
+import AboveTheFold from '@Components/LandingPage/AboveTheFold';
 import EditableSkills from '@Components/CMS/EditableSkills';
 import CMSNavbar from '@Components/CMS/CMSNavbar';
 import Sidebar from '@Components/CMS/Sidebar';
-import Music from '@Components/Music';
+import Music from '@Components/LandingPage/Music';
 import EditableProjects from '@Components/CMS/EditableProjects';
 import routes from '@App/routes';
 

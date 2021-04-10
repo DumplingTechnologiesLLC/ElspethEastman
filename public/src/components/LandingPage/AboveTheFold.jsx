@@ -5,7 +5,7 @@ import JumboTitle from '@Components/Text/JumboTitle';
 import ColoredText from '@Components/Text/ColoredText';
 import { Column, Row } from '@Components/Layout/Layout';
 import ContentParagraph from '@Components/Text/ContentParagraph';
-import TheHeroImage from '@Components/HeroImage';
+import TheHeroImage from '@Components/LandingPage/HeroImage';
 import ButtonGroup from '@Components/Buttons/ButtonGroup';
 import PrimaryButton from '@Components/Buttons/PrimaryButton';
 import SecondaryButton from '@Components/Buttons/SecondaryButton';

@@ -2,7 +2,7 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState, useContext } from 'react';
 import styled, { css } from 'styled-components';
-import CircularLoadingBar from '@Components/CircularLoadingBar';
+import CircularLoadingBar from '@Components/LandingPage/CircularLoadingBar';
 import StyledFooter, {
   FooterContent, FooterContentLink, FooterTitle, FooterSubTitle,
 } from '@Components/Layout/StyledFooter';

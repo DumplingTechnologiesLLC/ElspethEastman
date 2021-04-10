@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import SpottedSection from '@Components/Layout/SpottedSection';
 import SectionTitle from '@Components/Text/SectionTitle';
 import SecondaryButton from '@Components/Buttons/SecondaryButton';
-import YoutubeComponent from '@Components/YoutubeComponent';
+import YoutubeComponent from '@Components/LandingPage/YoutubeComponent';
 import ButtonGroup, { TitleButtonPairing } from '@Components/Buttons/ButtonGroup';
 import { ToastContext } from '@Components/ToastManager';
 import FailedToLoad from '@Components/FailedToLoad';
