@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import SectionTitle from '@Components/Text/SectionTitle';
 import BackgroundElephant from '@Assets/svg/BackgroundElephant.svg';
-import ContentTitle from './Text/ContentTitle';
+import ContentTitle from '../Text/ContentTitle';
 
 const MusicContainer = styled.section`
   ${(props) => css`

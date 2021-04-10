@@ -8,7 +8,7 @@ import PrimaryButton from '@Components/Buttons/PrimaryButton';
 import SecondaryButton from '@Components/Buttons/SecondaryButton';
 import FormInput from '@Components/Form/FormInput';
 import StyledForm from '@Components/Form/StyledForm';
-import YoutubeComponent from '@Components/YoutubeComponent';
+import YoutubeComponent from '@Components/LandingPage/YoutubeComponent';
 import DangerButton from '@Components/Buttons/DangerButton';
 
 const EditableYoutubeForm = styled.div`

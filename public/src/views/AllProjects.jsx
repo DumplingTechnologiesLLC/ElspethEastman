@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ToastContext } from '@Components/ToastManager';
-import YoutubeComponent from '@Components/YoutubeComponent';
+import YoutubeComponent from '@Components/LandingPage/YoutubeComponent';
 import SectionTitle from '@Components/Text/SectionTitle';
 import SecondaryButton from '@Components/Buttons/SecondaryButton';
 import FailedToLoad from '@Components/FailedToLoad';
