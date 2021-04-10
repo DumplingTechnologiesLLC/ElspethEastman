@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect, useContext } from 'react';
 import { TitleButtonPairing } from '@Components/Buttons/ButtonGroup';
 import PrimaryButton from '@Components/Buttons/PrimaryButton';
-import EditableYoutubeComponent from '@Components/EditableYoutubeComponent';
+import EditableYoutubeComponent from '@Components/CMS/EditableYoutubeComponent';
 import FailedToLoad from '@Components/FailedToLoad';
 import { WrappedCenteredContent } from '@Components/Layout/PageLayout';
 import SpottedSection from '@Components/Layout/SpottedSection';
