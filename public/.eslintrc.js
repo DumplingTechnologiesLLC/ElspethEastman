@@ -21,4 +21,14 @@ module.exports = {
     'import/no-named-as-default': 'off',
     'no-console': 'warn',
   },
+  settings: {
+    'import/resolver': {
+      alias: {
+        map: [
+          ['@Components', './src/components'],
+        ],
+        extensions: ['.ts', '.js', '.jsx', '.json'],
+      },
+    },
+  },
 };
