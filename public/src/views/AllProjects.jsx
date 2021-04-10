@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ToastContext } from '../components/ToastManager';
+import { ToastContext } from '@Components/ToastManager';
 import YoutubeComponent from '../components/YoutubeComponent';
 import SectionTitle from '../components/Text/SectionTitle';
 import SecondaryButton from '../components/Buttons/SecondaryButton';
