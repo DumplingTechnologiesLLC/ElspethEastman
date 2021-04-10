@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import SectionTitle from '../Text/SectionTitle';
+import SectionTitle from '@Components/Text/SectionTitle';
 
 export const ButtonGroup = styled.div`
   ${(props) => css`

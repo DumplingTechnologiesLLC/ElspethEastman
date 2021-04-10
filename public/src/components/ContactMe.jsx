@@ -1,15 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
-import ColoredText from './Text/ColoredText';
-
-import SectionTitleUnderText from './Text/SectionTitleUnderText';
-import API from '../api';
-import FormInput, { FormTextArea } from './Form/FormInput';
-import StyledForm from './Form/StyledForm';
-import PrimaryButton from './Buttons/PrimaryButton';
-import Modal from './Modal/Modal';
-import { ToastContext } from './ToastManager';
+import ColoredText from '@Components/Text/ColoredText';
+import SectionTitleUnderText from '@Components/Text/SectionTitleUnderText';
+import FormInput, { FormTextArea } from '@Components/Form/FormInput';
+import StyledForm from '@Components/Form/StyledForm';
+import PrimaryButton from '@Components/Buttons/PrimaryButton';
+import Modal from '@Components/Modal/Modal';
+import { ToastContext } from '@Components/ToastManager';
+import API from '@App/api';
 
 export const ContactMe = ({ showForm, setContactMeVisibility }) => {
   const [name, setName] = useState('');

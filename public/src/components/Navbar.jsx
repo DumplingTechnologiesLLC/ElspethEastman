@@ -4,9 +4,9 @@ import React, {
 import PropTypes from 'prop-types';
 import styled, { css, ThemeContext } from 'styled-components';
 import { useHistory, Link } from 'react-router-dom';
-import NavbarBrandImage from '../assets/NavbarBrand.webp';
-import BackgroundButton from './Buttons/BackgroundButton';
-import { ReactComponent as HamburgerMenu } from '../assets/svg/HamburgerMenu.svg';
+import BackgroundButton from '@Components/Buttons/BackgroundButton';
+import NavbarBrandImage from '@Assets/NavbarBrand.webp';
+import { ReactComponent as HamburgerMenu } from '@Assets/svg/HamburgerMenu.svg';
 
 export const StyledNav = styled.nav`
   ${(props) => css`

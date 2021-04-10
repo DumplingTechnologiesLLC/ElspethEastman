@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import ContentParagraph from './Text/ContentParagraph';
-import { ReactComponent as FailedToLoadSVG } from '../assets/svg/FailedToLoad.svg';
+import ContentParagraph from '@Components/Text/ContentParagraph';
+import { ReactComponent as FailedToLoadSVG } from '@Assets/svg/FailedToLoad.svg';
 
 const FailedToLoadContainer = styled.div`
   width: 100%;

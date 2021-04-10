@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
-import FormInputContainer from './FormInputContainer';
+import FormInputContainer from '@Components/Form/FormInputContainer';
 
 const StyledInput = styled.input`
   ${(props) => css`

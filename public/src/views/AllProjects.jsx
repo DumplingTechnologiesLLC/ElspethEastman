@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ToastContext } from '@Components/ToastManager';
-import YoutubeComponent from '../components/YoutubeComponent';
-import SectionTitle from '../components/Text/SectionTitle';
-import SecondaryButton from '../components/Buttons/SecondaryButton';
-import FailedToLoad from '../components/FailedToLoad';
-import { WrappedCenteredContent } from '../components/Layout/PageLayout';
-import { TitleButtonPairing } from '../components/Buttons/ButtonGroup';
+import YoutubeComponent from '@Components/YoutubeComponent';
+import SectionTitle from '@Components/Text/SectionTitle';
+import SecondaryButton from '@Components/Buttons/SecondaryButton';
+import FailedToLoad from '@Components/FailedToLoad';
+import { WrappedCenteredContent } from '@Components/Layout/PageLayout';
+import { TitleButtonPairing } from '@Components/Buttons/ButtonGroup';
 import API from '../api';
 
 export const AllProjects = () => {

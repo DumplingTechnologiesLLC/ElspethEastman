@@ -4,13 +4,13 @@ import {
   Route,
 } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import AboveTheFold from '../components/AboveTheFold';
-import EditableSkills from '../components/EditableSkills';
-import CMSNavbar from '../components/CMSNavbar';
-import Sidebar from '../components/Sidebar';
-import routes from '../routes';
-import Music from '../components/Music';
-import EditableProjects from '../components/EditableProjects';
+import AboveTheFold from '@Components/AboveTheFold';
+import EditableSkills from '@Components/EditableSkills';
+import CMSNavbar from '@Components/CMSNavbar';
+import Sidebar from '@Components/Sidebar';
+import Music from '@Components/Music';
+import EditableProjects from '@Components/EditableProjects';
+import routes from '@App/routes';
 
 const StyledCMSContent = styled.div`
   padding: 0 50px;

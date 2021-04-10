@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import styled, { css } from 'styled-components';
-import ButtonGroup from './Buttons/ButtonGroup';
-import PrimaryButton from './Buttons/PrimaryButton';
-import SecondaryButton from './Buttons/SecondaryButton';
-import FormInput from './Form/FormInput';
-import StyledForm from './Form/StyledForm';
-import YoutubeComponent from './YoutubeComponent';
-import DangerButton from './Buttons/DangerButton';
+import ButtonGroup from '@Components/Buttons/ButtonGroup';
+import PrimaryButton from '@Components/Buttons/PrimaryButton';
+import SecondaryButton from '@Components/Buttons/SecondaryButton';
+import FormInput from '@Components/Form/FormInput';
+import StyledForm from '@Components/Form/StyledForm';
+import YoutubeComponent from '@Components/YoutubeComponent';
+import DangerButton from '@Components/Buttons/DangerButton';
 
 const EditableYoutubeForm = styled.div`
   width: 100%;

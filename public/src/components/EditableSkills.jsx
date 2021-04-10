@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
-import API from '../api';
-import ContentParagraph from './Text/ContentParagraph';
-import { Row } from './Layout/Layout';
-import SpottedSection from './Layout/SpottedSection';
-import Elephant from '../assets/elephant.webp';
-import { ToastContext } from './ToastManager';
+import ContentParagraph from '@Components/Text/ContentParagraph';
+import { Row } from '@Components/Layout/Layout';
+import SpottedSection from '@Components/Layout/SpottedSection';
+import { ToastContext } from '@Components/ToastManager';
 import {
   SkillDescriptionContainer,
   PieContainer,
   PieTextContainer,
   SkillSvg,
   SkillPie,
-} from './Skills';
-import { FormTextArea } from './Form/FormInput';
-import PrimaryButton from './Buttons/PrimaryButton';
-import ButtonGroup from './Buttons/ButtonGroup';
-import WarningButton from './Buttons/WarningButton';
+} from '@Components/Skills';
+import { FormTextArea } from '@Components/Form/FormInput';
+import PrimaryButton from '@Components/Buttons/PrimaryButton';
+import ButtonGroup from '@Components/Buttons/ButtonGroup';
+import WarningButton from '@Components/Buttons/WarningButton';
+import Elephant from '@Assets/elephant.webp';
+import API from '@App/api';
 
 const SkillFormContainer = styled(SkillDescriptionContainer)`
   align-items: center;

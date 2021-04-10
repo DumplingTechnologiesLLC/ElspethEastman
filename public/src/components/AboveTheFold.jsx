@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
-import JumboTitle from './Text/JumboTitle';
-import ColoredText from './Text/ColoredText';
-import { Column, Row } from './Layout/Layout';
-import ContentParagraph from './Text/ContentParagraph';
-import HeroImage from '../assets/hero2.webp';
-import TheHeroImage from './HeroImage';
-import ButtonGroup from './Buttons/ButtonGroup';
-import PrimaryButton from './Buttons/PrimaryButton';
-import SecondaryButton from './Buttons/SecondaryButton';
+import JumboTitle from '@Components/Text/JumboTitle';
+import ColoredText from '@Components/Text/ColoredText';
+import { Column, Row } from '@Components/Layout/Layout';
+import ContentParagraph from '@Components/Text/ContentParagraph';
+import TheHeroImage from '@Components/HeroImage';
+import ButtonGroup from '@Components/Buttons/ButtonGroup';
+import PrimaryButton from '@Components/Buttons/PrimaryButton';
+import SecondaryButton from '@Components/Buttons/SecondaryButton';
+import HeroImage from '@Assets/hero2.webp';
 
 const AboveTheFoldContainer = styled(Row)`
   margin-top: 3em;

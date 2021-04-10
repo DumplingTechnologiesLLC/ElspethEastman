@@ -1,10 +1,10 @@
-import React, { useState, useContext } from 'react';
-import styled, { css, ThemeContext } from 'styled-components';
+import React, { useState } from 'react';
+import styled, { css } from 'styled-components';
 import { useHistory } from 'react-router-dom';
-import { ReactComponent as Mail } from '../assets/svg/mail.svg';
-import { ReactComponent as CMSIcon } from '../assets/svg/cms.svg';
-import BackgroundButton from './Buttons/BackgroundButton';
-import routes, { routesReverseLookup } from '../routes';
+import BackgroundButton from '@Components/Buttons/BackgroundButton';
+import { ReactComponent as Mail } from '@Assets/svg/mail.svg';
+import { ReactComponent as CMSIcon } from '@Assets/svg/cms.svg';
+import routes, { routesReverseLookup } from '@App/routes';
 
 const StyledSidebar = styled.nav`
   ${({ theme }) => css`
