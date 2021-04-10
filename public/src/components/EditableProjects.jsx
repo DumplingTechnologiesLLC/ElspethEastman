@@ -1,15 +1,15 @@
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect, useContext } from 'react';
-import API from '../api';
-import { TitleButtonPairing } from './Buttons/ButtonGroup';
-import PrimaryButton from './Buttons/PrimaryButton';
-import EditableYoutubeComponent from './EditableYoutubeComponent';
-import FailedToLoad from './FailedToLoad';
-import { WrappedCenteredContent } from './Layout/PageLayout';
-import SpottedSection from './Layout/SpottedSection';
-import SectionTitle from './Text/SectionTitle';
-import { ToastContext } from './ToastManager';
+import { TitleButtonPairing } from '@Components/Buttons/ButtonGroup';
+import PrimaryButton from '@Components/Buttons/PrimaryButton';
+import EditableYoutubeComponent from '@Components/EditableYoutubeComponent';
+import FailedToLoad from '@Components/FailedToLoad';
+import { WrappedCenteredContent } from '@Components/Layout/PageLayout';
+import SpottedSection from '@Components/Layout/SpottedSection';
+import SectionTitle from '@Components/Text/SectionTitle';
+import { ToastContext } from '@Components/ToastManager';
+import API from '@App/api';
 
 export const EditableProjects = () => {
   const { toast, flavors } = useContext(ToastContext);

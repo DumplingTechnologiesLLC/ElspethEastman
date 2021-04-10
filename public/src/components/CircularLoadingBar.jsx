@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import PropTypes from 'prop-types';
-import { FooterContent } from './Layout/StyledFooter';
+import { FooterContent } from '@Components/Layout/StyledFooter';
 
 const canvasDimension = 200;
 const circleDimension = 175;

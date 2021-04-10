@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import Button from './Button';
+import Button from '@Components/Buttons/Button';
 
 export const PrimaryButton = styled(Button)`
   ${(props) => css`

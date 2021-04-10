@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
-import SpottedSection from './Layout/SpottedSection';
-import SectionTitle from './Text/SectionTitle';
-import SecondaryButton from './Buttons/SecondaryButton';
-import YoutubeComponent from './YoutubeComponent';
-import ButtonGroup, { TitleButtonPairing } from './Buttons/ButtonGroup';
-import API from '../api';
-import { ToastContext } from './ToastManager';
-import FailedToLoad from './FailedToLoad';
-import { WrappedCenteredContent } from './Layout/PageLayout';
-import routes from '../routes';
+import SpottedSection from '@Components/Layout/SpottedSection';
+import SectionTitle from '@Components/Text/SectionTitle';
+import SecondaryButton from '@Components/Buttons/SecondaryButton';
+import YoutubeComponent from '@Components/YoutubeComponent';
+import ButtonGroup, { TitleButtonPairing } from '@Components/Buttons/ButtonGroup';
+import { ToastContext } from '@Components/ToastManager';
+import FailedToLoad from '@Components/FailedToLoad';
+import { WrappedCenteredContent } from '@Components/Layout/PageLayout';
+import API from '@App/api';
+import routes from '@App/routes';
 
 const CenteredButtonGroup = styled(ButtonGroup)`
   margin: 0 auto;

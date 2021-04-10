@@ -2,13 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import styled, { css } from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import API from '../api';
-import ContentParagraph from './Text/ContentParagraph';
-import ContentTitle from './Text/ContentTitle';
-import { Column, Row } from './Layout/Layout';
-import SpottedSection from './Layout/SpottedSection';
-import Elephant from '../assets/elephant.webp';
-import { ToastContext } from './ToastManager';
+import ContentParagraph from '@Components/Text/ContentParagraph';
+import ContentTitle from '@Components/Text/ContentTitle';
+import { Column, Row } from '@Components/Layout/Layout';
+import SpottedSection from '@Components/Layout/SpottedSection';
+import { ToastContext } from '@Components/ToastManager';
+import Elephant from '@Assets/elephant.webp';
+import API from '@App/api';
 
 export const SkillDescriptionContainer = styled(Column)`
   text-align: center;

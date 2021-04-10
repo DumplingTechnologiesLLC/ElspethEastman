@@ -4,17 +4,16 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
-import { PageLayout, PageContent } from './components/Layout/PageLayout';
-
-import ElspethTheme from './theme';
-import Navbar from './components/Navbar';
-import HomePage from './views/HomePage';
-import ContactMe from './components/ContactMe';
-import PageFooter from './components/PageFooter';
-import ToastManager from './components/ToastManager';
-import AllProjects from './views/AllProjects';
-import routes from './routes';
-import CMS from './views/CMS';
+import { PageLayout, PageContent } from '@Components/Layout/PageLayout';
+import Navbar from '@Components/Navbar';
+import ContactMe from '@Components/ContactMe';
+import PageFooter from '@Components/PageFooter';
+import ToastManager from '@Components/ToastManager';
+import HomePage from '@Views/HomePage';
+import AllProjects from '@Views/AllProjects';
+import CMS from '@Views/CMS';
+import ElspethTheme from '@App/theme';
+import routes from '@App/routes';
 
 function App() {
   const [showContactMe, onContactMe] = useState(false);

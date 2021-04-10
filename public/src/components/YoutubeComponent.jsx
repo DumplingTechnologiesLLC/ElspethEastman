@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import PropTypes from 'prop-types';
-import { ReactComponent as YoutubeLoader } from '../assets/svg/YoutubeLoader.svg';
+import { ReactComponent as YoutubeLoader } from '@Assets/svg/YoutubeLoader.svg';
 
 const StyledTitle = styled.span`
   ${(props) => css`

@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 import styled, { css } from 'styled-components';
-import SectionTitle from './Text/SectionTitle';
-import API from '../api';
-import ContentParagraph from './Text/ContentParagraph';
-import SectionTitleUnderText from './Text/SectionTitleUnderText';
-import { ReactComponent as ExternalLink } from '../assets/svg/ExternalLink.svg';
-import { ToastContext } from './ToastManager';
+import SectionTitle from '@Components/Text/SectionTitle';
+import ContentParagraph from '@Components/Text/ContentParagraph';
+import SectionTitleUnderText from '@Components/Text/SectionTitleUnderText';
+import { ToastContext } from '@Components/ToastManager';
+import { ReactComponent as ExternalLink } from '@Assets/svg/ExternalLink.svg';
+import API from '@App/api';
 
 const ExperienceContainer = styled.section`
   ${(props) => css`
@@ -71,6 +71,7 @@ export const Experience = () => {
       as={exp?.link ? 'a' : 'p'}
       href={exp?.link ? exp.link : undefined}
       target={exp?.link ? '_blank' : undefined}
+      rel="noreferrer"
     >
       {formatCredit(exp)}
       {exp?.link ? <ExternalLink /> : ''}

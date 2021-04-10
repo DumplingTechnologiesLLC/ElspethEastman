@@ -2,16 +2,16 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState, useContext } from 'react';
 import styled, { css } from 'styled-components';
-import API from '../api';
-import CircularLoadingBar from './CircularLoadingBar';
+import CircularLoadingBar from '@Components/CircularLoadingBar';
 import StyledFooter, {
   FooterContent, FooterContentLink, FooterTitle, FooterSubTitle,
-} from './Layout/StyledFooter';
-import Instagram from '../assets/svg/Instagram.svg';
-import Soundcloud from '../assets/svg/Soundcloud.svg';
-import Twitter from '../assets/svg/Twitter.svg';
-import Youtube from '../assets/svg/Youtube.svg';
-import { ToastContext } from './ToastManager';
+} from '@Components/Layout/StyledFooter';
+import { ToastContext } from '@Components/ToastManager';
+import API from '@App/api';
+import Instagram from '@Assets/svg/Instagram.svg';
+import Soundcloud from '@Assets/svg/Soundcloud.svg';
+import Twitter from '@Assets/svg/Twitter.svg';
+import Youtube from '@Assets/svg/Youtube.svg';
 
 const LoadingContainer = styled.div`
   display: flex;

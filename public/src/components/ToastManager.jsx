@@ -3,11 +3,11 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
-import ContentParagraph from './Text/ContentParagraph';
-import { ReactComponent as Warning } from '../assets/svg/warning.svg';
-import { ReactComponent as Error } from '../assets/svg/error.svg';
-import { ReactComponent as Success } from '../assets/svg/success.svg';
-import { ReactComponent as Info } from '../assets/svg/info.svg';
+import ContentParagraph from '@Components/Text/ContentParagraph';
+import { ReactComponent as Warning } from '@Assets/svg/warning.svg';
+import { ReactComponent as Error } from '@Assets/svg/error.svg';
+import { ReactComponent as Success } from '@Assets/svg/success.svg';
+import { ReactComponent as Info } from '@Assets/svg/info.svg';
 
 const StyledToast = styled.div`
   ${({ theme, time }) => css`

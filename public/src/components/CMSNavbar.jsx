@@ -5,9 +5,9 @@ import styled, { css, ThemeContext } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import NavbarBrandImage from '../assets/NavbarBrand.webp';
-import { ReactComponent as HamburgerMenu } from '../assets/svg/HamburgerMenu.svg';
-import routes from '../routes';
+import NavbarBrandImage from '@Assets/NavbarBrand.webp';
+import { ReactComponent as HamburgerMenu } from '@Assets/svg/HamburgerMenu.svg';
+import routes from '@App/routes';
 import {
   StyledNav,
   StyledNavItems,

@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import AboveTheFold from '../components/AboveTheFold';
-import Skills from '../components/Skills';
-import LatestProjects from '../components/LatestProjects';
-import Music from '../components/Music';
-import Experience from '../components/Experience';
+import AboveTheFold from '@Components/AboveTheFold';
+import Skills from '@Components/Skills';
+import LatestProjects from '@Components/LatestProjects';
+import Music from '@Components/Music';
+import Experience from '@Components/Experience';
 
 export const HomePage = ({ onContactMe }) => {
   const scrollToWork = () => {

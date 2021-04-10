@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
-import SectionTitle from './Text/SectionTitle';
-import BackgroundElephant from '../assets/svg/BackgroundElephant.svg';
+import SectionTitle from '@Components/Text/SectionTitle';
+import BackgroundElephant from '@Assets/svg/BackgroundElephant.svg';
+import ContentTitle from './Text/ContentTitle';
 
 const MusicContainer = styled.section`
   ${(props) => css`
@@ -50,26 +51,56 @@ const StyledIframe = styled.iframe`
     border: 0;
   `}
 `;
+const LoadingIframe = styled.div`
+  margin: 0 auto;
+  max-width: 500px;
+  max-height: 500px;
+  height: 500px;
+  width: 100%;
+  z-index: 1;
+  background-color: #b6ecf7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1em;
+  border: 0;
+  ${ContentTitle} {
+    margin: 0;
+  }
+`;
 /* eslint-disable max-len */
-export const Music = () => (
-  <MusicContainer>
-    <BackgroundDecoration id="Music" />
-    <BackgroundImage src={BackgroundElephant} aria-hidden tabindex="-1" />
-    <SectionTitle>Music </SectionTitle>
-    <IFrameContainer>
-      <StyledIframe
-        title="My soundcloud"
-        tabIndex="-1"
-        color="black"
-        width="100%"
-        height="500"
-        frameborder="no"
-        scrolling="no"
-        src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/2775113&color=ff9bff&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false"
-      />
-    </IFrameContainer>
+export const Music = () => {
+  const [showSoundCloud, setShowSoundCloud] = useState(false);
+  useEffect(() => {
+    setTimeout(() => setShowSoundCloud(true), 500);
+  }, [setShowSoundCloud]);
+  return (
+    <MusicContainer>
+      <BackgroundDecoration id="Music" />
+      <BackgroundImage src={BackgroundElephant} aria-hidden tabindex="-1" />
+      <SectionTitle>Music </SectionTitle>
+      <IFrameContainer>
+        {showSoundCloud ? (
+          <StyledIframe
+            title="My soundcloud"
+            tabIndex="-1"
+            color="black"
+            width="100%"
+            height="500"
+            frameborder="no"
+            scrolling="no"
+            src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/2775113&color=ff9bff&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false"
+          />
+        ) : (
+          <LoadingIframe>
+            <ContentTitle>Loading Soundcloud...</ContentTitle>
+          </LoadingIframe>
+        )}
 
-  </MusicContainer>
-);
+      </IFrameContainer>
+
+    </MusicContainer>
+  );
+};
 
 export default Music;

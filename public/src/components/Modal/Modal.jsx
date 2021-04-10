@@ -1,10 +1,10 @@
 import styled, { css } from 'styled-components';
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ReactComponent as Close } from '../../assets/svg/CloseX.svg';
-import SectionTitle from '../Text/SectionTitle';
-import BackgroundButton from '../Buttons/BackgroundButton';
-import uuid from '../../utils';
+import { ReactComponent as Close } from '@Assets/svg/CloseX.svg';
+import SectionTitle from '@Components/Text/SectionTitle';
+import BackgroundButton from '@Components/Buttons/BackgroundButton';
+import uuid from '@App/utils';
 
 const ModalContainer = styled.div`
   position: fixed;
