@@ -14,7 +14,10 @@ from django.core.mail import send_mail
 import re
 
 
-class ContactViewSet(viewsets.ModelViewSet):
+class ContactViewSet(
+        mixins.CreateModelMixin,
+        mixins.ListModelMixin,
+        viewsets.GenericViewSet):
     model = Contact
     serializer_class = ContactSerializer
     authentication_classes = []
@@ -23,6 +26,8 @@ class ContactViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # TODO: Integrate email support
         serializer.save()
         return Response({'message': "Success"})
 
@@ -89,6 +94,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['PATCH'], name='Update a group of projects at once')
     def batch_update(self, request):
+        # TODO: protect behind authentication
         validated_serializers = []
         for item in request.data:
             try:
@@ -110,6 +116,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response({'message': 'Success, all projects updated'})
 
     def patch(self, request, pk,):
+        # TODO: protect behind authentication
         project = self.get_object(pk)
         serializer = self.get_serializer(project, data=request.data)
         if not serializer.is_valid():
