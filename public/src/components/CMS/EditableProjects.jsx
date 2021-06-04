@@ -14,6 +14,7 @@ import API from '@App/api';
 export const EditableProjects = () => {
   const { toast, flavors } = useContext(ToastContext);
   const [loadedProjects, setLoadedProjects] = useState([]);
+  const [cachedProjects, setCachedProjects] = useState([]);
   const [inFlight, setInFlight] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [errors, setErrors] = useState({});
@@ -35,11 +36,17 @@ export const EditableProjects = () => {
     },
   };
 
+  const resetProject = (index) => {
+    const currentLoadedProjects = loadedProjects.slice();
+    currentLoadedProjects[index] = { ...cachedProjects[index] };
+    setLoadedProjects(currentLoadedProjects);
+  };
+
   const updateProject = async (index) => {
-    const systemToSubmit = loadedProjects[index];
-    setInFlight([...inFlight, systemToSubmit.id]);
-    const response = await API.updateProject(systemToSubmit, systemToSubmit.id);
-    setInFlight(inFlight.filter((id) => id !== systemToSubmit.id));
+    const projectToSubmit = loadedProjects[index];
+    setInFlight([...inFlight, projectToSubmit.id]);
+    const response = await API.updateProject(projectToSubmit, projectToSubmit.id);
+    setInFlight(inFlight.filter((id) => id !== projectToSubmit.id));
     if (response === null) {
       toast(
         'Error',
@@ -55,8 +62,11 @@ export const EditableProjects = () => {
       flavor,
     );
     if (response.status === 400) {
-      setErrors({ ...errors, [systemToSubmit.id]: response.data });
+      setErrors({ ...errors, [projectToSubmit.id]: response.data });
     }
+    const newCachedProjects = cachedProjects.slice();
+    newCachedProjects[index] = { ...projectToSubmit };
+    setCachedProjects(newCachedProjects);
   };
 
   const updateAllProjects = async () => {
@@ -86,6 +96,7 @@ export const EditableProjects = () => {
       response.data.message ?? response.data.error,
       flavor,
     );
+    setCachedProjects(loadedProjects);
     if (response.status === 400) {
       setErrors({ ...errors, [response.data.id]: response.data.errors });
     }
@@ -102,7 +113,8 @@ export const EditableProjects = () => {
           flavors.error,
         );
       } else {
-        setLoadedProjects(loadedProjects.concat(results));
+        setLoadedProjects(loadedProjects.concat(results.slice()));
+        setCachedProjects(cachedProjects.concat(JSON.parse(JSON.stringify(results.slice()))));
       }
     }).catch(() => {
       setLoaded(true);
@@ -118,6 +130,27 @@ export const EditableProjects = () => {
     /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
   const handleChange = (value, key, index) => {
+    if (key === 'src') {
+      // we need to strip everything that's not the value.
+      const embedString = 'embed/';
+      const watchString = 'watch?v=';
+      if (value.includes(embedString)) {
+        // embed url in the format youtube.com/embed/<id>
+
+        /**
+         * Disabled because we know value is a string so its passed by value. no danger in reassigning since we
+         * want to mutate it.
+         */
+        /* eslint-disable no-param-reassign */
+        value = value.slice(value.indexOf(embedString) + embedString.length);
+      } else if (value.includes(watchString)) {
+        value = value.slice(value.indexOf(watchString) + watchString.length);
+        if (value.includes('&')) {
+          value = value.slice(0, value.indexOf('&'));
+        }
+      }
+      /* eslint-enable no-param-reassign */
+    }
     const updatedProjects = loadedProjects.slice();
     updatedProjects[index][key] = value;
     const existingErrors = errors[updatedProjects[index].id] ?? {};
@@ -143,6 +176,7 @@ export const EditableProjects = () => {
             onSrcChange={(value) => handleChange(value, 'src', index)}
             onTitleChange={(value) => handleChange(value, 'title', index)}
             onSubmit={() => updateProject(index)}
+            onReset={() => resetProject(index)}
             errors={errors[project.id] ?? {}}
             inFlight={inFlight.includes(project.id)}
             src={project.src}

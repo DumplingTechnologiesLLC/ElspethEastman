@@ -6,6 +6,7 @@ import styled, { css } from 'styled-components';
 import ButtonGroup from '@Components/Buttons/ButtonGroup';
 import PrimaryButton from '@Components/Buttons/PrimaryButton';
 import SecondaryButton from '@Components/Buttons/SecondaryButton';
+import WarningButton from '@Components/Buttons/WarningButton';
 import FormInput from '@Components/Form/FormInput';
 import StyledForm from '@Components/Form/StyledForm';
 import YoutubeComponent from '@Components/LandingPage/YoutubeComponent';
@@ -35,7 +36,7 @@ const CustomButtonGroup = styled(ButtonGroup)`
 `;
 
 export const EditableYoutubeComponent = ({
-  src, title, onSrcChange, onTitleChange, onSubmit, inFlight, errors,
+  src, title, onSrcChange, onTitleChange, onSubmit, onReset, inFlight, errors,
 }) => {
   const [preview, setPreviewState] = useState(false);
 
@@ -82,10 +83,14 @@ export const EditableYoutubeComponent = ({
           </StyledForm>
         )}
       <CustomButtonGroup toggled={preview}>
+
         <SecondaryButton onClick={() => setPreviewState(!preview)}>{preview ? 'View Form' : 'Preview'}</SecondaryButton>
         <PrimaryButton onClick={onSubmit} disabled={inFlight}>
           { saveText() }
         </PrimaryButton>
+        <WarningButton onClick={onReset} disabled={inFlight}>
+          Reset
+        </WarningButton>
         <DangerButton disabled={inFlight}>
           { deleteText() }
         </DangerButton>
@@ -98,6 +103,7 @@ EditableYoutubeComponent.propTypes = {
   src: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   onSrcChange: PropTypes.func.isRequired,
+  onReset: PropTypes.func.isRequired,
   onTitleChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   inFlight: PropTypes.bool.isRequired,
