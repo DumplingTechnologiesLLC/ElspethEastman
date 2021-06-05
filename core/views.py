@@ -1,4 +1,5 @@
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
+from rest_framework.exceptions import MethodNotAllowed
 from core.models import Affiliations, Contact, Experience, FooterStat, Project, Skills
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
@@ -52,6 +53,9 @@ class SkillViewSet(
     def get_queryset(self):
         return self.model.objects.first()
 
+    def put(self, request,):
+        raise MethodNotAllowed('PUT', detail='Use Patch')
+
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         lookup = {}
@@ -85,7 +89,12 @@ class SkillViewSet(
         return Response(self.get_serializer(item).data)
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(
+        mixins.CreateModelMixin,
+        mixins.ListModelMixin,
+        mixins.UpdateModelMixin,
+        mixins.DestroyModelMixin,
+        viewsets.GenericViewSet):
     model = Project
     serializer_class = ProjectSerializer
 
@@ -114,6 +123,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
         for serializer in validated_serializers:
             serializer.save()
         return Response({'message': 'Success, all projects updated'})
+
+    def put(self, request,):
+        raise MethodNotAllowed('PUT', detail='Use Patch')
+
+    def delete(self, request, pk):
+        # TODO:
 
     def create(self, request, *args, **kwargs):
         # TODO: protect behind authentication
@@ -167,7 +182,10 @@ class PaginatedProjectViewSet(
         })
 
 
-class FooterViewSet(viewsets.ModelViewSet):
+class FooterViewSet(
+        mixins.ListModelMixin,
+        mixins.UpdateModelMixin,
+        viewsets.GenericViewSet):
     model = FooterStat
     serializer_class = FooterStatSerializer
     affiliation_class = AffiliationSerializer
@@ -177,6 +195,9 @@ class FooterViewSet(viewsets.ModelViewSet):
 
     def get_affiliation_queryset(self):
         return Affiliations.objects.all().order_by("id")
+
+    def put(self, request,):
+        raise MethodNotAllowed('PUT', detail='Use Patch')
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -188,7 +209,11 @@ class FooterViewSet(viewsets.ModelViewSet):
         return Response(response_data)
 
 
-class ExperienceViewSet(viewsets.ModelViewSet):
+class ExperienceViewSet(
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin,
+        mixins.CreateModelMixin,
+        viewsets.GenericViewSet):
     serializer_class = ExperienceSerializer
     creation_serializer = ExperienceCreationSerializer
     model = Experience
