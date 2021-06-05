@@ -102,7 +102,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
       setShowModal={closeAndClear}
       title={(
         <div>
-          Contact
+          <span>Contact</span>
           {' '}
           <ColoredText flavor="pink">Me</ColoredText>
           <br />

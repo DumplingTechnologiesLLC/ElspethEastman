@@ -1,7 +1,7 @@
-import { faSave } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect, useContext } from 'react';
-import { TitleButtonPairing } from '@Components/Buttons/ButtonGroup';
+import ButtonGroup, { TitleButtonPairing } from '@Components/Buttons/ButtonGroup';
 import PrimaryButton from '@Components/Buttons/PrimaryButton';
 import EditableYoutubeComponent from '@Components/CMS/EditableYoutubeComponent';
 import FailedToLoad from '@Components/FailedToLoad';
@@ -10,14 +10,19 @@ import SpottedSection from '@Components/Layout/SpottedSection';
 import SectionTitle from '@Components/Text/SectionTitle';
 import { ToastContext } from '@Components/ToastManager';
 import API from '@App/api';
+import SecondaryButton from '@Components/Buttons/SecondaryButton';
+import Modal from '@Components/Modal/Modal';
 
 export const EditableProjects = () => {
   const { toast, flavors } = useContext(ToastContext);
   const [loadedProjects, setLoadedProjects] = useState([]);
   const [cachedProjects, setCachedProjects] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const [inFlight, setInFlight] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [errors, setErrors] = useState({});
+  const defaultNewProject = { id: -1, src: '', title: '' };
+  const [newProject, setNewProject] = useState(defaultNewProject);
   const toastMap = {
     404: {
       flavor: flavors.error,
@@ -36,11 +41,9 @@ export const EditableProjects = () => {
     },
   };
 
-  const resetProject = (index) => {
-    const currentLoadedProjects = loadedProjects.slice();
-    currentLoadedProjects[index] = { ...cachedProjects[index] };
-    setLoadedProjects(currentLoadedProjects);
-  };
+  /**
+   * API consumers
+   */
 
   const updateProject = async (index) => {
     const projectToSubmit = loadedProjects[index];
@@ -67,6 +70,35 @@ export const EditableProjects = () => {
     const newCachedProjects = cachedProjects.slice();
     newCachedProjects[index] = { ...projectToSubmit };
     setCachedProjects(newCachedProjects);
+  };
+
+  const createProject = async () => {
+    const data = { src: newProject.src, title: newProject.title };
+    setInFlight([newProject.id]);
+    const response = await API.createProject(data);
+    if (response === null) {
+      toast(
+        'Error',
+        'Network error',
+        flavors.error,
+      );
+      return;
+    }
+    const { title, flavor } = toastMap[response.status];
+    toast(
+      title,
+      response.data.message ?? response.data.error,
+      flavor,
+    );
+    setInFlight(inFlight.filter((inFlightId) => inFlightId !== newProject.id));
+    if (response.status === 400) {
+      setErrors({ ...errors, [response.data.id]: response.data.errors });
+    } else {
+      setLoadedProjects([...loadedProjects, { ...response.data.project }]);
+      setCachedProjects([...JSON.parse(JSON.stringify(loadedProjects)), { ...response.data.project }]);
+      setShowModal(false);
+      setNewProject(defaultNewProject);
+    }
   };
 
   const updateAllProjects = async () => {
@@ -100,7 +132,7 @@ export const EditableProjects = () => {
     if (response.status === 400) {
       setErrors({ ...errors, [response.data.id]: response.data.errors });
     }
-    setInFlight([]);
+    setInFlight(inFlight.filter((inFlightId) => inFlightId !== response.data.id));
   };
 
   useEffect(() => {
@@ -129,7 +161,12 @@ export const EditableProjects = () => {
      */
     /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
-  const handleChange = (value, key, index) => {
+
+  const updateProjectData = (project, value, key) => {
+    /**
+     * Disabled because we know want to mutate the object here
+     */
+    /* eslint-disable no-param-reassign */
     if (key === 'src') {
       // we need to strip everything that's not the value.
       const embedString = 'embed/';
@@ -137,11 +174,6 @@ export const EditableProjects = () => {
       if (value.includes(embedString)) {
         // embed url in the format youtube.com/embed/<id>
 
-        /**
-         * Disabled because we know value is a string so its passed by value. no danger in reassigning since we
-         * want to mutate it.
-         */
-        /* eslint-disable no-param-reassign */
         value = value.slice(value.indexOf(embedString) + embedString.length);
       } else if (value.includes(watchString)) {
         value = value.slice(value.indexOf(watchString) + watchString.length);
@@ -149,9 +181,31 @@ export const EditableProjects = () => {
           value = value.slice(0, value.indexOf('&'));
         }
       }
-      /* eslint-enable no-param-reassign */
     }
+    project[key] = value;
+    /* eslint-enable no-param-reassign */
+  };
+
+  /**
+   * Form function
+   */
+
+  const resetProject = (index) => {
+    const currentLoadedProjects = loadedProjects.slice();
+    currentLoadedProjects[index] = { ...cachedProjects[index] };
+    setLoadedProjects(currentLoadedProjects);
+  };
+
+  const handleNewProjectChange = (value, key) => {
+    const changedProject = { ...newProject };
+    updateProjectData(changedProject, value, key);
+    setNewProject(changedProject);
+  };
+
+  const handleChange = (value, key, index) => {
     const updatedProjects = loadedProjects.slice();
+    const project = updatedProjects[index];
+    updateProjectData(project, value, key);
     updatedProjects[index][key] = value;
     const existingErrors = errors[updatedProjects[index].id] ?? {};
     if (existingErrors[key]) {
@@ -162,13 +216,41 @@ export const EditableProjects = () => {
   };
   return (
     <SpottedSection>
+      <Modal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        title={
+          <span>Add new Project</span>
+      }
+        content={(
+          <EditableYoutubeComponent
+            onSrcChange={(value) => handleNewProjectChange(value, 'src')}
+            onTitleChange={(value) => handleNewProjectChange(value, 'title')}
+            onSubmit={createProject}
+            onReset={() => setNewProject(defaultNewProject)}
+            errors={errors[newProject.id] ?? {}}
+            inFlight={inFlight.includes(newProject.id)}
+            src={newProject.src}
+            title={newProject.title}
+            block
+            showDelete={false}
+          />
+        )}
+      />
       <TitleButtonPairing>
         <SectionTitle>All Projects</SectionTitle>
-        <PrimaryButton onClick={updateAllProjects}>
-          Save All
-          {' '}
-          <FontAwesomeIcon icon={faSave} />
-        </PrimaryButton>
+        <ButtonGroup>
+          <PrimaryButton onClick={updateAllProjects}>
+            Save All
+            {' '}
+            <FontAwesomeIcon icon={faSave} />
+          </PrimaryButton>
+          <SecondaryButton onClick={() => setShowModal(true)}>
+            Add New Project
+            {' '}
+            <FontAwesomeIcon icon={faPlus} />
+          </SecondaryButton>
+        </ButtonGroup>
       </TitleButtonPairing>
       <WrappedCenteredContent>
         {loadedProjects.map((project, index) => (

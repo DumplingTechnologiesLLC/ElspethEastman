@@ -115,6 +115,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
             serializer.save()
         return Response({'message': 'Success, all projects updated'})
 
+    def create(self, request, *args, **kwargs):
+        # TODO: protect behind authentication
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                'error': 'There was a problem with your submission',
+                'errors': serializer.errors,
+                'id': -1}, status=status.HTTP_400_BAD_REQUEST)
+        project = serializer.save()
+        return Response({'message': "Success", 'project': self.get_serializer(project).data})
+
     def patch(self, request, pk,):
         # TODO: protect behind authentication
         project = self.get_object(pk)
