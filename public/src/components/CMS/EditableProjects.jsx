@@ -27,7 +27,7 @@ export const EditableProjects = () => {
     404: {
       flavor: flavors.error,
       title: 'Error',
-      content: 'Project no longer exists. Perhaps it was deleted?',
+      content: 'Project no longer exists. Perhaps it was already deleted?',
     },
     400: {
       flavor: flavors.error,
@@ -37,13 +37,40 @@ export const EditableProjects = () => {
     200: {
       flavor: flavors.success,
       title: 'Success',
-      content: 'Project updated.',
+      content: 'Action submitted successfully.',
     },
   };
 
   /**
    * API consumers
    */
+
+  const deleteProject = async (index) => {
+    const projectToBeDeleted = loadedProjects[index];
+    setInFlight([...inFlight, projectToBeDeleted.id]);
+    const response = await API.deleteProject(projectToBeDeleted.id);
+    setInFlight(inFlight.filter((id) => id !== projectToBeDeleted.id));
+    if (response === null) {
+      toast(
+        'Error',
+        'Network error',
+        flavors.error,
+      );
+      return;
+    }
+    const { title, content, flavor } = toastMap[response.status];
+    toast(
+      title,
+      content,
+      flavor,
+    );
+    if (response.status === 200) {
+      const newLoadedProjects = loadedProjects.slice();
+      newLoadedProjects.splice(index, 1);
+      setLoadedProjects(newLoadedProjects);
+      setCachedProjects(JSON.parse(JSON.stringify(newLoadedProjects)));
+    }
+  };
 
   const updateProject = async (index) => {
     const projectToSubmit = loadedProjects[index];
@@ -74,7 +101,7 @@ export const EditableProjects = () => {
 
   const createProject = async () => {
     const data = { src: newProject.src, title: newProject.title };
-    setInFlight([newProject.id]);
+    setInFlight([...inFlight, newProject.id]);
     const response = await API.createProject(data);
     if (response === null) {
       toast(
@@ -257,6 +284,7 @@ export const EditableProjects = () => {
           <EditableYoutubeComponent
             onSrcChange={(value) => handleChange(value, 'src', index)}
             onTitleChange={(value) => handleChange(value, 'title', index)}
+            onDelete={() => deleteProject(index)}
             onSubmit={() => updateProject(index)}
             onReset={() => resetProject(index)}
             errors={errors[project.id] ?? {}}

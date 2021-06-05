@@ -101,6 +101,27 @@ class API {
     }
   }
 
+  async deleteProject(id) {
+    try {
+      const csrftoken = getCookie('csrftoken');
+      const response = await fetch(`${this.endpoints.projects.list}${id}/`, {
+        method: 'DELETE',
+        cache: 'no-cache',
+        headers: {
+          'X-CSRFToken': csrftoken,
+          'Content-Type': 'application/json',
+        },
+      });
+      const returnData = await response.json();
+      return {
+        status: response.status,
+        data: returnData,
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
   async updateProject(data, id) {
     try {
       const csrftoken = getCookie('csrftoken');
