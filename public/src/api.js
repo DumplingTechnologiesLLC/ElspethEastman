@@ -57,6 +57,28 @@ class API {
     }
   }
 
+  async createProject(data) {
+    try {
+      const csrftoken = getCookie('csrftoken');
+      const response = await fetch(`${this.endpoints.projects.list}`, {
+        method: 'POST',
+        cache: 'no-cache',
+        headers: {
+          'X-CSRFToken': csrftoken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      const returnData = await response.json();
+      return {
+        status: response.status,
+        data: returnData,
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
   async updateAllProjects(data) {
     try {
       const csrftoken = getCookie('csrftoken');

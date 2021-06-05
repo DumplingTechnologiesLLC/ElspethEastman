@@ -14,11 +14,11 @@ import DangerButton from '@Components/Buttons/DangerButton';
 
 const EditableYoutubeForm = styled.div`
   width: 100%;
-  max-width: 480px;
   box-sizing: border-box;
   position: relative;
   flex: 50%;
-  ${({ theme }) => css`
+  ${({ theme, block }) => css`
+    max-width: ${block ? '100%' : '480px'};
     margin  : ${theme.spacing.sm};
     background-color: white;
     border: 1px solid ${theme.flavors.blueTransparent};
@@ -36,7 +36,7 @@ const CustomButtonGroup = styled(ButtonGroup)`
 `;
 
 export const EditableYoutubeComponent = ({
-  src, title, onSrcChange, onTitleChange, onSubmit, onReset, inFlight, errors,
+  src, title, onSrcChange, onTitleChange, onSubmit, onReset, inFlight, errors, block, showDelete,
 }) => {
   const [preview, setPreviewState] = useState(false);
 
@@ -58,8 +58,8 @@ export const EditableYoutubeComponent = ({
     </span>
   ));
   return (
-    <EditableYoutubeForm>
-      {preview ? <YoutubeComponent src={src} title={title} />
+    <EditableYoutubeForm block={block}>
+      {preview ? <YoutubeComponent block={block} src={src} title={title} />
         : (
           <StyledForm>
             <FormInput
@@ -91,9 +91,14 @@ export const EditableYoutubeComponent = ({
         <WarningButton onClick={onReset} disabled={inFlight}>
           Reset
         </WarningButton>
-        <DangerButton disabled={inFlight}>
-          { deleteText() }
-        </DangerButton>
+        {
+          showDelete ? (
+            <DangerButton disabled={inFlight}>
+              { deleteText() }
+            </DangerButton>
+          ) : ''
+        }
+
       </CustomButtonGroup>
     </EditableYoutubeForm>
   );
@@ -107,12 +112,19 @@ EditableYoutubeComponent.propTypes = {
   onTitleChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   inFlight: PropTypes.bool.isRequired,
+  block: PropTypes.bool,
+  showDelete: PropTypes.bool,
   /**
    * Disabled because errors is an object that contains the errors for both inputs, and we validate all
    * properties used
    */
   /* eslint-disable-next-line react/forbid-prop-types */
   errors: PropTypes.object.isRequired,
+};
+
+EditableYoutubeComponent.defaultProps = {
+  block: false,
+  showDelete: true,
 };
 
 export default EditableYoutubeComponent;

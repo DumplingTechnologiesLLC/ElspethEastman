@@ -32,9 +32,31 @@ export const TitleButtonPairing = styled.div`
     button + ${SectionTitle} {
       margin-left: ${theme.spacing.md};
     }
+    ${SectionTitle} + div {
+      margin-left: ${theme.spacing.md};
+      display: inline-flex;
+      width: auto;
+    }
+    div + ${SectionTitle} {
+      margin-left: ${theme.spacing.md};
+      display: inline-flex;
+      width: auto;
+    }
     @media screen and (max-width: ${theme.breakpoints.latestProjects}) {
       ${SectionTitle} {
         margin-bottom: ${theme.spacing.sm};
+      }
+      ${SectionTitle} + div {
+        margin-left: 0;
+        width: 100%;
+        margin-bottom: ${theme.spacing.md};
+        display: inline-flex;
+        width: auto;
+      }
+      div + ${SectionTitle} {
+        margin-left: 0;
+        display: inline-flex;
+        width: auto;
       }
       ${SectionTitle} + button {
         margin-left: 0;

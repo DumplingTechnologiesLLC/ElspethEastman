@@ -27,12 +27,12 @@ const TitleContainer = styled.div`
   align-items: center;
   text-align: center;
   width: 100%;
-  ${({ theme }) => css`
-    max-width: ${theme.videoSize};
+  ${({ theme, block }) => css`
+    max-width: ${block ? '100%' : theme.videoSize};
   `}
 `;
-const VideoTitle = ({ title }) => (
-  <TitleContainer>
+const VideoTitle = ({ title, block }) => (
+  <TitleContainer block={block}>
     <TitleLine />
     <StyledTitle>{title}</StyledTitle>
     <TitleLine />
@@ -40,11 +40,12 @@ const VideoTitle = ({ title }) => (
 );
 VideoTitle.propTypes = {
   title: PropTypes.string.isRequired,
+  block: PropTypes.bool.isRequired,
 };
 
 const VideoThumbnail = styled.img`
-  ${({ theme }) => css`
-    max-width: ${theme.videoSize};
+  ${({ theme, block }) => css`
+    max-width: ${block ? '100%' : theme.videoSize};
     width: 100%;
     
     cursor: pointer;
@@ -54,9 +55,9 @@ const VideoThumbnail = styled.img`
   `}
 `;
 const ComponentContainer = styled.div`
-  ${({ theme }) => css`
+  ${({ theme, block }) => css`
     margin-bottom: ${theme.spacing.xl};
-    max-width: ${theme.videoSize}
+    max-width: ${block ? '100%' : theme.videoSize}
     width: 100%;
   `}
 `;
@@ -108,11 +109,11 @@ const StyledSVG = styled(YoutubeLoader)`
  `}
 `;
 /* eslint-disable max-len */
-export const YoutubeComponent = ({ src, title }) => {
+export const YoutubeComponent = ({ src, title, block }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   return (
-    <ComponentContainer>
-      <VideoTitle title={title} />
+    <ComponentContainer block={block}>
+      <VideoTitle title={title} block={block} />
       { videoLoaded ? (
         <StyledIframe
           title={`Embedded Youtube Video: ${title}`}
@@ -139,6 +140,7 @@ export const YoutubeComponent = ({ src, title }) => {
               alt={`Select this thumbnail to load ${title}`}
               onClick={() => setVideoLoaded(true)}
               onKeyUp={(e) => (e.key === 'Enter' ? setVideoLoaded(true) : null)}
+              block={block}
             />
           </VideoThumbnailContainer>
         )}
@@ -148,6 +150,11 @@ export const YoutubeComponent = ({ src, title }) => {
 YoutubeComponent.propTypes = {
   src: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
+  block: PropTypes.bool,
+};
+
+YoutubeComponent.defaultProps = {
+  block: false,
 };
 
 export default YoutubeComponent;
