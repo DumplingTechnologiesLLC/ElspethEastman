@@ -127,8 +127,11 @@ class ProjectViewSet(
     def put(self, request,):
         raise MethodNotAllowed('PUT', detail='Use Patch')
 
-    def delete(self, request, pk):
-        # TODO:
+    def destroy(self, request, pk):
+        # TODO: protect behind authentication
+        project = get_object_or_404(Project, pk=pk)
+        project.delete()
+        return Response({'message': 'Success'})
 
     def create(self, request, *args, **kwargs):
         # TODO: protect behind authentication

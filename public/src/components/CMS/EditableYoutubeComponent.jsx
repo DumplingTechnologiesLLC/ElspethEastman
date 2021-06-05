@@ -36,7 +36,7 @@ const CustomButtonGroup = styled(ButtonGroup)`
 `;
 
 export const EditableYoutubeComponent = ({
-  src, title, onSrcChange, onTitleChange, onSubmit, onReset, inFlight, errors, block, showDelete,
+  src, title, onSrcChange, onTitleChange, onSubmit, onReset, inFlight, errors, block, showDelete, onDelete,
 }) => {
   const [preview, setPreviewState] = useState(false);
 
@@ -93,7 +93,7 @@ export const EditableYoutubeComponent = ({
         </WarningButton>
         {
           showDelete ? (
-            <DangerButton disabled={inFlight}>
+            <DangerButton onClick={onDelete} disabled={inFlight}>
               { deleteText() }
             </DangerButton>
           ) : ''
@@ -111,6 +111,7 @@ EditableYoutubeComponent.propTypes = {
   onReset: PropTypes.func.isRequired,
   onTitleChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
   inFlight: PropTypes.bool.isRequired,
   block: PropTypes.bool,
   showDelete: PropTypes.bool,
