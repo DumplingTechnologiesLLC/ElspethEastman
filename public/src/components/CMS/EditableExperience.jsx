@@ -90,7 +90,9 @@ export const EditableExperience = () => {
    * @returns {Object}
    */
   const experienceFactory = (category) => ({
-    year: Number(new Date().getFullYear()),
+    // this is hacky but the years from the backend are returned as (####) or (TBA) so to match we generate years
+    // as (####)
+    year: `(${Number(new Date().getFullYear())})`,
     link: '',
     credit: '',
     tba: false,
@@ -105,9 +107,11 @@ export const EditableExperience = () => {
    * @param {Experience Object} exp
    */
   const openModal = (exp) => {
+    // year can be undefined
+    const year = exp?.year ?? '';
     const coercedExp = {
       ...exp,
-      year: exp.year.match(/([0-9]){4}/g)?.[0] ?? null,
+      year: year.match(/([0-9]){4}/g)?.[0] ?? null,
     };
     setCurrentlyEditedExperience(coercedExp);
     setCachedCurrentlyEditedExperience(coercedExp);
