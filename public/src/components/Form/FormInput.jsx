@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import FormInputContainer from '@Components/Form/FormInputContainer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
 
 const StyledInput = styled.input`
   ${(props) => css`
@@ -40,6 +42,17 @@ const ErrorMessage = styled.span`
     color: ${theme.flavors.errorText};
   `}
 `;
+
+const commonInputProps = {
+  label: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  name: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.bool,
+  ]).isRequired,
+};
 
 export const FormInput = ({
   autoFocus, label, type, value, onChange,
@@ -83,6 +96,57 @@ export const FormInput = ({
   );
 };
 
+const StyledCheckboxContainer = styled.div`
+  ${({ theme }) => css`
+    display: inline-flex;
+    align-items: center;
+    color: ${theme?.flavors?.midBlue};
+    pointer-events: none;
+    height: 40px;
+  `}
+`;
+const StyledCheckbox = styled.input`
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  cursor: pointer;
+  opacity: 0;
+`;
+
+const CheckboxLabel = styled(StyledLabel)`
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  ${StyledCheckboxContainer} {
+    margin-right: .25em;
+  }
+`;
+export const FormCheckbox = ({
+  label, onChange, value, name,
+}) => (
+  <FormInputContainer>
+    <CheckboxLabel htmlFor={name}>
+      <StyledCheckbox
+        type="checkbox"
+        name={name}
+        checked={!!value}
+        onChange={(e) => onChange(e.target.checked)}
+      />
+      <StyledCheckboxContainer>
+        {value ? (<FontAwesomeIcon icon={faCheckSquare} />) : (<FontAwesomeIcon icon={faSquare} />)}
+      </StyledCheckboxContainer>
+      {label}
+    </CheckboxLabel>
+  </FormInputContainer>
+);
+
+FormCheckbox.propTypes = {
+  ...commonInputProps,
+};
+
 export const FormTextArea = ({
   autoFocus, label, value, onChange, name, placeholder, errorMessage, hasError,
 }) => {
@@ -124,17 +188,11 @@ export const FormTextArea = ({
 };
 
 FormInput.propTypes = {
-  label: PropTypes.string.isRequired,
+  ...commonInputProps,
   type: PropTypes.string.isRequired,
   autoFocus: PropTypes.bool,
   placeholder: PropTypes.string,
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-    PropTypes.bool,
-  ]).isRequired,
-  onChange: PropTypes.func.isRequired,
-  name: PropTypes.string.isRequired,
+
   hasError: PropTypes.bool,
   errorMessage: PropTypes.oneOfType([
     PropTypes.string,
@@ -154,16 +212,10 @@ FormInput.defaultProps = {
 };
 
 FormTextArea.propTypes = {
-  label: PropTypes.string.isRequired,
+  ...commonInputProps,
   placeholder: PropTypes.string,
   autoFocus: PropTypes.bool,
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-    PropTypes.bool,
-  ]).isRequired,
-  onChange: PropTypes.func.isRequired,
-  name: PropTypes.string.isRequired,
+
   hasError: PropTypes.bool,
   errorMessage: PropTypes.oneOfType([
     PropTypes.string,
