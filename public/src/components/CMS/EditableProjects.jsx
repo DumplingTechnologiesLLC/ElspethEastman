@@ -18,6 +18,7 @@ export const EditableProjects = () => {
   const [loadedProjects, setLoadedProjects] = useState([]);
   const [cachedProjects, setCachedProjects] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [projectsLoaded, setProjectsLoaded] = useState(false);
   const [inFlight, setInFlight] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [errors, setErrors] = useState({});
@@ -163,31 +164,35 @@ export const EditableProjects = () => {
   };
 
   useEffect(() => {
-    API.retrieveProjects().then((results) => {
-      setLoaded(true);
-      if (results === null) {
+    if (!projectsLoaded) {
+      API.retrieveProjects().then((results) => {
+        setLoaded(true);
+        if (results === null) {
+          toast(
+            'Error',
+            'Failed to load projects',
+            flavors.error,
+          );
+        } else {
+          setLoadedProjects(loadedProjects.concat(results.slice()));
+          setCachedProjects(cachedProjects.concat(JSON.parse(JSON.stringify(results.slice()))));
+        }
+      }).catch(() => {
+        setLoaded(true);
         toast(
           'Error',
           'Failed to load projects',
           flavors.error,
         );
-      } else {
-        setLoadedProjects(loadedProjects.concat(results.slice()));
-        setCachedProjects(cachedProjects.concat(JSON.parse(JSON.stringify(results.slice()))));
-      }
-    }).catch(() => {
-      setLoaded(true);
-      toast(
-        'Error',
-        'Failed to load projects',
-        flavors.error,
-      );
-    });
+      }).finally(() => {
+        setProjectsLoaded(true);
+      });
+    }
     /**
      * We don't care about this hook firing every time toast references change. Not important.
      */
     /* eslint-disable react-hooks/exhaustive-deps */
-  }, []);
+  }, [projectsLoaded]);
 
   const updateProjectData = (project, value, key) => {
     /**

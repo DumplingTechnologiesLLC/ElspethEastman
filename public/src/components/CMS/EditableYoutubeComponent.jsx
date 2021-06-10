@@ -111,7 +111,7 @@ EditableYoutubeComponent.propTypes = {
   onReset: PropTypes.func.isRequired,
   onTitleChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
+  onDelete: PropTypes.func,
   inFlight: PropTypes.bool.isRequired,
   block: PropTypes.bool,
   showDelete: PropTypes.bool,
@@ -126,6 +126,7 @@ EditableYoutubeComponent.propTypes = {
 EditableYoutubeComponent.defaultProps = {
   block: false,
   showDelete: true,
+  onDelete: () => {},
 };
 
 export default EditableYoutubeComponent;

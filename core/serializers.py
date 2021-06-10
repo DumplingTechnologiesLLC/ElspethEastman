@@ -33,6 +33,7 @@ class ExperienceSerializer(serializers.ModelSerializer):
             'id',
             'year',
             'link',
+            'tba',
             'credit'
         )
 

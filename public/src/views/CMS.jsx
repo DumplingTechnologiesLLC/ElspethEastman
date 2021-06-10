@@ -10,6 +10,7 @@ import CMSNavbar from '@Components/CMS/CMSNavbar';
 import Sidebar from '@Components/CMS/Sidebar';
 import Music from '@Components/LandingPage/Music';
 import EditableProjects from '@Components/CMS/EditableProjects';
+import EditableExperience from '@Components/CMS/EditableExperience';
 import routes from '@App/routes';
 
 const StyledCMSContent = styled.div`
@@ -52,6 +53,7 @@ export const CMS = () => {
               <DisabledSectionContainer>
                 <Music />
               </DisabledSectionContainer>
+              <EditableExperience />
             </StyledCMSMainContent>
           </Route>
           <Route path={routes.mail}>
