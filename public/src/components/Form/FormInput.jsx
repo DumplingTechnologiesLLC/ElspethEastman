@@ -100,6 +100,7 @@ const StyledCheckboxContainer = styled.div`
   ${({ theme }) => css`
     display: inline-flex;
     align-items: center;
+    pointer-events: none;
     color: ${theme?.flavors?.midBlue};
     pointer-events: none;
     height: 40px;
@@ -120,28 +121,33 @@ const CheckboxLabel = styled(StyledLabel)`
   display: flex;
   cursor: pointer;
   align-items: center;
+  user-select: none;
   ${StyledCheckboxContainer} {
     margin-right: .25em;
   }
 `;
 export const FormCheckbox = ({
   label, onChange, value, name,
-}) => (
-  <FormInputContainer>
-    <CheckboxLabel htmlFor={name}>
-      <StyledCheckbox
-        type="checkbox"
-        name={name}
-        checked={!!value}
-        onChange={(e) => onChange(e.target.checked)}
-      />
-      <StyledCheckboxContainer>
-        {value ? (<FontAwesomeIcon icon={faCheckSquare} />) : (<FontAwesomeIcon icon={faSquare} />)}
-      </StyledCheckboxContainer>
-      {label}
-    </CheckboxLabel>
-  </FormInputContainer>
-);
+}) => {
+  const inputEl = useRef(null);
+  return (
+    <FormInputContainer>
+      <CheckboxLabel htmlFor={name} onClick={() => onChange(!inputEl.current.checked)}>
+        <StyledCheckbox
+          type="checkbox"
+          name={name}
+          ref={inputEl}
+          checked={!!value}
+          onChange={(e) => onChange(e.target.checked)}
+        />
+        <StyledCheckboxContainer>
+          {value ? (<FontAwesomeIcon icon={faCheckSquare} />) : (<FontAwesomeIcon icon={faSquare} />)}
+        </StyledCheckboxContainer>
+        {label}
+      </CheckboxLabel>
+    </FormInputContainer>
+  );
+};
 
 FormCheckbox.propTypes = {
   ...commonInputProps,

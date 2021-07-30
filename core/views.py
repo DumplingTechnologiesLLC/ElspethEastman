@@ -90,8 +90,8 @@ class SkillViewSet(
 
 
 class ProjectViewSet(
-        mixins.CreateModelMixin,
         mixins.ListModelMixin,
+        mixins.CreateModelMixin,
         mixins.UpdateModelMixin,
         mixins.DestroyModelMixin,
         viewsets.GenericViewSet):
@@ -214,8 +214,9 @@ class FooterViewSet(
 
 class ExperienceViewSet(
         mixins.ListModelMixin,
-        mixins.RetrieveModelMixin,
         mixins.CreateModelMixin,
+        mixins.RetrieveModelMixin,
+        mixins.DestroyModelMixin,
         viewsets.GenericViewSet):
     serializer_class = ExperienceSerializer
     creation_serializer = ExperienceCreationSerializer
@@ -237,17 +238,37 @@ class ExperienceViewSet(
 
     def retrieve(self, request, pk=None):
         queryset = self.model.objects.all()
-        user = get_object_or_404(queryset, pk=pk)
-        serializer = self.get_serializer(user)
+        exp = get_object_or_404(queryset, pk=pk)
+        serializer = self.get_serializer(exp)
         return Response(serializer.data)
+
+    def patch(self, request, pk,):
+        # TODO: protect behind authentication
+        project = get_object_or_404(self.model, pk=pk)
+        print(request.data)
+        serializer = self.creation_serializer(project, data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        item = serializer.save()
+        return Response(data={'object': self.get_serializer(item).data}, status=status.HTTP_200_OK)
+
+    def put(self, request,):
+        raise MethodNotAllowed('PUT', detail='Use Patch')
+
+    def destroy(self, request, pk):
+        # TODO: protect behind authentication
+        experience = get_object_or_404(self.model, pk=pk)
+        experience.delete()
+        return Response({'message': 'Success'})
 
     def create(self, request):
         # TODO: Protect behind authentication and authorization
         data = request.data
+        print(data)
         serializer = self.creation_serializer(data=data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(data={"message": "success"}, status=status.HTTP_200_OK)
+            exp = serializer.save()
+            return Response(data={"object": self.get_serializer(exp).data}, status=status.HTTP_200_OK)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

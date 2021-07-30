@@ -16,8 +16,12 @@ class ExperienceCreationSerializer(serializers.ModelSerializer):
             'year',
             'credit',
             'link',
-            'category'
+            'category',
+            'tba'
         )
+    
+    # def clean_year(self, value):
+    #     if not isinstance(value, int) and 
 
 
 class ExperienceSerializer(serializers.ModelSerializer):

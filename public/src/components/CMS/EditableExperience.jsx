@@ -80,8 +80,11 @@ export const EditButton = styled(PrimaryButton)`
 export const EditableExperience = () => {
   const [experience, setExperience] = useState({});
   const [experienceLoaded, setExperienceLoaded] = useState(false);
+  const [currentlyEditedCategory, setCurrentlyEditedCategory] = useState('');
   const [showModal, setShowModal] = useState(false);
   const { toast, flavors } = useContext(ToastContext);
+  const [currentlyEditedExperience, setCurrentlyEditedExperience] = useState({});
+  const [cachedCurrentlyEditedExperience, setCachedCurrentlyEditedExperience] = useState({});
 
   /**
    *  Create an experience object
@@ -98,8 +101,6 @@ export const EditableExperience = () => {
     tba: false,
     category,
   });
-  const [currentlyEditedExperience, setCurrentlyEditedExperience] = useState({});
-  const [cachedCurrentlyEditedExperience, setCachedCurrentlyEditedExperience] = useState({});
 
   /**
    * Populate the modal form and open the modal
@@ -108,10 +109,10 @@ export const EditableExperience = () => {
    */
   const openModal = (exp) => {
     // year can be undefined
-    const year = exp?.year ?? '';
+    const year = exp?.year.match(/([0-9]){4}/g)?.[0] ?? null;
     const coercedExp = {
       ...exp,
-      year: year.match(/([0-9]){4}/g)?.[0] ?? null,
+      year: year === null ? null : Number(year),
     };
     setCurrentlyEditedExperience(coercedExp);
     setCachedCurrentlyEditedExperience(coercedExp);
@@ -126,6 +127,7 @@ export const EditableExperience = () => {
   const closeModal = () => {
     setCurrentlyEditedExperience({});
     setCachedCurrentlyEditedExperience({});
+    setCurrentlyEditedCategory('');
     setShowModal(false);
   };
 
@@ -136,6 +138,7 @@ export const EditableExperience = () => {
    * @listens onclick create button
    */
   const createNewExperience = (category) => {
+    setCurrentlyEditedCategory(category);
     const newExperience = experienceFactory(category);
     openModal(newExperience);
   };
@@ -144,7 +147,7 @@ export const EditableExperience = () => {
     voiceCredits: 'Voice Credits',
     musicGames: 'Music - Games',
     musicMiscellaneous: 'Music - Miscellaneous',
-    streamingCredits: 'Streaming Credits',
+    streamingCredits: 'Streaming - Credits',
   };
 
   const toastMap = {
@@ -218,12 +221,57 @@ export const EditableExperience = () => {
    * @function saveExperience
    * @listens onClick of modal save button
    */
-  const saveExperience = async () => {};
+  const saveExperience = async () => {
+    const submittedExperience = { ...currentlyEditedExperience };
+    if (submittedExperience.year === '') {
+      submittedExperience.year = null;
+    }
+    const response = typeof submittedExperience.id === 'undefined'
+      ? await API.createExperience({ ...submittedExperience })
+      : await API.updateExperience(
+        { ...submittedExperience, category: currentlyEditedCategory },
+        submittedExperience.id,
+      );
+    if (response === null) {
+      toast(
+        'Error',
+        'Network error',
+        flavors.error,
+      );
+      return;
+    }
+    const { title, content, flavor } = toastMap[response.status];
+    toast(
+      title,
+      content,
+      flavor,
+    );
+    if (response.status === 200) {
+      const newExperiences = JSON.parse(JSON.stringify(experience));
+      newExperiences[currentlyEditedCategory] = typeof submittedExperience.id === 'undefined'
+        ? JSON.parse(
+          JSON.stringify(experience[currentlyEditedCategory].concat([{ ...response.data.object }])),
+        )
+        : JSON.parse(JSON.stringify(
+          /**
+           * This is a pretty straightforward ternary
+           */
+          /* eslint-disable-next-line no-confusing-arrow */
+          experience[currentlyEditedCategory].map((exp) => exp.id === submittedExperience.id
+            ? { ...response.data.object }
+            : exp),
+        ));
+      setExperience(newExperiences);
+      closeModal();
+    }
+  };
 
-  const handleUpdatingExperience = (field, value) => setCurrentlyEditedExperience({
-    ...currentlyEditedExperience,
-    [field]: value,
-  });
+  const handleUpdatingExperience = (field, value) => {
+    setCurrentlyEditedExperience({
+      ...currentlyEditedExperience,
+      [field]: value,
+    });
+  };
 
   const resetForm = () => setCurrentlyEditedExperience(cachedCurrentlyEditedExperience);
 
@@ -240,7 +288,12 @@ export const EditableExperience = () => {
       <DeleteButton onClick={() => confirmDelete(exp, section)}>
         <FontAwesomeIcon icon={faTrash} />
       </DeleteButton>
-      <EditButton onClick={() => openModal(exp)}>
+      <EditButton onClick={() => {
+        setCurrentlyEditedCategory(section);
+        setCurrentlyEditedExperience(exp);
+        openModal(exp);
+      }}
+      >
         <FontAwesomeIcon icon={faEdit} />
       </EditButton>
       <ExperienceLine
