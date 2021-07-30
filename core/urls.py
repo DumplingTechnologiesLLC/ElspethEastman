@@ -17,6 +17,8 @@ router.register(r"projects/paginated", PaginatedProjectViewSet,
 urlpatterns = [
     # path("calendar", App.as_view(), name="app"),
     # path("", App.as_view(), name="app"),
+    path('cms/', Client.as_view(), name="client"),
+    path('cms', Client.as_view(), name="client"),
     path('projects', Client.as_view(), name="client"),
     path("api/", include(router.urls)),
     path('', Client.as_view(), name="client-projects"),
