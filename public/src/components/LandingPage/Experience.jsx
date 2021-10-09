@@ -60,10 +60,9 @@ export const Experience = () => {
     voiceCredits: 'Voice Credits',
     musicGames: 'Music - Games',
     musicMiscellaneous: 'Music - Miscellaneous',
-    streamingCredits: 'Streaming Credits',
+    streamingCredits: 'Streaming - Credits',
   };
   const formatCredit = (credit) => (credit.year ? `${credit.year} ${credit.credit}` : credit.credit);
-
   /* eslint-disable no-confusing-arrow */
   const showExperience = (experiences) => experiences?.length ? experiences.map((exp) => (
     <ExperienceLine

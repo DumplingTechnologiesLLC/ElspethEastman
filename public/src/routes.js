@@ -2,7 +2,7 @@ export const routes = {
   projects: '/projects',
   home: '/',
   cms: '/cms',
-  mail: '/cms/messages',
+  // mail: '/cms/messages',
   logout: '/logout',
 };
 

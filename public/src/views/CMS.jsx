@@ -12,6 +12,8 @@ import Music from '@Components/LandingPage/Music';
 import EditableProjects from '@Components/CMS/EditableProjects';
 import EditableExperience from '@Components/CMS/EditableExperience';
 import routes from '@App/routes';
+import DisabledSectionContainer from '@Components/DisabledSectionContainer';
+import EditablePageFooter from '@Components/CMS/EditablePageFooter';
 
 const StyledCMSContent = styled.div`
   padding: 0 50px;
@@ -28,11 +30,6 @@ const StyledCMSMainContent = styled.div`
     padding: ${theme.spacing.md};
     max-width: ${theme.maxContentWidth};
   `}
-`;
-
-const DisabledSectionContainer = styled.div`
-  pointer-events: none;
-  opacity: .5;
 `;
 
 export const CMS = () => {
@@ -54,13 +51,14 @@ export const CMS = () => {
                 <Music />
               </DisabledSectionContainer>
               <EditableExperience />
+              <EditablePageFooter />
             </StyledCMSMainContent>
           </Route>
-          <Route path={routes.mail}>
+          {/* <Route path={routes.mail}>
             <StyledCMSMainContent>
               <h1>TODO EMAILS</h1>
             </StyledCMSMainContent>
-          </Route>
+          </Route> */}
         </Switch>
       </StyledCMSContent>
     </>

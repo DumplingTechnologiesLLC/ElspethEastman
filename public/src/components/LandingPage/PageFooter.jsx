@@ -13,7 +13,7 @@ import Soundcloud from '@Assets/svg/Soundcloud.svg';
 import Twitter from '@Assets/svg/Twitter.svg';
 import Youtube from '@Assets/svg/Youtube.svg';
 
-const LoadingContainer = styled.div`
+export const LoadingContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -21,7 +21,7 @@ const LoadingContainer = styled.div`
   width: 100%;
 `;
 
-const AffiliationsAndLinks = styled.div`
+export const AffiliationsAndLinks = styled.div`
   ${(props) => css`
     display: flex;
     padding-top: ${props.theme.spacing.xl};
@@ -32,12 +32,12 @@ const AffiliationsAndLinks = styled.div`
   `}
 `;
 
-const Affiliations = styled.div`
+export const Affiliations = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 200px;
 `;
-const SocialMediaContainer = styled.div`
+export const SocialMediaContainer = styled.div`
   display: flex;
   
   flex-direction: column;
@@ -47,7 +47,7 @@ const SocialMediaContainer = styled.div`
     }
   `}
 `;
-const SocialMedia = styled.div`
+export const SocialMedia = styled.div`
   ${(props) => css`
     display: flex;
     flex-direction: row;
@@ -56,7 +56,7 @@ const SocialMedia = styled.div`
     justify-content: space-between;
   `}
 `;
-const SocialMediaIcon = styled.img`
+export const SocialMediaIcon = styled.img`
   height: 40px;
 `;
 

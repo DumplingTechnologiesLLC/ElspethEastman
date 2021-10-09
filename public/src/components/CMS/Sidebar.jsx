@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import BackgroundButton from '@Components/Buttons/BackgroundButton';
-import { ReactComponent as Mail } from '@Assets/svg/mail.svg';
+// import { ReactComponent as Mail } from '@Assets/svg/mail.svg';
 import { ReactComponent as CMSIcon } from '@Assets/svg/cms.svg';
 import routes, { routesReverseLookup } from '@App/routes';
 
@@ -54,7 +54,7 @@ const SidebarItem = styled.li`
 `;
 
 const CMS_KEY = 'cms';
-const MAIL_KEY = 'mail';
+// const MAIL_KEY = 'mail';
 
 export const Sidebar = () => {
   const history = useHistory();
@@ -72,9 +72,9 @@ export const Sidebar = () => {
           </SidebarButton>
         </SidebarItem>
         <SidebarItem>
-          <SidebarButton active={active === MAIL_KEY} onClick={() => navigate(routes[MAIL_KEY], MAIL_KEY)}>
+          {/* <SidebarButton active={active === MAIL_KEY} onClick={() => navigate(routes[MAIL_KEY], MAIL_KEY)}>
             <Mail />
-          </SidebarButton>
+          </SidebarButton> */}
         </SidebarItem>
       </SidebarList>
     </StyledSidebar>
