@@ -100,8 +100,9 @@ class SkillViewSet(
         })
 
     def patch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # TODO protect behind authentication
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         item = self.get_queryset()
         serializer = self.get_serializer(data=request.data, instance=item)
         if not serializer.is_valid():
@@ -255,10 +256,7 @@ class AffiliationViewSet(
         # TODO: protect behind authentication
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
-            return Response({
-                'error': 'There was a problem with your submission',
-                'errors': serializer.errors,
-                'id': -1}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         project = serializer.save()
         return Response(self.get_serializer(project).data)
 

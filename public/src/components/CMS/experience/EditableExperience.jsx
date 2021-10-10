@@ -17,6 +17,7 @@ export const EditableExperience = ({
   onCreditChange,
   onSubmit,
   onReset,
+  errors,
 }) => (
   <StyledForm>
     <FormInput
@@ -25,6 +26,8 @@ export const EditableExperience = ({
       name="ExperienceYear"
       label="Year"
       onChange={onYearChange}
+      hasError={typeof errors?.year !== 'undefined'}
+      errorMessage={errors?.year ?? ''}
     />
     <FormInput
       type="text"
@@ -32,6 +35,8 @@ export const EditableExperience = ({
       name="ExperienceLink"
       value={link}
       onChange={onLinkChange}
+      hasError={typeof errors?.link !== 'undefined'}
+      errorMessage={errors?.link ?? ''}
     />
     <FormInput
       type="text"
@@ -39,8 +44,17 @@ export const EditableExperience = ({
       name="ExperienceCredit"
       value={credit}
       onChange={onCreditChange}
+      hasError={typeof errors?.credit !== 'undefined'}
+      errorMessage={errors?.credit ?? ''}
     />
-    <FormCheckbox name="ExperienceTBA" label="TBA?" value={tba} onChange={onTbaChange} />
+    <FormCheckbox
+      name="ExperienceTBA"
+      label="TBA?"
+      hasError={typeof errors?.tba !== 'undefined'}
+      errorMessage={errors?.tba}
+      value={tba}
+      onChange={onTbaChange}
+    />
     <ButtonGroup>
       <PrimaryButton type="button" onClick={onSubmit}>Save</PrimaryButton>
       <WarningButton type="button" onClick={onReset}>Reset Changes</WarningButton>
@@ -59,6 +73,12 @@ EditableExperience.propTypes = {
   onCreditChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   onReset: PropTypes.func.isRequired,
+  errors: PropTypes.shape({
+    year: PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.arrayOf(PropTypes.string)]),
+    link: PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.arrayOf(PropTypes.string)]),
+    credit: PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.arrayOf(PropTypes.string)]),
+    tba: PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.arrayOf(PropTypes.string)]),
+  }),
 };
 
 export default EditableExperience;

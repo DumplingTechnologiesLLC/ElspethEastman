@@ -76,13 +76,13 @@ const EditableSkills = () => {
         DEFAULT_ERROR_MESSAGE_TITLE,
         `There was an issue updating skills. ${
           `${
-            Object.keys(response.data).join(', ')
+            Object.keys(response.data).map((key) => lookup[key]).join(', ')
           } contain${Object.keys(response.data).length > 1 ? '' : 's'} errors`}`,
         flavors.error,
       );
       setErrors(response.data);
     } else if (response.status === HTTP_SUCCESS) {
-      toastBasedOnResponse(response, toastMap);
+      toastBasedOnResponse(response, toast, toastMap);
     }
   };
 

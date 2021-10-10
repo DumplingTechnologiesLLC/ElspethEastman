@@ -10,7 +10,7 @@ import API from '@App/api';
 import Modal from '@Components/Modal/Modal';
 import { cloneDeep, toastMapFactory } from '@App/utils';
 import {
-  performAPIAction, performAPIDelete, HTTP_SUCCESS, toastBasedOnResponse,
+  performAPIAction, performAPIDelete, HTTP_SUCCESS, toastBasedOnResponse, HTTP_BAD_SUBMISSION,
 } from '@App/api/utils';
 import Experience, { ExperienceLine } from './experience/Experience';
 import EditableExperience from './experience/EditableExperience';
@@ -65,6 +65,7 @@ const EditableExperiences = () => {
   const [experienceLoaded, setExperienceLoaded] = useState(false);
   const [currentlyEditedCategory, setCurrentlyEditedCategory] = useState(DEFAULT_CATEGORY);
   const [showModal, setShowModal] = useState(false);
+  const [errors, setErrors] = useState({});
   const { toast, flavors } = useContext(ToastContext);
   const [currentlyEditedExperience, setCurrentlyEditedExperience] = useState(DEFAULT_EXPERIENCE);
   const [cachedCurrentlyEditedExperience, setCachedCurrentlyEditedExperience] = useState(DEFAULT_EXPERIENCE);
@@ -162,17 +163,25 @@ const EditableExperiences = () => {
         );
       closeModal();
       setExperience(newExperiences);
+    } else if (response.status === HTTP_BAD_SUBMISSION) {
+      setErrors(response.data);
     }
   };
 
   const handleUpdatingExperience = (field, value) => {
+    const updatedErrors = cloneDeep(errors);
+    delete updatedErrors[field];
+    setErrors(updatedErrors);
     setCurrentlyEditedExperience({
       ...currentlyEditedExperience,
       [field]: value,
     });
   };
 
-  const resetForm = () => setCurrentlyEditedExperience(cachedCurrentlyEditedExperience);
+  const resetForm = () => {
+    setCurrentlyEditedExperience(cachedCurrentlyEditedExperience);
+    setErrors({});
+  };
 
   /**
    * Iterate through experiences and render them
@@ -239,6 +248,7 @@ const EditableExperiences = () => {
                 onCreditChange={(value) => handleUpdatingExperience('credit', value)}
                 onSubmit={saveExperience}
                 onReset={resetForm}
+                errors={errors}
               />
             ) : <span>Loading</span>
         )}

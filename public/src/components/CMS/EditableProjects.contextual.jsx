@@ -43,7 +43,7 @@ export const EditableProjects = () => {
     const response = await performAPIDelete(API.deleteProject, projectToBeDeleted.id, toast);
     setInFlight(inFlight.filter((id) => id !== projectToBeDeleted.id));
 
-    toastBasedOnResponse(response, toastMap);
+    toastBasedOnResponse(response, toast, toastMap);
     if (response.status === HTTP_SUCCESS) {
       const newLoadedProjects = loadedProjects.slice();
       newLoadedProjects.splice(index, 1);
@@ -64,7 +64,7 @@ export const EditableProjects = () => {
     const response = await performAPIAction(API.updateProject, projectToSubmit, projectToSubmit.id, toast);
     setInFlight(inFlight.filter((id) => id !== projectToSubmit.id));
 
-    toastBasedOnResponse(response, toastMap);
+    toastBasedOnResponse(response, toast, toastMap);
     if (response.status === HTTP_BAD_SUBMISSION) {
       setErrors({ ...errors, [projectToSubmit.id]: response.data });
     } else {
@@ -83,7 +83,7 @@ export const EditableProjects = () => {
     const response = await performAPIAction(API.createProject, data, null, toast);
     setInFlight(inFlight.filter((inFlightId) => inFlightId !== newProject.id));
 
-    toastBasedOnResponse(response, toastMap);
+    toastBasedOnResponse(response, toast, toastMap);
     if (response.status === HTTP_BAD_SUBMISSION) {
       setErrors({ ...errors, [response.data.id]: response.data.errors });
     } else {
@@ -117,10 +117,11 @@ export const EditableProjects = () => {
         response.data.message ?? response.data.error,
         flavor,
       );
+    }
+    if (response.status === HTTP_BAD_SUBMISSION) {
+      setErrors({ ...errors, [response.data.id]: response.data.errors });
+    } else if (response.status === HTTP_SUCCESS) {
       setCachedProjects(loadedProjects);
-      if (response.status === HTTP_BAD_SUBMISSION) {
-        setErrors({ ...errors, [response.data.id]: response.data.errors });
-      }
     }
   };
 
@@ -175,9 +176,24 @@ export const EditableProjects = () => {
    * Form function
    */
 
+  const openModal = () => {
+    resetNewProject();
+    setShowModal(true);
+  };
+
+  const resetNewProject = () => {
+    const updatedErrors = cloneDeep(errors);
+    delete updatedErrors[newProject.id];
+    setErrors(updatedErrors);
+    setNewProject(DEFAULT_NEW_PROJECT);
+  };
+
   const resetProject = (index) => {
     const currentLoadedProjects = loadedProjects.slice();
     currentLoadedProjects[index] = { ...cachedProjects[index] };
+    const updatedErrors = cloneDeep(errors);
+    delete updatedErrors[currentLoadedProjects[index].id];
+    setErrors(updatedErrors);
     setLoadedProjects(currentLoadedProjects);
   };
 
@@ -212,7 +228,7 @@ export const EditableProjects = () => {
             onSrcChange={(value) => handleNewProjectChange(value, 'src')}
             onTitleChange={(value) => handleNewProjectChange(value, 'title')}
             onSubmit={createProject}
-            onReset={() => setNewProject(DEFAULT_NEW_PROJECT)}
+            onReset={resetNewProject}
             errors={errors[newProject.id] ?? {}}
             inFlight={inFlight.includes(newProject.id)}
             src={newProject.src}
@@ -230,7 +246,7 @@ export const EditableProjects = () => {
             {' '}
             <FontAwesomeIcon icon={faSave} />
           </PrimaryButton>
-          <SecondaryButton onClick={() => setShowModal(true)}>
+          <SecondaryButton onClick={openModal}>
             Add New Project
             {' '}
             <FontAwesomeIcon icon={faPlus} />

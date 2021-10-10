@@ -98,6 +98,11 @@ export const EditablePageFooter = () => {
   const updateAffiliation = (idx, key, value) => {
     const stateClone = cloneDeep(affiliations);
     stateClone[idx][key] = value;
+    const updatedErrors = cloneDeep(errors);
+    if (updatedErrors[stateClone[idx].id]?.[key] !== undefined) {
+      delete updatedErrors[stateClone[idx].id]?.[key];
+    }
+    setErrors(updatedErrors);
     setAffiliations(stateClone);
   };
 
@@ -108,7 +113,17 @@ export const EditablePageFooter = () => {
   const resetAffiliation = (idx) => {
     const stateClone = cloneDeep(affiliations);
     stateClone[idx] = cloneDeep(cachedAffiliations[idx]);
+    const updatedErrors = cloneDeep(errors);
+    delete updatedErrors[stateClone[idx].id];
+    setErrors(updatedErrors);
     setAffiliations(stateClone);
+  };
+
+  const resetNewAffiliation = () => {
+    setNewAffiliation(DEFAULT_NEW_AFFILIATION_STATE);
+    const updatedErrors = cloneDeep(errors);
+    delete updatedErrors[newAffiliation.id];
+    setErrors(updatedErrors);
   };
 
   const submitAffiliation = async (affiliation, idx) => {
@@ -188,7 +203,7 @@ export const EditablePageFooter = () => {
           <EditableAffiliation
             onTextChange={(value) => updateNewAffiliation('affiliation', value)}
             onLinkChange={(value) => updateNewAffiliation('link', value)}
-            onReset={() => setNewAffiliation(DEFAULT_NEW_AFFILIATION_STATE)}
+            onReset={resetNewAffiliation}
             onSubmit={() => submitAffiliation(newAffiliation, affiliations.length, () => setShowModal(false))}
             affiliationText={newAffiliation.affiliation}
             affiliationLink={newAffiliation.link}
