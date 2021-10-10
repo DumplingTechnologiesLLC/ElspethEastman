@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 
@@ -7,6 +8,15 @@ class Contact(models.Model):
     name = models.CharField('Name', max_length=2000)
     email = models.EmailField('Email')
     message = models.TextField('Message')
+    date_created = models.DateTimeField("Date Created", blank=True)
+    date_sent = models.DateTimeField("Date Sent", blank=True, null=True)
+    sent = models.BooleanField('Email sent', default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.date_created = timezone.now()
+
+        return super(Contact, self).save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.name} - {self.email}'

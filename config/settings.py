@@ -103,11 +103,22 @@ if DEBUG:
     THIRD_PARTY_APPS += ("corsheaders",)
     MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware',)
     CORS_ALLOW_ALL_ORIGINS = True
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_HOST = ''
+    EMAIL_PORT = 8001
+    EMAIL_HOST_USER = 'debug'
+    EMAIL_HOST_PASSWORD = 'debug'
+    DEFAULT_FROM_EMAIL = 'debug@localhost.com'
+    DEFAULT_TO_EMAIL = 'debugrecipient@localhost.com'
+    EMAIL_USE_TLS = False
 else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.mailgun.org'
     EMAIL_PORT = 587
     EMAIL_HOST_USER = env('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+    DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+    DEFAULT_TO_EMAIL = env('DEFAULT_TO_EMAIL')
     EMAIL_USE_TLS = True
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

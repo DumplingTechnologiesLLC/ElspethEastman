@@ -1,18 +1,39 @@
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
-from rest_framework.exceptions import MethodNotAllowed
-from core.models import Affiliations, Contact, Experience, FooterStat, Project, Skills
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.views import View
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.utils import timezone
+
 from rest_framework import viewsets, status, mixins
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from core.models import Affiliations, Contact, Experience, FooterStat, Project, Skills
 from core.serializers import (
     AffiliationSerializer, ContactSerializer, ExperienceSerializer, ExperienceCreationSerializer,
     FooterStatSerializer, ProjectSerializer, SkillsSerializer
 )
-from django.core.mail import send_mail
 import re
+
+
+def send_contact_email(contact):
+    html_content = render_to_string('email.html', {'contact': contact})
+    text_content = strip_tags(html_content)
+
+    send_mail(
+        f'Website Contact: {contact.name}',
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[settings.DEFAULT_TO_EMAIL],
+        message=text_content, html_message=html_content
+    )
+
+    contact.sent = True
+    contact.date_sent = timezone.now()
+    contact.save()
 
 
 class ContactViewSet(
@@ -28,8 +49,8 @@ class ContactViewSet(
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # TODO: Integrate email support
-        serializer.save()
+        contact = serializer.save()
+        send_contact_email(contact)
         return Response({'message': "Success"})
 
     def list(self, request, *args, **kwargs):
