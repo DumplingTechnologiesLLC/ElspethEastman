@@ -1,17 +1,18 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import styled, { css } from 'styled-components';
 import SectionTitle from '@Components/Text/SectionTitle';
-import ContentParagraph from '@Components/Text/ContentParagraph';
+
 import SectionTitleUnderText from '@Components/Text/SectionTitleUnderText';
 import { ToastContext } from '@Components/ToastManager';
-import { ReactComponent as ExternalLink } from '@Assets/svg/ExternalLink.svg';
-import DangerButton from '@Components/Buttons/DangerButton';
 import PrimaryButton from '@Components/Buttons/PrimaryButton';
 import API from '@App/api';
 import Modal from '@Components/Modal/Modal';
-import EditableExperienceComponent from './EditableExperienceComponent';
+import { cloneDeep, toastMapFactory } from '@App/utils';
+import { performAPIAction, performAPIDelete, toastBasedOnResponse } from '@App/api/utils';
+import Experience, { ExperienceLine } from './experience/Experience';
+import EditableExperience from './experience/EditableExperience';
+import { experienceFactory, lookup } from './experience';
 
 const ExperienceContainer = styled.section`
   ${(props) => css`
@@ -46,61 +47,25 @@ const ColoredTitle = styled.h3`
     color: ${props.theme.flavors[props.color] ?? 'black'};
   `}
 `;
-const LineContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: .25em;
-  height: 40px;
-`;
-const ExperienceLine = styled(ContentParagraph)`
-  ${({ theme }) => css`
-    ${theme.text.mediumContentText};
-    display: inline-block;
-    text-decoration: none;
-    svg {
-      height: 1em;
-    }
-    fill: ${theme.flavors.baseTextColor};
-  `}
-`;
-const miniButtonCss = css`
-  display: inline;
-  white-space: nowrap;
-  width: auto;
-  margin-right: .25em;
-`;
-export const DeleteButton = styled(DangerButton)`
-  ${miniButtonCss}
-`;
 
-export const EditButton = styled(PrimaryButton)`
-  ${miniButtonCss}
-`;
+const DEFAULT_EXPERIENCE = {
+  link: '',
+  tba: false,
+  credit: '',
+  year: '',
+};
 
-export const EditableExperience = () => {
-  const [experience, setExperience] = useState({});
+const DEFAULT_EXPERIENCES = {};
+const DEFAULT_CATEGORY = '';
+
+const EditableExperiences = () => {
+  const [experience, setExperience] = useState(DEFAULT_EXPERIENCES);
   const [experienceLoaded, setExperienceLoaded] = useState(false);
-  const [currentlyEditedCategory, setCurrentlyEditedCategory] = useState('');
+  const [currentlyEditedCategory, setCurrentlyEditedCategory] = useState(DEFAULT_CATEGORY);
   const [showModal, setShowModal] = useState(false);
   const { toast, flavors } = useContext(ToastContext);
-  const [currentlyEditedExperience, setCurrentlyEditedExperience] = useState({});
-  const [cachedCurrentlyEditedExperience, setCachedCurrentlyEditedExperience] = useState({});
-
-  /**
-   *  Create an experience object
-   * @function experienceFactory
-   * @param {String} category
-   * @returns {Object}
-   */
-  const experienceFactory = (category) => ({
-    // this is hacky but the years from the backend are returned as (####) or (TBA) so to match we generate years
-    // as (####)
-    year: `(${Number(new Date().getFullYear())})`,
-    link: '',
-    credit: '',
-    tba: false,
-    category,
-  });
+  const [currentlyEditedExperience, setCurrentlyEditedExperience] = useState(DEFAULT_EXPERIENCE);
+  const [cachedCurrentlyEditedExperience, setCachedCurrentlyEditedExperience] = useState(DEFAULT_EXPERIENCE);
 
   /**
    * Populate the modal form and open the modal
@@ -125,9 +90,9 @@ export const EditableExperience = () => {
    * @listens onclick closeModal button or backdrop
    */
   const closeModal = () => {
-    setCurrentlyEditedExperience({});
-    setCachedCurrentlyEditedExperience({});
-    setCurrentlyEditedCategory('');
+    setCurrentlyEditedExperience(DEFAULT_EXPERIENCE);
+    setCachedCurrentlyEditedExperience(DEFAULT_EXPERIENCE);
+    setCurrentlyEditedCategory(DEFAULT_CATEGORY);
     setShowModal(false);
   };
 
@@ -143,38 +108,7 @@ export const EditableExperience = () => {
     openModal(newExperience);
   };
 
-  const lookup = {
-    voiceCredits: 'Voice Credits',
-    musicGames: 'Music - Games',
-    musicMiscellaneous: 'Music - Miscellaneous',
-    streamingCredits: 'Streaming - Credits',
-  };
-
-  const toastMap = {
-    404: {
-      flavor: flavors.error,
-      title: 'Error',
-      content: 'Experience no longer exists. Perhaps it was already deleted?',
-    },
-    400: {
-      flavor: flavors.error,
-      title: 'Error',
-      content: 'There was a problem with your submission',
-    },
-    200: {
-      flavor: flavors.success,
-      title: 'Success',
-      content: 'Action submitted successfully.',
-    },
-  };
-
-  /**
-   * Credits can optionally have a year, so we need to append the year to the front if it exists
-   * @function formatCredit
-   * @param {Object} credit
-   * @returns {String}
-   */
-  const formatCredit = (credit) => (credit.year ? `${credit.year} ${credit.credit}` : credit.credit);
+  const toastMap = toastMapFactory('Experience no longer exists. Perhaps it was already deleted?');
 
   /**
    * Deletes a selected experience after prompting the user to confirm their choice
@@ -183,37 +117,15 @@ export const EditableExperience = () => {
    * @param {String} section the section the experience belongs to
    * @listens onclick of delete button
    */
-  const confirmDelete = async (exp, section) => {
-    /**
-     * Disabled because I don't want to be implementing an entire alert modal for this one off project.
-     * The basic JS alert is sufficient.
-     */
-    /* eslint-disable-next-line no-alert, no-restricted-globals */
-    const confirmed = confirm('Are you sure you want to delete this experience?');
-    if (confirmed) {
-      const response = await API.deleteExperience(exp.id);
-      if (response === null) {
-        toast(
-          'Error',
-          'Network error',
-          flavors.error,
-        );
-        return;
-      }
-      const { title, content, flavor } = toastMap[response.status];
-      toast(
-        title,
-        content,
-        flavor,
+  const confirmDelete = (exp, section) => {
+    performAPIDelete(API.deleteExperience, exp.id, toast, toastMap, (response) => {
+      toastBasedOnResponse(response, toast, toastMap);
+      const newExperiences = cloneDeep(experience);
+      newExperiences[section] = cloneDeep(
+        experience[section].filter((existingExperience) => existingExperience.id !== exp.id),
       );
-      if (response.status === 200) {
-        const newExperiences = JSON.parse(JSON.stringify(experience));
-        newExperiences[section] = JSON.parse(
-          JSON.stringify(experience[section].filter((existingExperience) => existingExperience.id !== exp.id)),
-        );
-        setExperience(newExperiences);
-      }
-    }
+      setExperience(newExperiences);
+    });
   };
 
   /**
@@ -222,48 +134,37 @@ export const EditableExperience = () => {
    * @listens onClick of modal save button
    */
   const saveExperience = async () => {
-    const submittedExperience = { ...currentlyEditedExperience };
+    const submittedExperience = cloneDeep(currentlyEditedExperience);
     if (submittedExperience.year === '') {
       submittedExperience.year = null;
     }
-    const response = typeof submittedExperience.id === 'undefined'
-      ? await API.createExperience({ ...submittedExperience })
-      : await API.updateExperience(
-        { ...submittedExperience, category: currentlyEditedCategory },
-        submittedExperience.id,
-      );
-    if (response === null) {
-      toast(
-        'Error',
-        'Network error',
-        flavors.error,
-      );
-      return;
-    }
-    const { title, content, flavor } = toastMap[response.status];
-    toast(
-      title,
-      content,
-      flavor,
+    const endpoint = typeof submittedExperience.id === 'undefined' ? API.createExperience : API.updateExperience;
+    const payload = typeof submittedExperience.id === 'undefined'
+      ? cloneDeep(submittedExperience) : { ...submittedExperience, category: currentlyEditedCategory };
+    performAPIAction(
+      endpoint,
+      payload,
+      submittedExperience.id,
+      toast,
+      toastMap,
+      (response) => {
+        toastBasedOnResponse(response, toast, toastMap);
+        const newExperiences = cloneDeep(experience);
+        newExperiences[currentlyEditedCategory] = typeof submittedExperience.id === 'undefined'
+          ? cloneDeep(experience[currentlyEditedCategory].concat([{ ...response.data.object }]))
+          : cloneDeep(
+            /**
+             * This is a pretty straightforward ternary
+             */
+            /* eslint-disable-next-line no-confusing-arrow */
+            experience[currentlyEditedCategory].map((exp) => exp.id === submittedExperience.id
+              ? { ...response.data.object }
+              : exp),
+          );
+        closeModal();
+        setExperience(newExperiences);
+      },
     );
-    if (response.status === 200) {
-      const newExperiences = JSON.parse(JSON.stringify(experience));
-      newExperiences[currentlyEditedCategory] = typeof submittedExperience.id === 'undefined'
-        ? JSON.parse(
-          JSON.stringify(experience[currentlyEditedCategory].concat([{ ...response.data.object }])),
-        )
-        : JSON.parse(JSON.stringify(
-          /**
-           * This is a pretty straightforward ternary
-           */
-          /* eslint-disable-next-line no-confusing-arrow */
-          experience[currentlyEditedCategory].map((exp) => exp.id === submittedExperience.id
-            ? { ...response.data.object }
-            : exp),
-        ));
-      setExperience(newExperiences);
-      closeModal();
-    }
   };
 
   const handleUpdatingExperience = (field, value) => {
@@ -275,7 +176,6 @@ export const EditableExperience = () => {
 
   const resetForm = () => setCurrentlyEditedExperience(cachedCurrentlyEditedExperience);
 
-  /* eslint-disable no-confusing-arrow */
   /**
    * Iterate through experiences and render them
    * @function showExperience
@@ -284,46 +184,24 @@ export const EditableExperience = () => {
    * @returns {Nodes}
    */
   const showExperience = (experiences, section) => experiences?.map((exp) => (
-    <LineContainer key={exp.id}>
-      <DeleteButton onClick={() => confirmDelete(exp, section)}>
-        <FontAwesomeIcon icon={faTrash} />
-      </DeleteButton>
-      <EditButton onClick={() => {
+    <Experience
+      onDelete={() => confirmDelete(exp, section)}
+      onEdit={() => {
         setCurrentlyEditedCategory(section);
         setCurrentlyEditedExperience(exp);
         openModal(exp);
       }}
-      >
-        <FontAwesomeIcon icon={faEdit} />
-      </EditButton>
-      <ExperienceLine
-        key={exp?.id}
-        as={exp?.link ? 'a' : 'p'}
-        href={exp?.link ? exp.link : undefined}
-        target={exp?.link ? '_blank' : undefined}
-        rel="noreferrer"
-      >
-        {formatCredit(exp)}
-        {exp?.link ? <ExternalLink /> : ''}
-      </ExperienceLine>
-    </LineContainer>
+      experience={exp}
+      key={exp?.id}
+    />
   ));
 
   useEffect(() => {
     if (!experienceLoaded) {
-      API.retrieveExperience().then((results) => {
-        if (results !== null) {
-          setExperience(results);
-          setExperienceLoaded(true);
-        } else {
-          setExperienceLoaded(true);
-          toast(
-            'Error',
-            'Failed to load experience list',
-            flavors.error,
-          );
-        }
-      }).catch(() => {
+      performAPIAction(API.retrieveExperience, null, null, toast, toastMap, (response) => {
+        setExperience(response.data);
+        setExperienceLoaded(true);
+      }, () => {
         setExperienceLoaded(true);
         toast(
           'Error',
@@ -347,7 +225,7 @@ export const EditableExperience = () => {
         content={(
           showModal
             ? (
-              <EditableExperienceComponent
+              <EditableExperience
             /**
              * Disabled because we control what currentlyEditedExperience is, so we know its safe
              * and it's easier than manually enumerating all the attributes of the object
@@ -367,7 +245,6 @@ export const EditableExperience = () => {
       <SectionTitle id="Experience">
         Experience
         <br />
-        {' '}
         <SectionTitleUnderText>
           2012 -
           {year}
@@ -415,4 +292,4 @@ export const EditableExperience = () => {
   );
 };
 
-export default EditableExperience;
+export default EditableExperiences;

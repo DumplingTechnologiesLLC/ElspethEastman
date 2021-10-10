@@ -22,7 +22,8 @@ module.exports = {
     'import/no-named-as-default': 'off',
     'no-console': 'warn',
     'no-debugger': 'warn',
-
+    'no-extra-boolean-cast': 'off',
+    'react/react-in-jsx-scope': 'off',
   },
   settings: {
     'import/resolver': {

@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'Montserrat';
+  src: local('Montserrat'), url('./Montserrat/Montserrat-Regular.woff') format('woff');
+}
+@font-face {
+  font-family: 'Dolcissimo';
+  src: local('Dolcissimo'), url('./Dolcissimo/Dolcissimo.woff') format('woff');
+}

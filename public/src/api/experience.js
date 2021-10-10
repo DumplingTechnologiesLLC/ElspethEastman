@@ -1,5 +1,6 @@
 import { getCookie } from '../utils';
 import ENDPOINTS from '../endpoints';
+import { responseFactory } from './utils';
 
 export const deleteExperience = async (id) => {
   try {
@@ -12,11 +13,7 @@ export const deleteExperience = async (id) => {
         'Content-Type': 'application/json',
       },
     });
-    const returnData = await response.json();
-    return {
-      status: response.status,
-      data: returnData,
-    };
+    return await responseFactory(response);
   } catch (error) {
     return null;
   }
@@ -34,11 +31,7 @@ export const updateExperience = async (data, id) => {
       },
       body: JSON.stringify(data),
     });
-    const returnData = await response.json();
-    return {
-      status: response.status,
-      data: returnData,
-    };
+    return await responseFactory(response);
   } catch (error) {
     return null;
   }
@@ -56,11 +49,7 @@ export const createExperience = async (data) => {
       },
       body: JSON.stringify(data),
     });
-    const returnData = await response.json();
-    return {
-      status: response.status,
-      data: returnData,
-    };
+    return await responseFactory(response);
   } catch (error) {
     return null;
   }
@@ -74,7 +63,7 @@ export const retrieveExperience = async () => {
     if (!response.ok) {
       return null;
     }
-    return response.json();
+    return await responseFactory(response);
   } catch (error) {
     return null;
   }

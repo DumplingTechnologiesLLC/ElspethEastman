@@ -6,7 +6,7 @@ import FormInput, { FormCheckbox } from '@Components/Form/FormInput';
 import StyledForm from '@Components/Form/StyledForm';
 import PropTypes from 'prop-types';
 
-export const EditableExperienceComponent = ({
+export const EditableExperience = ({
   year,
   onYearChange,
   link,
@@ -48,8 +48,8 @@ export const EditableExperienceComponent = ({
   </StyledForm>
 );
 
-EditableExperienceComponent.propTypes = {
-  year: PropTypes.number.isRequired,
+EditableExperience.propTypes = {
+  year: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   onYearChange: PropTypes.func.isRequired,
   link: PropTypes.string.isRequired,
   onLinkChange: PropTypes.func.isRequired,
@@ -61,4 +61,4 @@ EditableExperienceComponent.propTypes = {
   onReset: PropTypes.func.isRequired,
 };
 
-export default EditableExperienceComponent;
+export default EditableExperience;

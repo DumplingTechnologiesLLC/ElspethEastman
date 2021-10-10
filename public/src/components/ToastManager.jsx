@@ -106,6 +106,13 @@ Toast.propTypes = {
   time: PropTypes.number.isRequired,
 };
 
+export const flavors = {
+  info: 'info',
+  warning: 'warning',
+  success: 'success',
+  error: 'error',
+};
+
 export const ToastContext = createContext();
 export const ToastManager = ({ children }) => {
   const toasts = useRef([]);
@@ -135,12 +142,7 @@ export const ToastManager = ({ children }) => {
   };
 
   const contextData = useMemo(() => ({
-    flavors: {
-      info: 'info',
-      warning: 'warning',
-      success: 'success',
-      error: 'error',
-    },
+    flavors,
     toast: _toast,
   /**
    * Disabled because we don't want this to rerender despite the fact that toast is updating every time internally

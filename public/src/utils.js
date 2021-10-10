@@ -1,3 +1,6 @@
+import { flavors } from '@Components/ToastManager';
+import { NOT_FOUND, BAD_SUBMISSION, SUCCESS } from '@App/api/utils';
+
 export const uuid = ((p = '') => {
   let counter = 0;
   /* eslint-disable no-plusplus */
@@ -21,5 +24,23 @@ export const getCookie = (name) => {
 };
 
 export const cloneDeep = (obj) => JSON.parse(JSON.stringify(obj));
+
+export const toastMapFactory = (notFoundMessage) => ({
+  [NOT_FOUND]: {
+    flavor: flavors.error,
+    title: 'Error',
+    content: notFoundMessage,
+  },
+  [BAD_SUBMISSION]: {
+    flavor: flavors.error,
+    title: 'Error',
+    content: 'There was a problem with your submission',
+  },
+  [SUCCESS]: {
+    flavor: flavors.success,
+    title: 'Success',
+    content: 'Action submitted successfully.',
+  },
+});
 
 export default uuid;

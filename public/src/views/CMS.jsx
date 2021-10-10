@@ -7,10 +7,10 @@ import styled, { css } from 'styled-components';
 import AboveTheFold from '@Components/LandingPage/AboveTheFold';
 import EditableSkills from '@Components/CMS/EditableSkills';
 import CMSNavbar from '@Components/CMS/CMSNavbar';
-import Sidebar from '@Components/CMS/Sidebar';
+// import Sidebar from '@Components/CMS/Sidebar';
 import Music from '@Components/LandingPage/Music';
 import EditableProjects from '@Components/CMS/EditableProjects';
-import EditableExperience from '@Components/CMS/EditableExperience';
+import EditableExperience from '@Components/CMS/EditableExperience.contextual';
 import routes from '@App/routes';
 import DisabledSectionContainer from '@Components/DisabledSectionContainer';
 import EditablePageFooter from '@Components/CMS/EditablePageFooter';
@@ -37,7 +37,7 @@ export const CMS = () => {
   return (
     <>
       <CMSNavbar />
-      <Sidebar />
+      {/* <Sidebar /> */}
       <StyledCMSContent>
         <Switch>
           <Route exact path={routes.cms}>
