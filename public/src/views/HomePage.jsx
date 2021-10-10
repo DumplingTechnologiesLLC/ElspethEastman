@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import AboveTheFold from '@Components/LandingPage/AboveTheFold';
-import Skills from '@Components/LandingPage/Skills';
-import LatestProjects from '@Components/LandingPage/LatestProjects';
+import Skills from '@Components/LandingPage/Skills.contextual';
+import LatestProjects from '@Components/LandingPage/LatestProjects.contextual';
 import Music from '@Components/LandingPage/Music';
-import Experience from '@Components/LandingPage/Experience';
+import Experience from '@Components/LandingPage/Experience.contextual';
 
 export const HomePage = ({ onContactMe }) => {
   const scrollToWork = () => {

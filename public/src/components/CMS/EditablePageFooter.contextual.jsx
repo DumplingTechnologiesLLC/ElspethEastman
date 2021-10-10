@@ -14,7 +14,9 @@ import {
   SocialMediaContainer,
   SocialMedia,
   SocialMediaIcon,
-} from '@Components/LandingPage/PageFooter';
+  DEFAULT_STATE,
+  ERROR_STATE,
+} from '@Components/LandingPage/PageFooter.contextual';
 import { ToastContext } from '@Components/ToastManager';
 import API from '@App/api';
 import Instagram from '@Assets/svg/Instagram.svg';
@@ -38,15 +40,6 @@ const EditableAffiliations = styled(Affiliations)`
 const DEFAULT_NEW_AFFILIATION_STATE = {
   link: '',
   affiliation: '',
-};
-
-const DEFAULT_STATE = {
-  stats: [],
-  affiliations: [],
-};
-const ERROR_STATE = {
-  ...DEFAULT_STATE,
-  affiliations: ['Failed to load...'],
 };
 
 export const EditablePageFooter = () => {

@@ -6,11 +6,12 @@ import SectionTitle from '@Components/Text/SectionTitle';
 import SecondaryButton from '@Components/Buttons/SecondaryButton';
 import YoutubeComponent from '@Components/LandingPage/YoutubeComponent';
 import ButtonGroup, { TitleButtonPairing } from '@Components/Buttons/ButtonGroup';
-import { ToastContext } from '@Components/ToastManager';
+import { ToastContext, DEFAULT_ERROR_MESSAGE_TITLE } from '@Components/ToastManager';
 import FailedToLoad from '@Components/FailedToLoad';
 import { WrappedCenteredContent } from '@Components/Layout/PageLayout';
 import API from '@App/api';
 import routes from '@App/routes';
+import { HTTP_NETWORK_ERROR, HTTP_SERVER_ERROR } from '@App/api/utils';
 
 const CenteredButtonGroup = styled(ButtonGroup)`
   margin: 0 auto;
@@ -31,26 +32,21 @@ export const LatestProjects = () => {
    */
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
-    API.retrievePaginatedProjects(currentPage).then((results) => {
+    const fetchPaginatedProjects = async (page) => {
       setLoaded(true);
-      if (results === null) {
+      const response = await API.retrievePaginatedProjects(page);
+      if ([HTTP_NETWORK_ERROR, HTTP_SERVER_ERROR].some((status) => status === response.status)) {
         toast(
-          'Error',
+          DEFAULT_ERROR_MESSAGE_TITLE,
           'Failed to load next page of projects',
           flavors.error,
         );
       } else {
-        setLoadedProjects(loadedProjects.concat(results.data));
-        setTotalPages(results.pages);
+        setLoadedProjects(loadedProjects.concat(response.data.data));
+        setTotalPages(response.data.pages);
       }
-    }).catch(() => {
-      setLoaded(true);
-      toast(
-        'Error',
-        'Failed to load next page of projects',
-        flavors.error,
-      );
-    });
+    };
+    fetchPaginatedProjects(currentPage);
   }, [currentPage]);
   /* eslint-enable react-hooks/exhaustive-deps */
   return (

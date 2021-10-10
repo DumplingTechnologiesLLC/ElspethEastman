@@ -3,9 +3,10 @@ import styled, { css } from 'styled-components';
 import SectionTitle from '@Components/Text/SectionTitle';
 import ContentParagraph from '@Components/Text/ContentParagraph';
 import SectionTitleUnderText from '@Components/Text/SectionTitleUnderText';
-import { ToastContext } from '@Components/ToastManager';
+import { ToastContext, DEFAULT_ERROR_MESSAGE_TITLE } from '@Components/ToastManager';
 import { ReactComponent as ExternalLink } from '@Assets/svg/ExternalLink.svg';
 import API from '@App/api';
+import { HTTP_SUCCESS, performAPIAction } from '@App/api/utils';
 
 const ExperienceContainer = styled.section`
   ${(props) => css`
@@ -52,8 +53,14 @@ const ExperienceLine = styled(ContentParagraph)`
   `}
 `;
 
+const DEFAULT_EXPERIENCE = {
+  streamingCredits: [],
+  voiceCredits: [],
+  musicGames: [],
+  musicMiscellaneous: [],
+};
 export const Experience = () => {
-  const [experience, setExperience] = useState({});
+  const [experience, setExperience] = useState(DEFAULT_EXPERIENCE);
   const [experienceLoaded, setExperienceLoaded] = useState(false);
   const { toast, flavors } = useContext(ToastContext);
   const lookup = {
@@ -78,33 +85,26 @@ export const Experience = () => {
   )) : <ExperienceLine>Coming soon!</ExperienceLine>;
 
   useEffect(() => {
-    if (!experienceLoaded) {
-      API.retrieveExperience().then((results) => {
-        if (results !== null) {
-          setExperience(results);
-          setExperienceLoaded(true);
-        } else {
-          setExperienceLoaded(true);
-          toast(
-            'Error',
-            'Failed to load experience list',
-            flavors.error,
-          );
-        }
-      }).catch(() => {
-        setExperienceLoaded(true);
+    const fetchExperience = async () => {
+      const response = await performAPIAction(API.retrieveExperience, null, null, toast);
+
+      setExperienceLoaded(true);
+      if (response.status === HTTP_SUCCESS) {
+        setExperience(response.data);
+      } else {
         toast(
-          'Error',
+          DEFAULT_ERROR_MESSAGE_TITLE,
           'Failed to load experience list',
           flavors.error,
         );
-      });
-    }
+      }
+    };
+    fetchExperience();
   /**
    * We don't want this hook firing every time the reference for toast changes.
    */
   /* eslint-disable react-hooks/exhaustive-deps */
-  }, [experienceLoaded]);
+  }, []);
   const year = new Date().getFullYear();
   return (
     <ExperienceContainer>

@@ -10,7 +10,7 @@ import {
   PieTextContainer,
   SkillSvg,
   SkillPie,
-} from '@Components/LandingPage/Skills';
+} from '@Components/LandingPage/Skills.contextual';
 import { FormTextArea } from '@Components/Form/FormInput';
 import PrimaryButton from '@Components/Buttons/PrimaryButton';
 import ButtonGroup from '@Components/Buttons/ButtonGroup';

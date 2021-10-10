@@ -6,8 +6,9 @@ import FormInput, { FormTextArea } from '@Components/Form/FormInput';
 import StyledForm from '@Components/Form/StyledForm';
 import PrimaryButton from '@Components/Buttons/PrimaryButton';
 import Modal from '@Components/Modal/Modal';
-import { ToastContext } from '@Components/ToastManager';
+import { ToastContext, DEFAULT_ERROR_MESSAGE_TITLE } from '@Components/ToastManager';
 import API from '@App/api';
+import { HTTP_SUCCESS, performAPIAction, HTTP_BAD_SUBMISSION } from '@App/api/utils';
 
 export const ContactMe = ({ showForm, setContactMeVisibility }) => {
   const [name, setName] = useState('');
@@ -50,49 +51,37 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
   /* eslint-disable-next-line consistent-return */
   const submitForm = async (event) => {
     event.preventDefault();
-    if (!name || !email) {
+    if (!name || !email || !message) {
       return setErrors({
         name: name ? '' : 'Name is required',
         email: email ? '' : 'Email is required',
         message: message ? '' : 'Message is required',
       });
     }
-    setInFlight(true);
-    try {
-      const response = await API.submitContactMe({
-        name,
-        email,
-        message,
-      });
 
-      if (response.status === 200) {
-        toast(
-          'Success!',
-          'Submitted form. I\'ll be in touch soon!',
-          flavors.success,
-        );
-        setName('');
-        setEmail('');
-        setMessage('');
-      } else {
-        setErrors({
-          ...initialErrorState,
-          ...response.data,
-        });
-        toast(
-          'Error',
-          'Failed to submit form. Please try again later.',
-          flavors.error,
-        );
-      }
-    } catch (error) {
+    setInFlight(true);
+    const response = await performAPIAction(API.submitContactMe, { name, email, message }, null, toast);
+    setInFlight(false);
+
+    if (response.status === HTTP_SUCCESS) {
       toast(
-        'Error',
+        'Success!',
+        'Submitted form. I\'ll be in touch soon!',
+        flavors.success,
+      );
+      setName('');
+      setEmail('');
+      setMessage('');
+    } else if (response.status === HTTP_BAD_SUBMISSION) {
+      setErrors({
+        ...initialErrorState,
+        ...response.data,
+      });
+      toast(
+        DEFAULT_ERROR_MESSAGE_TITLE,
         'Failed to submit form. Please try again later.',
         flavors.error,
       );
-    } finally {
-      setInFlight(false);
     }
   };
 

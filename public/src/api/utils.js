@@ -1,4 +1,4 @@
-import { flavors } from '@Components/ToastManager';
+import { DEFAULT_ERROR_MESSAGE_TITLE, flavors } from '@Components/ToastManager';
 
 export const getCookie = (name) => {
   let cookieValue = null;
@@ -20,6 +20,9 @@ export const HTTP_NOT_FOUND = 404;
 export const HTTP_BAD_SUBMISSION = 400;
 export const HTTP_SUCCESS = 200;
 export const HTTP_FORBIDDEN = 403;
+export const HTTP_SERVER_ERROR = 500;
+export const NULL_RESPONSE = { json: () => null, status: null };
+
 export const HTTP_NETWORK_ERROR = null;
 export const REQUEST_FORBIDDEN_TITLE = 'Forbidden';
 export const REQUEST_FORBIDDEN_MESSAGE = 'Your session has expired. Please log in again.';
@@ -63,7 +66,14 @@ export const performAPIAction = async (
       NETWORK_ERROR_MESSAGE,
       flavors.error,
     );
-    return responseFactory({ json: () => null, status: null });
+    return responseFactory(NULL_RESPONSE);
+  } if (response.status === HTTP_SERVER_ERROR) {
+    toast(
+      DEFAULT_ERROR_MESSAGE_TITLE,
+      'There was a server error. Please try again later',
+      flavors.error,
+    );
+    return responseFactory(NULL_RESPONSE);
   }
 
   if (response.status === HTTP_FORBIDDEN) {

@@ -1,12 +1,13 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ToastContext } from '@Components/ToastManager';
+import { ToastContext, DEFAULT_ERROR_MESSAGE_TITLE } from '@Components/ToastManager';
 import YoutubeComponent from '@Components/LandingPage/YoutubeComponent';
 import SectionTitle from '@Components/Text/SectionTitle';
 import SecondaryButton from '@Components/Buttons/SecondaryButton';
 import FailedToLoad from '@Components/FailedToLoad';
 import { WrappedCenteredContent } from '@Components/Layout/PageLayout';
 import { TitleButtonPairing } from '@Components/Buttons/ButtonGroup';
+import { performAPIAction, HTTP_SUCCESS } from '@App/api/utils';
 import API from '../api';
 
 export const AllProjects = () => {
@@ -16,25 +17,21 @@ export const AllProjects = () => {
   const history = useHistory();
 
   useEffect(() => {
-    API.retrieveProjects().then((results) => {
+    const fetchProjects = async () => {
+      const response = await performAPIAction(API.retrieveProjects, null, null, toast);
+
       setLoaded(true);
-      if (results === null) {
+      if (response.status === HTTP_SUCCESS) {
+        setLoadedProjects(loadedProjects.concat(response.data));
+      } else {
         toast(
-          'Error',
+          DEFAULT_ERROR_MESSAGE_TITLE,
           'Failed to load projects',
           flavors.error,
         );
-      } else {
-        setLoadedProjects(loadedProjects.concat(results));
       }
-    }).catch(() => {
-      setLoaded(true);
-      toast(
-        'Error',
-        'Failed to load projects',
-        flavors.error,
-      );
-    });
+    };
+    fetchProjects();
   /**
    * We don't care about this hook firing every time toast references change. Not important.
    */

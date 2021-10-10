@@ -6,9 +6,10 @@ import ContentParagraph from '@Components/Text/ContentParagraph';
 import ContentTitle from '@Components/Text/ContentTitle';
 import { Column, Row } from '@Components/Layout/Layout';
 import SpottedSection from '@Components/Layout/SpottedSection';
-import { ToastContext } from '@Components/ToastManager';
+import { ToastContext, DEFAULT_ERROR_MESSAGE_TITLE } from '@Components/ToastManager';
 import Elephant from '@Assets/elephant.webp';
 import API from '@App/api';
+import { HTTP_SUCCESS, performAPIAction } from '@App/api/utils';
 
 export const SkillDescriptionContainer = styled(Column)`
   text-align: center;
@@ -92,30 +93,23 @@ export const Skills = () => {
     return (<FontAwesomeIcon size="lg" icon={faSpinner} pulse />);
   };
   useEffect(() => {
-    if (!skillsLoaded) {
-      API.retrieveSkills().then((results) => {
-        if (results !== null) {
-          setSkills(results.data);
-          setLookup(results.lookup);
-          setDisplayedValue(results.lookup.voice_acting);
-          setSkillsLoaded(true);
-        } else {
-          setSkillsLoaded(true);
-          toast(
-            'Error',
-            'Failed to load skills',
-            flavors.error,
-          );
-        }
-      }).catch(() => {
-        setSkillsLoaded(true);
+    const fetchSkills = async () => {
+      const response = await performAPIAction(API.retrieveSkills, null, null, toast);
+
+      setSkillsLoaded(true);
+      if (response.status === HTTP_SUCCESS) {
+        setSkills(response.data.data);
+        setLookup(response.data.lookup);
+        setDisplayedValue(response.data.lookup.voice_acting);
+      } else {
         toast(
-          'Error',
+          DEFAULT_ERROR_MESSAGE_TITLE,
           'Failed to load skills',
           flavors.error,
         );
-      });
-    }
+      }
+    };
+    fetchSkills();
   /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 

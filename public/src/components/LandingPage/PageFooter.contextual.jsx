@@ -1,17 +1,20 @@
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect, useState, useContext, useMemo,
+} from 'react';
 import styled, { css } from 'styled-components';
 import CircularLoadingBar from '@Components/LandingPage/CircularLoadingBar';
 import StyledFooter, {
   FooterContent, FooterContentLink, FooterTitle, FooterSubTitle,
 } from '@Components/Layout/StyledFooter';
-import { ToastContext } from '@Components/ToastManager';
+import { ToastContext, DEFAULT_ERROR_MESSAGE_TITLE } from '@Components/ToastManager';
 import API from '@App/api';
 import Instagram from '@Assets/svg/Instagram.svg';
 import Soundcloud from '@Assets/svg/Soundcloud.svg';
 import Twitter from '@Assets/svg/Twitter.svg';
 import Youtube from '@Assets/svg/Youtube.svg';
+import { HTTP_SUCCESS, performAPIAction } from '@App/api/utils';
 
 export const LoadingContainer = styled.div`
   display: flex;
@@ -60,33 +63,35 @@ export const SocialMediaIcon = styled.img`
   height: 40px;
 `;
 
+export const DEFAULT_STATE = {
+  stats: [],
+  affiliations: [],
+};
+
+export const ERROR_STATE = {
+  ...DEFAULT_STATE,
+  affiliations: ['Failed to load...'],
+};
+
 export const PageFooter = () => {
-  const [footerData, setFooterData] = useState({
-    stats: [],
-    affiliations: [],
-  });
+  const [footerData, setFooterData] = useState(DEFAULT_STATE);
   const [inFlight, setInFlight] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const { toast, flavors } = useContext(ToastContext);
 
   useEffect(() => {
-    const errorState = {
-      stats: [],
-      affiliations: ['Failed to load...'],
-    };
     const retrieveFooter = async () => {
       setInFlight(true);
-      try {
-        const response = await API.retrieveFooterData();
-        setLoaded(true);
-        setInFlight(false);
-        setFooterData(response);
-      } catch (err) {
-        setInFlight(false);
-        setFooterData(errorState);
-        setLoaded(true);
+      const response = await performAPIAction(API.retrieveFooterData, null, null, toast);
+      setLoaded(true);
+      setInFlight(false);
+
+      if (response.status === HTTP_SUCCESS) {
+        setFooterData(response.data);
+      } else {
+        setFooterData(ERROR_STATE);
         toast(
-          'Error',
+          DEFAULT_ERROR_MESSAGE_TITLE,
           'Failed to load footer details',
           flavors.error,
         );
@@ -98,7 +103,7 @@ export const PageFooter = () => {
    */
   /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
-  const showStats = () => {
+  const showStats = useMemo(() => {
     if (inFlight || !loaded) {
       return (<FontAwesomeIcon size="6x" icon={faSpinner} pulse />);
     }
@@ -108,7 +113,7 @@ export const PageFooter = () => {
     return footerData.stats.map((stat) => (
       <CircularLoadingBar label={stat.label} value={stat.value} percent={stat.percent} key={stat.id} />
     ));
-  };
+  }, [inFlight, loaded, footerData.stats]);
   const showAffiliations = () => {
     if (inFlight || !loaded) {
       return (<FontAwesomeIcon size="lg" icon={faSpinner} pulse />);
@@ -121,7 +126,7 @@ export const PageFooter = () => {
     <StyledFooter>
       <FooterTitle>Interesting Facts</FooterTitle>
       <LoadingContainer key={footerData.stats.length}>
-        {showStats()}
+        {showStats}
       </LoadingContainer>
       <AffiliationsAndLinks>
         <Affiliations>
