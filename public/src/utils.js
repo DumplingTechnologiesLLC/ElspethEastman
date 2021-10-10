@@ -1,5 +1,7 @@
 import { flavors } from '@Components/ToastManager';
-import { NOT_FOUND, BAD_SUBMISSION, SUCCESS } from '@App/api/utils';
+import {
+  HTTP_NOT_FOUND, HTTP_BAD_SUBMISSION, HTTP_SUCCESS, HTTP_FORBIDDEN, REQUEST_FORBIDDEN_MESSAGE, REQUEST_FORBIDDEN_TITLE,
+} from '@App/api/utils';
 
 export const uuid = ((p = '') => {
   let counter = 0;
@@ -7,36 +9,25 @@ export const uuid = ((p = '') => {
   return (prefix) => `${prefix}${++counter}`;
 })();
 
-export const getCookie = (name) => {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      // Does this cookie string begin with the name we want?
-      if (cookie.substring(0, name.length + 1) === (`${name}=`)) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-};
-
 export const cloneDeep = (obj) => JSON.parse(JSON.stringify(obj));
 
 export const toastMapFactory = (notFoundMessage) => ({
-  [NOT_FOUND]: {
+  [HTTP_NOT_FOUND]: {
     flavor: flavors.error,
     title: 'Error',
     content: notFoundMessage,
   },
-  [BAD_SUBMISSION]: {
+  [HTTP_BAD_SUBMISSION]: {
     flavor: flavors.error,
     title: 'Error',
     content: 'There was a problem with your submission',
   },
-  [SUCCESS]: {
+  [HTTP_FORBIDDEN]: {
+    flavor: flavors.error,
+    title: REQUEST_FORBIDDEN_TITLE,
+    content: REQUEST_FORBIDDEN_MESSAGE,
+  },
+  [HTTP_SUCCESS]: {
     flavor: flavors.success,
     title: 'Success',
     content: 'Action submitted successfully.',

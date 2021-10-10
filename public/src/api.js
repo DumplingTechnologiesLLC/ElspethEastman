@@ -1,5 +1,4 @@
 import ENDPOINTS from './endpoints';
-import { getCookie } from './utils';
 import {
   createProject,
   retrieveProjects,
@@ -27,6 +26,12 @@ import {
   createAffiliation,
   retrieveAffiliations,
 } from './api/affiliation';
+
+import {
+  retrieveFooterData,
+} from './api/footer';
+
+import { requestOptionsFactory, responseFactory } from './api/utils';
 
 class API {
   constructor() {
@@ -57,38 +62,20 @@ class API {
 
   async submitContactMe(data) {
     try {
-      const csrftoken = getCookie('csrftoken');
       const response = await fetch(this.endpoints.contactMe, {
-        method: 'POST',
-        cache: 'no-cache',
-        headers: {
-          'X-CSRFToken': csrftoken,
-          'Content-Type': 'application/json',
-        },
+        ...requestOptionsFactory('POST'),
         body: JSON.stringify(data),
       });
-      return {
-        status: response.status,
-        data: response.json(),
-      };
+      return await responseFactory(response);
     } catch (error) {
-      return null;
+      return {
+        status: null,
+        data: null,
+      };
     }
   }
 
-  async retrieveFooterData() {
-    try {
-      const response = await fetch(
-        `${this.endpoints.footersstats.list}`,
-      );
-      if (!response.ok) {
-        return null;
-      }
-      return response.json();
-    } catch (error) {
-      return null;
-    }
-  }
+  retrieveFooterData = retrieveFooterData
 
   /**
    * Experience API calls

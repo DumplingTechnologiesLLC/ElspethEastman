@@ -5,15 +5,14 @@ import {
 } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import AboveTheFold from '@Components/LandingPage/AboveTheFold';
-import EditableSkills from '@Components/CMS/EditableSkills';
+import EditableSkills from '@Components/CMS/EditableSkills.contextual';
 import CMSNavbar from '@Components/CMS/CMSNavbar';
-// import Sidebar from '@Components/CMS/Sidebar';
 import Music from '@Components/LandingPage/Music';
-import EditableProjects from '@Components/CMS/EditableProjects';
+import EditableProjects from '@Components/CMS/EditableProjects.contextual';
 import EditableExperience from '@Components/CMS/EditableExperience.contextual';
 import routes from '@App/routes';
 import DisabledSectionContainer from '@Components/DisabledSectionContainer';
-import EditablePageFooter from '@Components/CMS/EditablePageFooter';
+import EditablePageFooter from '@Components/CMS/EditablePageFooter.contextual';
 
 const StyledCMSContent = styled.div`
   padding: 0 50px;
@@ -37,7 +36,6 @@ export const CMS = () => {
   return (
     <>
       <CMSNavbar />
-      {/* <Sidebar /> */}
       <StyledCMSContent>
         <Switch>
           <Route exact path={routes.cms}>
@@ -54,11 +52,6 @@ export const CMS = () => {
               <EditablePageFooter />
             </StyledCMSMainContent>
           </Route>
-          {/* <Route path={routes.mail}>
-            <StyledCMSMainContent>
-              <h1>TODO EMAILS</h1>
-            </StyledCMSMainContent>
-          </Route> */}
         </Switch>
       </StyledCMSContent>
     </>

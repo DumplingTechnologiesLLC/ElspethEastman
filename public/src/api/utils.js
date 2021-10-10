@@ -1,9 +1,31 @@
 import { flavors } from '@Components/ToastManager';
 
-export const NOT_FOUND = 404;
-export const BAD_SUBMISSION = 400;
-export const SUCCESS = 200;
+export const getCookie = (name) => {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i += 1) {
+      const cookie = cookies[i].trim();
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) === (`${name}=`)) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+};
 
+export const HTTP_NOT_FOUND = 404;
+export const HTTP_BAD_SUBMISSION = 400;
+export const HTTP_SUCCESS = 200;
+export const HTTP_FORBIDDEN = 403;
+export const HTTP_NETWORK_ERROR = null;
+export const REQUEST_FORBIDDEN_TITLE = 'Forbidden';
+export const REQUEST_FORBIDDEN_MESSAGE = 'Your session has expired. Please log in again.';
+
+const NETWORK_ERROR_MESSAGE = 'Network error';
+const NETWORK_ERROR_TITLE = 'Error';
 /**
  * @function toastBasedOnResponse
  * @param {Response} response - Response from API
@@ -11,12 +33,14 @@ export const SUCCESS = 200;
  * @param {Object} toastMap - Map of response codes to messages
  */
 export const toastBasedOnResponse = (response, toast, toastMap) => {
-  const { title, content, flavor } = toastMap[response.status];
-  toast(
-    title,
-    content,
-    flavor,
-  );
+  const { title, content, flavor } = toastMap[response.status] ?? {};
+  if (title && content && flavor) {
+    toast(
+      title,
+      content,
+      flavor,
+    );
+  }
 };
 
 /**
@@ -25,35 +49,31 @@ export const toastBasedOnResponse = (response, toast, toastMap) => {
  * @param {*} payload - The payload for the request
  * @param {*} urlParams - The urlParams to include
  * @param {Function} toast - The toast function for toasting alerts
- * @param {Object} toastMap - The map of error response codes to error messages to toast
- * @param {Function} successCallback - The success callback function. Accepts response object as argument
- * @param {Function} errorCallback - The error callback function. Accepts response object as argument
  */
 export const performAPIAction = async (
   endpoint,
   payload,
   urlParams,
   toast,
-  toastMap,
-  successCallback = () => {},
-  errorCallback = (response) => {
-    toastBasedOnResponse(response, toast, toastMap);
-  },
 ) => {
   const response = await endpoint(payload, urlParams);
   if (response === null) {
     toast(
-      'Error',
-      'Network error',
+      NETWORK_ERROR_TITLE,
+      NETWORK_ERROR_MESSAGE,
       flavors.error,
     );
-    return;
+    return responseFactory({ json: () => null, status: null });
   }
-  if (response.status === SUCCESS) {
-    successCallback(response);
-  } else {
-    errorCallback(response);
+
+  if (response.status === HTTP_FORBIDDEN) {
+    toast(
+      REQUEST_FORBIDDEN_TITLE,
+      REQUEST_FORBIDDEN_MESSAGE,
+      flavors.error,
+    );
   }
+  return response;
 };
 
 /**
@@ -62,10 +82,8 @@ export const performAPIAction = async (
  * @param {Object} endpoint - The endpoint to DELETE to
  * @param {String} id - The id of the item to be deleted
  * @param {Function} toast - The toast function from the ToastContext
- * @param {Object} toastMap - The map of error response codes to error messages to toast
- * @param {Function} successCallback - an action to take upon success of the deletion
  */
-export const performAPIDelete = async (endpoint, id, toast, toastMap, successCallback = () => {}) => {
+export const performAPIDelete = async (endpoint, id, toast) => {
   /**
      * Disabled because I don't want to be implementing an entire alert modal for this one off project.
      * The basic JS alert is sufficient.
@@ -73,8 +91,9 @@ export const performAPIDelete = async (endpoint, id, toast, toastMap, successCal
   /* eslint-disable-next-line no-alert, no-restricted-globals */
   const confirmed = confirm('Are you sure you want to delete this item? This action cannot be undone.');
   if (confirmed) {
-    performAPIAction(endpoint, id, null, toast, toastMap, successCallback);
+    return performAPIAction(endpoint, id, null, toast);
   }
+  return false;
 };
 
 /**
@@ -88,5 +107,22 @@ export const responseFactory = async (response) => {
   return {
     status: response.status,
     data,
+  };
+};
+
+/**
+ *
+ * @param {String} method what HTTP method to make
+ * @returns
+ */
+export const requestOptionsFactory = (method) => {
+  const csrftoken = getCookie('csrftoken');
+  return {
+    method,
+    cache: 'no-cache',
+    headers: {
+      'X-CSRFToken': csrftoken,
+      'Content-Type': 'application/json',
+    },
   };
 };

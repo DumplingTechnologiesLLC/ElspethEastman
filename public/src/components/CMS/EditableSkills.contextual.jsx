@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import ContentParagraph from '@Components/Text/ContentParagraph';
 import { Row } from '@Components/Layout/Layout';
 import SpottedSection from '@Components/Layout/SpottedSection';
-import { ToastContext } from '@Components/ToastManager';
+import { ToastContext, DEFAULT_ERROR_MESSAGE_TITLE } from '@Components/ToastManager';
 import {
   SkillDescriptionContainer,
   PieContainer,
@@ -17,6 +17,10 @@ import ButtonGroup from '@Components/Buttons/ButtonGroup';
 import WarningButton from '@Components/Buttons/WarningButton';
 import Elephant from '@Assets/elephant.webp';
 import API from '@App/api';
+import {
+  HTTP_BAD_SUBMISSION, HTTP_SUCCESS, performAPIAction, toastBasedOnResponse,
+} from '@App/api/utils';
+import { toastMapFactory } from '@App/utils';
 
 const SkillFormContainer = styled(SkillDescriptionContainer)`
   align-items: center;
@@ -30,7 +34,11 @@ const SkillFormContainer = styled(SkillDescriptionContainer)`
     margin-top: ${({ theme }) => theme.spacing.md}
   }
 `;
-export const EditableSkills = () => {
+
+const SKILLS_NOT_LOADED = 'Skills failed to load.';
+const LOADING = 'Loading...';
+
+const EditableSkills = () => {
   const [displayedValue, setDisplayedValue] = useState('');
   const [skillsLoaded, setSkillsLoaded] = useState(false);
   const [skills, setSkills] = useState({});
@@ -40,79 +48,61 @@ export const EditableSkills = () => {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
+  const toastMap = toastMapFactory('There was an issue loading the skills.');
+
   const updateValue = (skill, value) => {
     setUpdatedSkills({
       ...updatedSkills,
       [lookup[skill]]: value,
     });
   };
+
   const retrieveSkill = (skill) => {
     if (skillsLoaded) {
-      return updatedSkills[lookup[skill]] ?? skills[lookup[skill]] ?? 'Skills failed to load...';
+      return updatedSkills[lookup[skill]] ?? skills[lookup[skill]] ?? SKILLS_NOT_LOADED;
     }
-    return ('Loading...');
+    return LOADING;
   };
+
   const submitSkills = async () => {
     setSubmitting(true);
-    const response = await API.updateSkills({
+    const response = await performAPIAction(API.updateSkills, {
       ...skills,
       ...updatedSkills,
-    });
+    }, null, toast);
     setSubmitting(false);
-    if (response === null || response.status !== 200) {
-      if (response.status === 403) {
-        toast(
-          'Error',
-          'Your session has expired. Please log in again',
-          flavors.error,
-        );
-        return;
-      }
+    if (response.status === HTTP_BAD_SUBMISSION) {
       toast(
-        'Error',
+        DEFAULT_ERROR_MESSAGE_TITLE,
         `There was an issue updating skills. ${
-          response === null
-            ? 'There was a network error.'
-            : `${
-              Object.keys(response.data).join(', ')
-            } contain${Object.keys(response.data).length > 1 ? '' : 's'} errors`}`,
+          `${
+            Object.keys(response.data).join(', ')
+          } contain${Object.keys(response.data).length > 1 ? '' : 's'} errors`}`,
         flavors.error,
       );
-      setErrors(response === null ? {} : response.data);
-    } else {
-      toast(
-        'Success',
-        'Successfully updated skills',
-        flavors.success,
-      );
-      setSkills(response.data);
+      setErrors(response.data);
+    } else if (response.status === HTTP_SUCCESS) {
+      toastBasedOnResponse(response, toastMap);
     }
   };
+
   useEffect(() => {
-    if (!skillsLoaded) {
-      API.retrieveSkills().then((results) => {
-        if (results !== null) {
-          setSkills(results.data);
-          setLookup(results.lookup);
-          setDisplayedValue(results.lookup.voice_acting);
-          setSkillsLoaded(true);
-        } else {
-          setSkillsLoaded(true);
-          toast(
-            'Error',
-            'Failed to load skills',
-            flavors.error,
-          );
-        }
-      }).catch(() => {
-        setSkillsLoaded(true);
+    const fetchSkills = async () => {
+      const response = await performAPIAction(API.retrieveSkills, null, null, toast);
+      setSkillsLoaded(true);
+      if (response.status === HTTP_SUCCESS) {
+        setSkills(response.data.data);
+        setLookup(response.data.lookup);
+        setDisplayedValue(response.data.lookup.voice_acting);
+      } else {
         toast(
-          'Error',
-          'Failed to load skills',
+          DEFAULT_ERROR_MESSAGE_TITLE,
+          SKILLS_NOT_LOADED,
           flavors.error,
         );
-      });
-    }
+      }
+    };
+    fetchSkills();
   /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 

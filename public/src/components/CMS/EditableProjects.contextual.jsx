@@ -3,15 +3,22 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect, useContext } from 'react';
 import ButtonGroup, { TitleButtonPairing } from '@Components/Buttons/ButtonGroup';
 import PrimaryButton from '@Components/Buttons/PrimaryButton';
-import EditableYoutubeComponent from '@Components/CMS/EditableYoutubeComponent';
+import Project from '@Components/CMS/projects/Project';
 import FailedToLoad from '@Components/FailedToLoad';
 import { WrappedCenteredContent } from '@Components/Layout/PageLayout';
 import SpottedSection from '@Components/Layout/SpottedSection';
 import SectionTitle from '@Components/Text/SectionTitle';
-import { ToastContext } from '@Components/ToastManager';
+import { ToastContext, DEFAULT_ERROR_MESSAGE_TITLE } from '@Components/ToastManager';
 import API from '@App/api';
 import SecondaryButton from '@Components/Buttons/SecondaryButton';
 import Modal from '@Components/Modal/Modal';
+import { cloneDeep, toastMapFactory } from '@App/utils';
+import {
+  toastBasedOnResponse, performAPIDelete, HTTP_SUCCESS, performAPIAction, HTTP_BAD_SUBMISSION, HTTP_NETWORK_ERROR,
+} from '@App/api/utils';
+
+const PROJECTS_FAILED_TO_LOAD = 'Failed to load projects';
+const DEFAULT_NEW_PROJECT = { id: -1, src: '', title: '' };
 
 export const EditableProjects = () => {
   const { toast, flavors } = useContext(ToastContext);
@@ -22,25 +29,8 @@ export const EditableProjects = () => {
   const [inFlight, setInFlight] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [errors, setErrors] = useState({});
-  const defaultNewProject = { id: -1, src: '', title: '' };
-  const [newProject, setNewProject] = useState(defaultNewProject);
-  const toastMap = {
-    404: {
-      flavor: flavors.error,
-      title: 'Error',
-      content: 'Project no longer exists. Perhaps it was already deleted?',
-    },
-    400: {
-      flavor: flavors.error,
-      title: 'Error',
-      content: 'There was a problem with your submission',
-    },
-    200: {
-      flavor: flavors.success,
-      title: 'Success',
-      content: 'Action submitted successfully.',
-    },
-  };
+  const [newProject, setNewProject] = useState(DEFAULT_NEW_PROJECT);
+  const toastMap = toastMapFactory('Project no longer exists. Perhaps it was already deleted?');
 
   /**
    * API consumers
@@ -48,84 +38,59 @@ export const EditableProjects = () => {
 
   const deleteProject = async (index) => {
     const projectToBeDeleted = loadedProjects[index];
+
     setInFlight([...inFlight, projectToBeDeleted.id]);
-    const response = await API.deleteProject(projectToBeDeleted.id);
+    const response = await performAPIDelete(API.deleteProject, projectToBeDeleted.id, toast);
     setInFlight(inFlight.filter((id) => id !== projectToBeDeleted.id));
-    if (response === null) {
-      toast(
-        'Error',
-        'Network error',
-        flavors.error,
-      );
-      return;
-    }
-    const { title, content, flavor } = toastMap[response.status];
-    toast(
-      title,
-      content,
-      flavor,
-    );
-    if (response.status === 200) {
+
+    toastBasedOnResponse(response, toastMap);
+    if (response.status === HTTP_SUCCESS) {
       const newLoadedProjects = loadedProjects.slice();
       newLoadedProjects.splice(index, 1);
       setLoadedProjects(newLoadedProjects);
-      setCachedProjects(JSON.parse(JSON.stringify(newLoadedProjects)));
+      setCachedProjects(cloneDeep(newLoadedProjects));
     }
   };
 
   const updateProject = async (index) => {
     const projectToSubmit = loadedProjects[index];
+
+    // clear errors so stale errors go away
+    const clearedErrors = cloneDeep(errors);
+    delete errors[projectToSubmit.id];
+    setErrors(clearedErrors);
+
     setInFlight([...inFlight, projectToSubmit.id]);
-    const response = await API.updateProject(projectToSubmit, projectToSubmit.id);
+    const response = await performAPIAction(API.updateProject, projectToSubmit, projectToSubmit.id, toast);
     setInFlight(inFlight.filter((id) => id !== projectToSubmit.id));
-    if (response === null) {
-      toast(
-        'Error',
-        'Network error',
-        flavors.error,
-      );
-      return;
-    }
-    const { title, content, flavor } = toastMap[response.status];
-    toast(
-      title,
-      content,
-      flavor,
-    );
-    if (response.status === 400) {
+
+    toastBasedOnResponse(response, toastMap);
+    if (response.status === HTTP_BAD_SUBMISSION) {
       setErrors({ ...errors, [projectToSubmit.id]: response.data });
+    } else {
+      const newCachedProjects = cachedProjects.slice();
+      newCachedProjects[index] = { ...projectToSubmit };
+      setCachedProjects(newCachedProjects);
     }
-    const newCachedProjects = cachedProjects.slice();
-    newCachedProjects[index] = { ...projectToSubmit };
-    setCachedProjects(newCachedProjects);
   };
 
   const createProject = async () => {
-    const data = { src: newProject.src, title: newProject.title };
+    const data = cloneDeep(newProject);
+    // the id is an invalid sentinel value and the API expects no id for a creation
+    delete data.id;
+
     setInFlight([...inFlight, newProject.id]);
-    const response = await API.createProject(data);
-    if (response === null) {
-      toast(
-        'Error',
-        'Network error',
-        flavors.error,
-      );
-      return;
-    }
-    const { title, flavor } = toastMap[response.status];
-    toast(
-      title,
-      response.data.message ?? response.data.error,
-      flavor,
-    );
+    const response = await performAPIAction(API.createProject, data, null, toast);
     setInFlight(inFlight.filter((inFlightId) => inFlightId !== newProject.id));
-    if (response.status === 400) {
+
+    toastBasedOnResponse(response, toastMap);
+    if (response.status === HTTP_BAD_SUBMISSION) {
       setErrors({ ...errors, [response.data.id]: response.data.errors });
     } else {
       setLoadedProjects([...loadedProjects, { ...response.data.project }]);
       setCachedProjects([...JSON.parse(JSON.stringify(loadedProjects)), { ...response.data.project }]);
       setShowModal(false);
-      setNewProject(defaultNewProject);
+      setNewProject(DEFAULT_NEW_PROJECT);
     }
   };
 
@@ -134,60 +99,48 @@ export const EditableProjects = () => {
     if (existingErrors.length > 0) {
       // unresolved errors
       toast(
-        'Error',
+        DEFAULT_ERROR_MESSAGE_TITLE,
         'Please resolve errors before submitting.',
         flavors.error,
       );
       return;
     }
+
     setInFlight(loadedProjects.map((project) => project.id));
-    const response = await API.updateAllProjects(loadedProjects);
-    if (response === null) {
+    const response = await performAPIAction(API.updateAllProjects, loadedProjects, null, toast);
+    setInFlight([]);
+
+    if (response.status !== HTTP_NETWORK_ERROR) {
+      const { title, flavor } = toastMap[response.status];
       toast(
-        'Error',
-        'Network error',
-        flavors.error,
+        title,
+        response.data.message ?? response.data.error,
+        flavor,
       );
-      return;
+      setCachedProjects(loadedProjects);
+      if (response.status === HTTP_BAD_SUBMISSION) {
+        setErrors({ ...errors, [response.data.id]: response.data.errors });
+      }
     }
-    const { title, flavor } = toastMap[response.status];
-    toast(
-      title,
-      response.data.message ?? response.data.error,
-      flavor,
-    );
-    setCachedProjects(loadedProjects);
-    if (response.status === 400) {
-      setErrors({ ...errors, [response.data.id]: response.data.errors });
-    }
-    setInFlight(inFlight.filter((inFlightId) => inFlightId !== response.data.id));
   };
 
   useEffect(() => {
-    if (!projectsLoaded) {
-      API.retrieveProjects().then((results) => {
-        setLoaded(true);
-        if (results === null) {
-          toast(
-            'Error',
-            'Failed to load projects',
-            flavors.error,
-          );
-        } else {
-          setLoadedProjects(loadedProjects.concat(results.slice()));
-          setCachedProjects(cachedProjects.concat(JSON.parse(JSON.stringify(results.slice()))));
-        }
-      }).catch(() => {
-        setLoaded(true);
+    const fetchProjects = async () => {
+      const response = await performAPIAction(API.retrieveProjects, null, null, toast);
+      setLoaded(true);
+      setProjectsLoaded(true);
+      if (response.status === HTTP_SUCCESS) {
+        setLoadedProjects(loadedProjects.concat(response.data.slice()));
+        setCachedProjects(cachedProjects.concat(cloneDeep(response.data.slice())));
+      } else {
         toast(
-          'Error',
-          'Failed to load projects',
+          DEFAULT_ERROR_MESSAGE_TITLE,
+          PROJECTS_FAILED_TO_LOAD,
           flavors.error,
         );
-      }).finally(() => {
-        setProjectsLoaded(true);
-      });
-    }
+      }
+    };
+    fetchProjects();
     /**
      * We don't care about this hook firing every time toast references change. Not important.
      */
@@ -255,11 +208,11 @@ export const EditableProjects = () => {
           <span>Add new Project</span>
       }
         content={(
-          <EditableYoutubeComponent
+          <Project
             onSrcChange={(value) => handleNewProjectChange(value, 'src')}
             onTitleChange={(value) => handleNewProjectChange(value, 'title')}
             onSubmit={createProject}
-            onReset={() => setNewProject(defaultNewProject)}
+            onReset={() => setNewProject(DEFAULT_NEW_PROJECT)}
             errors={errors[newProject.id] ?? {}}
             inFlight={inFlight.includes(newProject.id)}
             src={newProject.src}
@@ -286,7 +239,7 @@ export const EditableProjects = () => {
       </TitleButtonPairing>
       <WrappedCenteredContent>
         {loadedProjects.map((project, index) => (
-          <EditableYoutubeComponent
+          <Project
             onSrcChange={(value) => handleChange(value, 'src', index)}
             onTitleChange={(value) => handleChange(value, 'title', index)}
             onDelete={() => deleteProject(index)}

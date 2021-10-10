@@ -24,27 +24,33 @@ import Youtube from '@Assets/svg/Youtube.svg';
 import DisabledSectionContainer from '@Components/DisabledSectionContainer';
 import styled from 'styled-components';
 import PrimaryButton from '@Components/Buttons/PrimaryButton';
-import { cloneDeep } from '@App/utils';
+import { cloneDeep, toastMapFactory } from '@App/utils';
 import Modal from '@Components/Modal/Modal';
-import EditableAffiliation from './EditableAffiliation';
+import {
+  HTTP_BAD_SUBMISSION, performAPIAction, performAPIDelete, toastBasedOnResponse, HTTP_SUCCESS,
+} from '@App/api/utils';
+import EditableAffiliation from './footer/EditableAffiliation';
 
 const EditableAffiliations = styled(Affiliations)`
   min-width: 400px;
 `;
 
-const DEFAULT_UNSAVED_ID = -1;
-
 const DEFAULT_NEW_AFFILIATION_STATE = {
-  id: DEFAULT_UNSAVED_ID,
   link: '',
   affiliation: '',
 };
 
+const DEFAULT_STATE = {
+  stats: [],
+  affiliations: [],
+};
+const ERROR_STATE = {
+  ...DEFAULT_STATE,
+  affiliations: ['Failed to load...'],
+};
+
 export const EditablePageFooter = () => {
-  const [footerData, setFooterData] = useState({
-    stats: [],
-    affiliations: [],
-  });
+  const [footerData, setFooterData] = useState(DEFAULT_STATE);
   const [affiliations, setAffiliations] = useState([]);
   const [cachedAffiliations, setCachedAffiliations] = useState([]);
   const [inFlight, setInFlight] = useState(false);
@@ -55,42 +61,21 @@ export const EditablePageFooter = () => {
   const [showModal, setShowModal] = useState(false);
   const [newAffiliation, setNewAffiliation] = useState(DEFAULT_NEW_AFFILIATION_STATE);
 
-  const toastMap = {
-    404: {
-      flavor: flavors.error,
-      title: 'Error',
-      content: 'Affiliation no longer exists. Perhaps it was already deleted?',
-    },
-    400: {
-      flavor: flavors.error,
-      title: 'Error',
-      content: 'There was a problem with your submission',
-    },
-    200: {
-      flavor: flavors.success,
-      title: 'Success',
-      content: 'Action submitted successfully.',
-    },
-  };
+  const toastMap = toastMapFactory('Affiliation no longer exists. Perhaps it was already deleted?');
 
   useEffect(() => {
-    const errorState = {
-      stats: [],
-      affiliations: ['Failed to load...'],
-    };
     const retrieveFooter = async () => {
       setInFlight(true);
-      try {
-        const response = await API.retrieveFooterData();
-        setLoaded(true);
-        setInFlight(false);
-        setFooterData(response);
-        setAffiliations(cloneDeep(response.affiliations));
-        setCachedAffiliations(cloneDeep(response.affiliations));
-      } catch (err) {
-        setInFlight(false);
-        setFooterData(errorState);
-        setLoaded(true);
+      const response = await performAPIAction(API.retrieveFooterData, null, null, toast);
+      setInFlight(false);
+      setLoaded(true);
+
+      if (response.status === HTTP_SUCCESS) {
+        setFooterData(response.data);
+        setAffiliations(cloneDeep(response.data.affiliations));
+        setCachedAffiliations(cloneDeep(response.data.affiliations));
+      } else {
+        setFooterData(ERROR_STATE);
         toast(
           'Error',
           'Failed to load footer details',
@@ -133,82 +118,44 @@ export const EditablePageFooter = () => {
     setAffiliations(stateClone);
   };
 
-  const submitAffiliation = async (affiliation, idx, successCallback = () => {}, errorCallback = () => {}) => {
+  const submitAffiliation = async (affiliation, idx) => {
+    // clear out stale errors from last error state for this affiliation
     const affiliationToSubmit = cloneDeep(affiliation);
     const errorsClearedForAffiliation = cloneDeep(errors);
     delete errorsClearedForAffiliation[affiliation.id];
     setErrors(errorsClearedForAffiliation);
+
     setInFlightAffiliations([...inFlightAffiliations, affiliationToSubmit.id]);
-    if (affiliationToSubmit.id < 0) {
-      // sentinel value indicating an unsaved new affiliationToSubmit
-      delete affiliationToSubmit.id;
-    }
-    let response;
-    if (typeof affiliationToSubmit.id !== 'undefined') {
-      response = await API.updateAffiliation({ ...affiliationToSubmit }, affiliationToSubmit.id);
-    } else {
-      response = await API.createAffiliation({ ...affiliationToSubmit });
-    }
-    setInFlightAffiliations(inFlightAffiliations.filter((aff) => aff.id !== affiliationToSubmit.id));
-    if (response === null) {
-      toast(
-        'Error',
-        'Network error',
-        flavors.error,
-      );
-      return;
-    }
-    const { title, content, flavor } = toastMap[response.status];
-    toast(
-      title,
-      content,
-      flavor,
+    const response = await performAPIAction(
+      typeof affiliationToSubmit.id !== 'undefined' ? API.updateAffiliation : API.createAffiliation,
+      affiliationToSubmit,
+      affiliationToSubmit.id,
+      toast,
     );
-    if (response.status === 400) {
-      setErrors({ ...errors, [affiliationToSubmit.id ?? DEFAULT_UNSAVED_ID]: response.data });
-      errorCallback();
-    }
-    if (response.status === 200) {
-      successCallback();
+    setInFlightAffiliations([inFlightAffiliations.filter((aff) => aff.id !== affiliationToSubmit.id)]);
+
+    toastBasedOnResponse(response, toast, toastMap);
+    if (response.status === HTTP_SUCCESS) {
       const updatedAffiliations = cloneDeep(affiliations);
       updatedAffiliations[idx] = response.data;
       setAffiliations(updatedAffiliations);
       setCachedAffiliations(cloneDeep(updatedAffiliations));
+    } else if (response.status === HTTP_BAD_SUBMISSION) {
+      setErrors({ ...errors, [affiliationToSubmit.id]: response.data });
     }
   };
 
   const deleteAffiliation = async (index) => {
-    /**
-     * Disabled because I don't want to be implementing an entire alert modal for this one off project.
-     * The basic JS alert is sufficient.
-     */
-    /* eslint-disable-next-line no-alert, no-restricted-globals */
-    const confirmed = confirm('Are you sure you want to delete this affiliation?');
-    if (confirmed) {
-      const affiliationToBeDeleted = affiliations[index];
-      setInFlightAffiliations([...inFlightAffiliations, affiliationToBeDeleted.id]);
-      const response = await API.deleteAffiliation(affiliationToBeDeleted.id);
-      setInFlightAffiliations(inFlightAffiliations.filter((id) => id !== affiliationToBeDeleted.id));
-      if (response === null) {
-        toast(
-          'Error',
-          'Network error',
-          flavors.error,
-        );
-        return;
-      }
-      const { title, content, flavor } = toastMap[response.status];
-      toast(
-        title,
-        content,
-        flavor,
-      );
-      if (response.status === 200) {
-        const newAffiliations = cloneDeep(affiliations);
-        newAffiliations.splice(index, 1);
-        setAffiliations(newAffiliations);
-        setCachedAffiliations(cloneDeep(newAffiliations));
-      }
+    const affiliationToBeDeleted = affiliations[index];
+
+    setInFlightAffiliations([...inFlightAffiliations, affiliationToBeDeleted.id]);
+    const response = await performAPIDelete(API.deleteAffiliation, affiliationToBeDeleted.id, toast);
+    setInFlightAffiliations(inFlightAffiliations.filter((id) => id !== affiliationToBeDeleted.id));
+
+    if (response.status === HTTP_SUCCESS) {
+      const newAffiliations = cloneDeep(affiliations);
+      setAffiliations(newAffiliations);
+      setCachedAffiliations(cloneDeep(newAffiliations));
     }
   };
 

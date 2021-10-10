@@ -35,7 +35,7 @@ const CustomButtonGroup = styled(ButtonGroup)`
   `}
 `;
 
-export const EditableYoutubeComponent = ({
+export const Project = ({
   src, title, onSrcChange, onTitleChange, onSubmit, onReset, inFlight, errors, block, showDelete, onDelete,
 }) => {
   const [preview, setPreviewState] = useState(false);
@@ -104,7 +104,7 @@ export const EditableYoutubeComponent = ({
   );
 };
 
-EditableYoutubeComponent.propTypes = {
+Project.propTypes = {
   src: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   onSrcChange: PropTypes.func.isRequired,
@@ -123,10 +123,10 @@ EditableYoutubeComponent.propTypes = {
   errors: PropTypes.object.isRequired,
 };
 
-EditableYoutubeComponent.defaultProps = {
+Project.defaultProps = {
   block: false,
   showDelete: true,
   onDelete: () => {},
 };
 
-export default EditableYoutubeComponent;
+export default Project;

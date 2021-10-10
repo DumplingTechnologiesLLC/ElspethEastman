@@ -9,7 +9,9 @@ import PrimaryButton from '@Components/Buttons/PrimaryButton';
 import API from '@App/api';
 import Modal from '@Components/Modal/Modal';
 import { cloneDeep, toastMapFactory } from '@App/utils';
-import { performAPIAction, performAPIDelete, toastBasedOnResponse } from '@App/api/utils';
+import {
+  performAPIAction, performAPIDelete, HTTP_SUCCESS, toastBasedOnResponse,
+} from '@App/api/utils';
 import Experience, { ExperienceLine } from './experience/Experience';
 import EditableExperience from './experience/EditableExperience';
 import { experienceFactory, lookup } from './experience';
@@ -117,15 +119,17 @@ const EditableExperiences = () => {
    * @param {String} section the section the experience belongs to
    * @listens onclick of delete button
    */
-  const confirmDelete = (exp, section) => {
-    performAPIDelete(API.deleteExperience, exp.id, toast, toastMap, (response) => {
+  const confirmDelete = async (exp, section) => {
+    const response = await performAPIDelete(API.deleteExperience, exp.id, toast);
+    if (response !== false) {
+      // user did not cancel out
       toastBasedOnResponse(response, toast, toastMap);
       const newExperiences = cloneDeep(experience);
       newExperiences[section] = cloneDeep(
         experience[section].filter((existingExperience) => existingExperience.id !== exp.id),
       );
       setExperience(newExperiences);
-    });
+    }
   };
 
   /**
@@ -141,30 +145,24 @@ const EditableExperiences = () => {
     const endpoint = typeof submittedExperience.id === 'undefined' ? API.createExperience : API.updateExperience;
     const payload = typeof submittedExperience.id === 'undefined'
       ? cloneDeep(submittedExperience) : { ...submittedExperience, category: currentlyEditedCategory };
-    performAPIAction(
-      endpoint,
-      payload,
-      submittedExperience.id,
-      toast,
-      toastMap,
-      (response) => {
-        toastBasedOnResponse(response, toast, toastMap);
-        const newExperiences = cloneDeep(experience);
-        newExperiences[currentlyEditedCategory] = typeof submittedExperience.id === 'undefined'
-          ? cloneDeep(experience[currentlyEditedCategory].concat([{ ...response.data.object }]))
-          : cloneDeep(
-            /**
-             * This is a pretty straightforward ternary
-             */
-            /* eslint-disable-next-line no-confusing-arrow */
-            experience[currentlyEditedCategory].map((exp) => exp.id === submittedExperience.id
-              ? { ...response.data.object }
-              : exp),
-          );
-        closeModal();
-        setExperience(newExperiences);
-      },
-    );
+    const response = await performAPIAction(endpoint, payload, submittedExperience.id, toast);
+    toastBasedOnResponse(response, toast, toastMap);
+    if (response.status === HTTP_SUCCESS) {
+      const newExperiences = cloneDeep(experience);
+      newExperiences[currentlyEditedCategory] = typeof submittedExperience.id === 'undefined'
+        ? cloneDeep(experience[currentlyEditedCategory].concat([{ ...response.data.object }]))
+        : cloneDeep(
+          /**
+           * This is a pretty straightforward ternary
+           */
+          /* eslint-disable-next-line no-confusing-arrow */
+          experience[currentlyEditedCategory].map((exp) => exp.id === submittedExperience.id
+            ? { ...response.data.object }
+            : exp),
+        );
+      closeModal();
+      setExperience(newExperiences);
+    }
   };
 
   const handleUpdatingExperience = (field, value) => {
@@ -197,19 +195,22 @@ const EditableExperiences = () => {
   ));
 
   useEffect(() => {
-    if (!experienceLoaded) {
-      performAPIAction(API.retrieveExperience, null, null, toast, toastMap, (response) => {
-        setExperience(response.data);
+    const retrieveExperienceList = async () => {
+      if (!experienceLoaded) {
+        const response = await performAPIAction(API.retrieveExperience, null, null, toast);
         setExperienceLoaded(true);
-      }, () => {
-        setExperienceLoaded(true);
-        toast(
-          'Error',
-          'Failed to load experience list',
-          flavors.error,
-        );
-      });
-    }
+        if (response === null) {
+          toast(
+            'Error',
+            'Failed to load experience list',
+            flavors.error,
+          );
+        } else {
+          setExperience(response.data);
+        }
+      }
+    };
+    retrieveExperienceList();
   /**
    * We don't want this hook firing every time the reference for toast changes.
    */

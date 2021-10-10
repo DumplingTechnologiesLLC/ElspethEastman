@@ -113,6 +113,7 @@ export const flavors = {
   error: 'error',
 };
 
+export const DEFAULT_ERROR_MESSAGE_TITLE = 'Error';
 export const ToastContext = createContext();
 export const ToastManager = ({ children }) => {
   const toasts = useRef([]);

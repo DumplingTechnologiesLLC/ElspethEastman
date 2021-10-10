@@ -1,23 +1,13 @@
-import { getCookie } from '../utils';
 import ENDPOINTS from '../endpoints';
+import { requestOptionsFactory, responseFactory } from './utils';
 
 export const updateSkills = async (data) => {
   try {
-    const csrftoken = getCookie('csrftoken');
     const response = await fetch(ENDPOINTS.skills.list, {
-      method: 'PATCH',
-      cache: 'no-cache',
-      headers: {
-        'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json',
-      },
+      ...requestOptionsFactory('PATCH'),
       body: JSON.stringify(data),
     });
-    const returnData = await response.json();
-    return {
-      status: response.status,
-      data: returnData,
-    };
+    return await responseFactory(response);
   } catch (error) {
     return null;
   }
@@ -25,13 +15,8 @@ export const updateSkills = async (data) => {
 
 export const retrieveSkills = async () => {
   try {
-    const response = await fetch(
-      `${ENDPOINTS.skills.list}`,
-    );
-    if (!response.ok) {
-      return null;
-    }
-    return response.json();
+    const response = await fetch(`${ENDPOINTS.skills.list}`);
+    return response.ok ? await responseFactory(response) : null;
   } catch (error) {
     return null;
   }

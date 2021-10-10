@@ -1,18 +1,9 @@
-import { getCookie } from '../utils';
 import ENDPOINTS from '../endpoints';
-import { responseFactory } from './utils';
+import { responseFactory, requestOptionsFactory } from './utils';
 
 export const deleteExperience = async (id) => {
   try {
-    const csrftoken = getCookie('csrftoken');
-    const response = await fetch(`${ENDPOINTS.experience.list}${id}/`, {
-      method: 'DELETE',
-      cache: 'no-cache',
-      headers: {
-        'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await fetch(`${ENDPOINTS.experience.list}${id}/`, requestOptionsFactory('DELETE'));
     return await responseFactory(response);
   } catch (error) {
     return null;
@@ -21,14 +12,8 @@ export const deleteExperience = async (id) => {
 
 export const updateExperience = async (data, id) => {
   try {
-    const csrftoken = getCookie('csrftoken');
     const response = await fetch(`${ENDPOINTS.experience.list}${id}/`, {
-      method: 'PATCH',
-      cache: 'no-cache',
-      headers: {
-        'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json',
-      },
+      ...requestOptionsFactory('PATCH'),
       body: JSON.stringify(data),
     });
     return await responseFactory(response);
@@ -39,14 +24,8 @@ export const updateExperience = async (data, id) => {
 
 export const createExperience = async (data) => {
   try {
-    const csrftoken = getCookie('csrftoken');
     const response = await fetch(`${ENDPOINTS.experience.list}`, {
-      method: 'POST',
-      cache: 'no-cache',
-      headers: {
-        'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json',
-      },
+      ...requestOptionsFactory('POST'),
       body: JSON.stringify(data),
     });
     return await responseFactory(response);
@@ -57,13 +36,8 @@ export const createExperience = async (data) => {
 
 export const retrieveExperience = async () => {
   try {
-    const response = await fetch(
-      `${ENDPOINTS.experience.list}`,
-    );
-    if (!response.ok) {
-      return null;
-    }
-    return await responseFactory(response);
+    const response = await fetch(`${ENDPOINTS.experience.list}`);
+    return response.ok ? await responseFactory(response) : null;
   } catch (error) {
     return null;
   }
