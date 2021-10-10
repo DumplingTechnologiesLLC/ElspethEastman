@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { css, ThemeProvider, keyframes } from 'styled-components';
 
-const navbarBreakpoint = 700;
+const navbarBreakpoint = 760;
 const imageBackgroundColor = '#f7f7f7';
 const baseTextColor = '#292929';
 const inputShadowColor = 'rgba(1, 208, 254, 0.493)';
@@ -61,7 +61,7 @@ const baseTextStyling = css`
   color: ${baseTextColor};
 `;
 const smallFontSize = css`
-  font-size: .8em
+  font-size: .8em;
 `;
 const normalFontSize = css`
   font-size: 1em;
@@ -257,24 +257,24 @@ export const theme = {
     `,
     jumboTitleShadow: css`
       position: absolute;
-        z-index: -1;
-        color: rgba(0,0,0,0.05);
-        font-size: 95px;
-        left: 0%;
-        bottom: 0;
+      z-index: -1;
+      color: rgba(0,0,0,0.05);
+      font-size: 95px;
+      left: 0%;
+      bottom: 0;
     `,
     jumboTitle: css`
-      ${baseTextStyling}
-      ${baseTitleStyling}
+      ${baseTextStyling};
+      ${baseTitleStyling};
       font-size: 50px;
       font-stretch: expanded;
       position: relative;
     `,
     youtubeTitle: css`
-      ${baseTextStyling}
-      ${baseContentTextStyling}
+      ${baseTextStyling};
+      ${baseContentTextStyling};
       font-weight: bold;
-      ${smallTitleFontSize}
+      ${smallTitleFontSize};
     `,
     sectionTitleUnderText: css`
       ${baseTextStyling}
@@ -283,30 +283,29 @@ export const theme = {
       ${`${smallFontSize} !important`};
     `,
     categoryTitle: css`
-      ${baseTitleStyling}
-      ${baseTextStyling}
-      ${smallTitleFontSize}
+      ${baseTitleStyling};
+      ${baseTextStyling};
+      ${smallTitleFontSize};
       font-stretch: expanded;
     `,
     sectionTitle: css`
-      ${baseTitleStyling}
-      ${baseTextStyling}
+      ${baseTitleStyling};
+      ${baseTextStyling};
       font-stretch: expanded;
       position: relative;
       display: inline-block;
     `,
     mediumContentText: css`
-      ${baseTextStyling}
-      ${baseContentTextStyling}
-      ${mediumFontSize}
+      ${baseTextStyling};
+      ${baseContentTextStyling};
+      ${mediumFontSize};
     `,
     contentText: css`
-      ${baseTextStyling}
-      ${baseContentTextStyling}
-      ${normalFontSize}
+      ${baseTextStyling};
+      ${baseContentTextStyling};
+      ${normalFontSize};
     `,
   },
-
 };
 
 export const ElspethTheme = ({ children }) => (

@@ -19,9 +19,9 @@ class ExperienceCreationSerializer(serializers.ModelSerializer):
             'category',
             'tba'
         )
-    
+
     # def clean_year(self, value):
-    #     if not isinstance(value, int) and 
+    #     if not isinstance(value, int) and
 
 
 class ExperienceSerializer(serializers.ModelSerializer):

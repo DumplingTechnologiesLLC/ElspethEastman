@@ -21,6 +21,13 @@ import {
   deleteExperience,
 } from './api/experience';
 
+import {
+  deleteAffiliation,
+  updateAffiliation,
+  createAffiliation,
+  retrieveAffiliations,
+} from './api/affiliation';
+
 class API {
   constructor() {
     this.endpoints = ENDPOINTS;
@@ -93,6 +100,17 @@ class API {
   retrieveExperience = retrieveExperience
 
   updateExperience = updateExperience
+
+  /**
+   * Affiliation API calls
+   */
+  deleteAffiliation = deleteAffiliation
+
+  updateAffiliation = updateAffiliation
+
+  createAffiliation = createAffiliation
+
+  retrieveAffiliations = retrieveAffiliations
 }
 
 const apiInstance = new API();

@@ -17,9 +17,12 @@ module.exports = {
     'guard-for-in': 'off',
     'max-len': ['warn', 120, 2],
     'react/forbid-prop-types': 'warn',
+    'react/require-default-props': 'off',
     'react/jsx-props-no-spreading': 'warn',
     'import/no-named-as-default': 'off',
     'no-console': 'warn',
+    'no-debugger': 'warn',
+
   },
   settings: {
     'import/resolver': {

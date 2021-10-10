@@ -187,7 +187,6 @@ class PaginatedProjectViewSet(
 
 class FooterViewSet(
         mixins.ListModelMixin,
-        mixins.UpdateModelMixin,
         viewsets.GenericViewSet):
     model = FooterStat
     serializer_class = FooterStatSerializer
@@ -199,9 +198,6 @@ class FooterViewSet(
     def get_affiliation_queryset(self):
         return Affiliations.objects.all().order_by("id")
 
-    def put(self, request,):
-        raise MethodNotAllowed('PUT', detail='Use Patch')
-
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         affiliation_qs = self.get_affiliation_queryset()
@@ -210,6 +206,53 @@ class FooterViewSet(
             'affiliations': self.affiliation_class(affiliation_qs, many=True).data
         }
         return Response(response_data)
+
+
+class AffiliationViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
+    serializer_class = AffiliationSerializer
+    model = Affiliations
+
+    def get_queryset(self):
+        return Affiliations.objects.all().order_by("id")
+
+    def put(self, request,):
+        raise MethodNotAllowed('PUT', detail='Use Patch')
+
+    def destroy(self, request, pk):
+        # TODO: protect behind authentication
+        project = get_object_or_404(Affiliations, pk=pk)
+        project.delete()
+        return Response({'message': 'Success'})
+
+    def create(self, request, *args, **kwargs):
+        # TODO: protect behind authentication
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                'error': 'There was a problem with your submission',
+                'errors': serializer.errors,
+                'id': -1}, status=status.HTTP_400_BAD_REQUEST)
+        project = serializer.save()
+        return Response(self.get_serializer(project).data)
+
+    def patch(self, request, pk,):
+        # TODO: protect behind authentication
+        affiliation = get_object_or_404(Affiliations, pk=pk)
+        serializer = self.get_serializer(affiliation, data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        item = serializer.save()
+        return Response(self.get_serializer(item).data)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        return Response(self.get_serializer(queryset, many=True).data,)
 
 
 class ExperienceViewSet(

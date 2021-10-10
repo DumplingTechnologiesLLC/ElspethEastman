@@ -1,5 +1,8 @@
-from core.views import (Client, ContactViewSet, ExperienceViewSet, FooterViewSet,
-                        PaginatedProjectViewSet, ProjectViewSet, SkillViewSet)
+from core.views import (
+    Client, ContactViewSet, ExperienceViewSet, FooterViewSet,
+    PaginatedProjectViewSet, ProjectViewSet, SkillViewSet,
+    AffiliationViewSet
+)
 from rest_framework import routers
 from django.urls import include, path
 app_name = "core"
@@ -8,6 +11,7 @@ router = routers.DefaultRouter()
 router.register(r"experience", ExperienceViewSet, basename="records")
 router.register(r'contact-me', ContactViewSet, basename='contact-me')
 router.register(r"footerstats", FooterViewSet, basename="footerstats")
+router.register(r"affiliations", AffiliationViewSet, basename="affiliations")
 router.register(r"skills", SkillViewSet, basename="skills")
 router.register(r"projects/list", ProjectViewSet, basename="projects")
 router.register(r"projects/paginated", PaginatedProjectViewSet,
@@ -17,7 +21,9 @@ router.register(r"projects/paginated", PaginatedProjectViewSet,
 urlpatterns = [
     # path("calendar", App.as_view(), name="app"),
     # path("", App.as_view(), name="app"),
+    # TODO move behind authentication protection
     path('cms/', Client.as_view(), name="client"),
+    # TODO move behind authentication protection
     path('cms', Client.as_view(), name="client"),
     path('projects', Client.as_view(), name="client"),
     path("api/", include(router.urls)),

@@ -1,6 +1,8 @@
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect, useState, useContext, useMemo,
+} from 'react';
 import CircularLoadingBar from '@Components/LandingPage/CircularLoadingBar';
 import StyledFooter, {
   FooterContent, FooterTitle, FooterSubTitle,
@@ -22,11 +24,21 @@ import Youtube from '@Assets/svg/Youtube.svg';
 import DisabledSectionContainer from '@Components/DisabledSectionContainer';
 import styled from 'styled-components';
 import PrimaryButton from '@Components/Buttons/PrimaryButton';
+import { cloneDeep } from '@App/utils';
+import Modal from '@Components/Modal/Modal';
 import EditableAffiliation from './EditableAffiliation';
 
 const EditableAffiliations = styled(Affiliations)`
   min-width: 400px;
 `;
+
+const DEFAULT_UNSAVED_ID = -1;
+
+const DEFAULT_NEW_AFFILIATION_STATE = {
+  id: DEFAULT_UNSAVED_ID,
+  link: '',
+  affiliation: '',
+};
 
 export const EditablePageFooter = () => {
   const [footerData, setFooterData] = useState({
@@ -36,8 +48,30 @@ export const EditablePageFooter = () => {
   const [affiliations, setAffiliations] = useState([]);
   const [cachedAffiliations, setCachedAffiliations] = useState([]);
   const [inFlight, setInFlight] = useState(false);
+  const [inFlightAffiliations, setInFlightAffiliations] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const { toast, flavors } = useContext(ToastContext);
+  const [errors, setErrors] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [newAffiliation, setNewAffiliation] = useState(DEFAULT_NEW_AFFILIATION_STATE);
+
+  const toastMap = {
+    404: {
+      flavor: flavors.error,
+      title: 'Error',
+      content: 'Affiliation no longer exists. Perhaps it was already deleted?',
+    },
+    400: {
+      flavor: flavors.error,
+      title: 'Error',
+      content: 'There was a problem with your submission',
+    },
+    200: {
+      flavor: flavors.success,
+      title: 'Success',
+      content: 'Action submitted successfully.',
+    },
+  };
 
   useEffect(() => {
     const errorState = {
@@ -51,8 +85,8 @@ export const EditablePageFooter = () => {
         setLoaded(true);
         setInFlight(false);
         setFooterData(response);
-        setAffiliations(response.affiliations);
-        setCachedAffiliations(response.affiliations);
+        setAffiliations(cloneDeep(response.affiliations));
+        setCachedAffiliations(cloneDeep(response.affiliations));
       } catch (err) {
         setInFlight(false);
         setFooterData(errorState);
@@ -70,7 +104,8 @@ export const EditablePageFooter = () => {
    */
   /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
-  const showStats = () => {
+
+  const showStats = useMemo(() => {
     if (inFlight || !loaded) {
       return (<FontAwesomeIcon size="6x" icon={faSpinner} pulse />);
     }
@@ -80,57 +115,153 @@ export const EditablePageFooter = () => {
     return footerData.stats.map((stat) => (
       <CircularLoadingBar label={stat.label} value={stat.value} percent={stat.percent} key={stat.id} />
     ));
-  };
+  }, [inFlight, loaded, footerData]);
 
-  const updateAffiliation = (id, key, value) => {
-    const stateClone = JSON.parse(JSON.stringify(affiliations));
-    const affiliationIndex = affiliations.findIndex((affiliation) => affiliation.id === id);
-    affiliations[affiliationIndex][key] = value;
+  const updateAffiliation = (idx, key, value) => {
+    const stateClone = cloneDeep(affiliations);
+    stateClone[idx][key] = value;
     setAffiliations(stateClone);
   };
 
-  const resetAffiliation = (id) => {
-    const affiliationIndex = affiliations.findIndex((affiliation) => affiliation.id === id);
-    const stateClone = JSON.parse(JSON.stringify(affiliations));
-    stateClone[affiliationIndex] = { ...cachedAffiliations[affiliationIndex] };
-    setCachedAffiliations(stateClone);
+  const updateNewAffiliation = (key, value) => {
+    setNewAffiliation({ ...newAffiliation, [key]: value });
   };
 
-  const submitAffiliation = () => {
-    // TODO implement
+  const resetAffiliation = (idx) => {
+    const stateClone = cloneDeep(affiliations);
+    stateClone[idx] = cloneDeep(cachedAffiliations[idx]);
+    setAffiliations(stateClone);
   };
 
-  const deleteAffiliation = () => {
-    // TODO implement
+  const submitAffiliation = async (affiliation, idx, successCallback = () => {}, errorCallback = () => {}) => {
+    const affiliationToSubmit = cloneDeep(affiliation);
+    const errorsClearedForAffiliation = cloneDeep(errors);
+    delete errorsClearedForAffiliation[affiliation.id];
+    setErrors(errorsClearedForAffiliation);
+    setInFlightAffiliations([...inFlightAffiliations, affiliationToSubmit.id]);
+    if (affiliationToSubmit.id < 0) {
+      // sentinel value indicating an unsaved new affiliationToSubmit
+      delete affiliationToSubmit.id;
+    }
+    let response;
+    if (typeof affiliationToSubmit.id !== 'undefined') {
+      response = await API.updateAffiliation({ ...affiliationToSubmit }, affiliationToSubmit.id);
+    } else {
+      response = await API.createAffiliation({ ...affiliationToSubmit });
+    }
+    setInFlightAffiliations(inFlightAffiliations.filter((aff) => aff.id !== affiliationToSubmit.id));
+    if (response === null) {
+      toast(
+        'Error',
+        'Network error',
+        flavors.error,
+      );
+      return;
+    }
+    const { title, content, flavor } = toastMap[response.status];
+    toast(
+      title,
+      content,
+      flavor,
+    );
+    if (response.status === 400) {
+      setErrors({ ...errors, [affiliationToSubmit.id ?? DEFAULT_UNSAVED_ID]: response.data });
+      errorCallback();
+    }
+    if (response.status === 200) {
+      successCallback();
+      const updatedAffiliations = cloneDeep(affiliations);
+      updatedAffiliations[idx] = response.data;
+      setAffiliations(updatedAffiliations);
+      setCachedAffiliations(cloneDeep(updatedAffiliations));
+    }
+  };
+
+  const deleteAffiliation = async (index) => {
+    /**
+     * Disabled because I don't want to be implementing an entire alert modal for this one off project.
+     * The basic JS alert is sufficient.
+     */
+    /* eslint-disable-next-line no-alert, no-restricted-globals */
+    const confirmed = confirm('Are you sure you want to delete this affiliation?');
+    if (confirmed) {
+      const affiliationToBeDeleted = affiliations[index];
+      setInFlightAffiliations([...inFlightAffiliations, affiliationToBeDeleted.id]);
+      const response = await API.deleteAffiliation(affiliationToBeDeleted.id);
+      setInFlightAffiliations(inFlightAffiliations.filter((id) => id !== affiliationToBeDeleted.id));
+      if (response === null) {
+        toast(
+          'Error',
+          'Network error',
+          flavors.error,
+        );
+        return;
+      }
+      const { title, content, flavor } = toastMap[response.status];
+      toast(
+        title,
+        content,
+        flavor,
+      );
+      if (response.status === 200) {
+        const newAffiliations = cloneDeep(affiliations);
+        newAffiliations.splice(index, 1);
+        setAffiliations(newAffiliations);
+        setCachedAffiliations(cloneDeep(newAffiliations));
+      }
+    }
   };
 
   const addAffiliation = () => {
-    // TODO implement
+    setNewAffiliation(DEFAULT_NEW_AFFILIATION_STATE);
+    setShowModal(true);
   };
 
   const showAffiliations = () => {
     if (inFlight || !loaded) {
       return (<FontAwesomeIcon size="lg" icon={faSpinner} pulse />);
     }
-    return affiliations.map((affiliation) => (
+    return affiliations.map((affiliation, idx) => (
       <EditableAffiliation
-        onTextChange={(value) => updateAffiliation(affiliation.id, 'affiliation', value)}
-        onLinkChange={(value) => updateAffiliation(affiliation.id, 'link', value)}
-        onReset={resetAffiliation}
-        onSubmit={submitAffiliation}
-        onDelete={deleteAffiliation}
+        onTextChange={(value) => updateAffiliation(idx, 'affiliation', value)}
+        onLinkChange={(value) => updateAffiliation(idx, 'link', value)}
+        onReset={() => resetAffiliation(idx)}
+        onSubmit={() => submitAffiliation(affiliation, idx)}
+        onDelete={() => deleteAffiliation(idx)}
         affiliationText={affiliation.affiliation}
         affiliationLink={affiliation.link}
         key={affiliation.id}
+        disabled={inFlightAffiliations.includes(affiliation.id)}
+        errors={errors[affiliation.id]}
       />
     ));
   };
   return (
     <StyledFooter>
+      <Modal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        title={
+          <span>Add new Affiliation</span>
+      }
+        content={(
+          <EditableAffiliation
+            onTextChange={(value) => updateNewAffiliation('affiliation', value)}
+            onLinkChange={(value) => updateNewAffiliation('link', value)}
+            onReset={() => setNewAffiliation(DEFAULT_NEW_AFFILIATION_STATE)}
+            onSubmit={() => submitAffiliation(newAffiliation, affiliations.length, () => setShowModal(false))}
+            affiliationText={newAffiliation.affiliation}
+            affiliationLink={newAffiliation.link}
+            disabled={inFlightAffiliations.includes(newAffiliation.id)}
+            showDelete={false}
+            errors={errors[newAffiliation.id]}
+          />
+        )}
+      />
       <FooterTitle>Interesting Facts</FooterTitle>
       <DisabledSectionContainer>
         <LoadingContainer key={footerData.stats.length}>
-          {showStats()}
+          {showStats}
         </LoadingContainer>
       </DisabledSectionContainer>
       <AffiliationsAndLinks>

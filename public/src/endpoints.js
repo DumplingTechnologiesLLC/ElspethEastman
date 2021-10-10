@@ -3,6 +3,7 @@ class Endpoints {
     this.baseEndpoints = (!process.env.NODE_ENV || process.env.NODE_ENV === 'development')
       ? {
         skills: 'http://localhost:8000/api/skills',
+        affiliations: 'http://localhost:8000/api/affiliations',
         footerstats: 'http://localhost:8000/api/footerstats',
         projects: 'http://localhost:8000/api/projects',
         experience: 'http://localhost:8000/api/experience',
@@ -11,6 +12,7 @@ class Endpoints {
       : {
         skills: '/api/skills',
         footerstats: '/api/footerstats',
+        affiliations: '/api/affiliations',
         projects: '/api/projects',
         experience: '/api/experience',
         contactMe: '/api/contact-me',
@@ -21,6 +23,9 @@ class Endpoints {
     return {
       skills: {
         list: `${this.baseEndpoints.skills}/`,
+      },
+      affiliations: {
+        list: `${this.baseEndpoints.affiliations}/`,
       },
       footersstats: {
         list: `${this.baseEndpoints.footerstats}/`,

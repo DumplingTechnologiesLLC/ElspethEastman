@@ -205,6 +205,7 @@ FormInput.propTypes = {
     PropTypes.arrayOf([
       PropTypes.string,
     ]),
+    PropTypes.node,
   ]),
   inputCaps: PropTypes.node,
 };

@@ -21,15 +21,40 @@ const FooterForm = styled(StyledForm)`
 `;
 
 export const EditableAffiliation = ({
-  affiliationText, affiliationLink, onTextChange, onLinkChange, onSubmit, onReset, onDelete,
+  affiliationText,
+  affiliationLink,
+  onTextChange,
+  onLinkChange,
+  onSubmit,
+  onReset,
+  onDelete,
+  disabled,
+  showDelete,
+  errors,
 }) => (
   <FooterForm>
-    <FormInput type="text" name="affiliationText" label="Text" onChange={onTextChange} value={affiliationText} />
-    <FormInput type="text" name="affiliationLink" label="Link" onChange={onLinkChange} value={affiliationLink} />
+    <FormInput
+      hasError={!!errors?.affiliation}
+      errorMessage={errors?.affiliation ?? ''}
+      type="text"
+      name="affiliationText"
+      label="Text"
+      onChange={onTextChange}
+      value={affiliationText}
+    />
+    <FormInput
+      hasError={!!errors?.link}
+      errorMessage={errors?.link ?? ''}
+      type="text"
+      name="affiliationLink"
+      label="Link"
+      onChange={onLinkChange}
+      value={affiliationLink}
+    />
     <ButtonGroup>
-      <PrimaryButton type="button" onClick={onSubmit}>Save</PrimaryButton>
-      <WarningButton type="button" onClick={onReset}>Reset</WarningButton>
-      <DangerButton type="button" onClick={onDelete}>Delete</DangerButton>
+      <PrimaryButton disabled={disabled} type="button" onClick={onSubmit}>Save</PrimaryButton>
+      <WarningButton disabled={disabled} type="button" onClick={onReset}>Reset</WarningButton>
+      {showDelete && <DangerButton disabled={disabled} type="button" onClick={onDelete}>Delete</DangerButton>}
     </ButtonGroup>
   </FooterForm>
 );
@@ -41,6 +66,17 @@ EditableAffiliation.propTypes = {
   onTextChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   onReset: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
+  onDelete: PropTypes.func,
+  disabled: PropTypes.bool,
+  showDelete: PropTypes.bool,
+  errors: PropTypes.shape({
+    affiliation: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    link: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+  }),
+};
+
+EditableAffiliation.defaultProps = {
+  disabled: false,
+  showDelete: true,
 };
 export default EditableAffiliation;

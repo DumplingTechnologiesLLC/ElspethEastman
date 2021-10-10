@@ -20,4 +20,6 @@ export const getCookie = (name) => {
   return cookieValue;
 };
 
+export const cloneDeep = (obj) => JSON.parse(JSON.stringify(obj));
+
 export default uuid;
