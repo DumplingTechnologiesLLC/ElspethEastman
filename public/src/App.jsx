@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import { PageLayout, PageContent } from '@Components/Layout/PageLayout';
 import Navbar from '@Components/LandingPage/Navbar';
-import ContactMe from '@Components/LandingPage/ContactMe.contextual';
+import ContactMe from '@Components/ContactMe.contextual';
 import PageFooter from '@Components/LandingPage/PageFooter.contextual';
 import ToastManager from '@Components/ToastManager';
 import HomePage from '@Views/HomePage';

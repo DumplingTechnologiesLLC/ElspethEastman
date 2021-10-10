@@ -35,6 +35,11 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
     setErrors({ ...errors, email: '' });
   };
 
+  const setMessageAndClearErrors = (value) => {
+    setMessage(value);
+    setErrors({ ...errors, message: '' });
+  };
+
   const closeAndClear = () => {
     setInitialLoad(true);
     setName('');
@@ -58,7 +63,6 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
         message: message ? '' : 'Message is required',
       });
     }
-
     setInFlight(true);
     const response = await performAPIAction(API.submitContactMe, { name, email, message }, null, toast);
     setInFlight(false);
@@ -126,7 +130,7 @@ export const ContactMe = ({ showForm, setContactMeVisibility }) => {
                 errorMessage={errors.message}
                 name="Message (Required)"
                 label="Your Message"
-                onChange={setMessage}
+                onChange={setMessageAndClearErrors}
                 value={message}
               />
               <PrimaryButton

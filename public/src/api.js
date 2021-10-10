@@ -31,7 +31,7 @@ import {
   retrieveFooterData,
 } from './api/footer';
 
-import { requestOptionsFactory, responseFactory } from './api/utils';
+import submitContactMe from './api/contact';
 
 class API {
   constructor() {
@@ -60,20 +60,15 @@ class API {
 
   retrievePaginatedProjects = retrievePaginatedProjects
 
-  async submitContactMe(data) {
-    try {
-      const response = await fetch(this.endpoints.contactMe, {
-        ...requestOptionsFactory('POST'),
-        body: JSON.stringify(data),
-      });
-      return await responseFactory(response);
-    } catch (error) {
-      return {
-        status: null,
-        data: null,
-      };
-    }
-  }
+  /**
+   * Contact me calls
+   */
+
+  submitContactMe = submitContactMe
+
+  /**
+   * Footer calls
+   */
 
   retrieveFooterData = retrieveFooterData
 

@@ -8,6 +8,7 @@ class Endpoints {
         projects: 'http://localhost:8000/api/projects',
         experience: 'http://localhost:8000/api/experience',
         contactMe: 'http://localhost:8000/api/contact-me',
+        session: 'http://localhost:8000/api/session',
       }
       : {
         skills: '/api/skills',
@@ -16,11 +17,17 @@ class Endpoints {
         projects: '/api/projects',
         experience: '/api/experience',
         contactMe: '/api/contact-me',
+        session: '/api/session',
       };
   }
 
   endpoints() {
     return {
+      session: {
+        validate: `${this.baseEndpoints.session}`,
+        login: `${this.baseEndpoints.session}/login/`,
+        logout: `${this.baseEndpoints.session}/logout/`,
+      },
       skills: {
         list: `${this.baseEndpoints.skills}/`,
       },
