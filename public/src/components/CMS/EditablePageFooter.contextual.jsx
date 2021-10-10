@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, {
   useEffect, useState, useContext, useMemo,
 } from 'react';
-import CircularLoadingBar from '@Components/LandingPage/CircularLoadingBar';
+import CircularLoadingBar from '@Components/LandingPage/footer/CircularLoadingBar';
 import StyledFooter, {
   FooterContent, FooterTitle, FooterSubTitle,
 } from '@Components/Layout/StyledFooter';

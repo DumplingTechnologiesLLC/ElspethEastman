@@ -4,7 +4,7 @@ import React, {
   useEffect, useState, useContext, useMemo,
 } from 'react';
 import styled, { css } from 'styled-components';
-import CircularLoadingBar from '@Components/LandingPage/CircularLoadingBar';
+import CircularLoadingBar from '@Components/LandingPage/footer/CircularLoadingBar';
 import StyledFooter, {
   FooterContent, FooterContentLink, FooterTitle, FooterSubTitle,
 } from '@Components/Layout/StyledFooter';
