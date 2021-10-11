@@ -153,15 +153,21 @@ export const EditablePageFooter = () => {
     }
   };
 
+  const handleModalSubmit = () => {
+    submitAffiliation(newAffiliation, affiliations.length);
+    setShowModal(false);
+  };
+
   const deleteAffiliation = async (index) => {
     const affiliationToBeDeleted = affiliations[index];
 
     setInFlightAffiliations([...inFlightAffiliations, affiliationToBeDeleted.id]);
     const response = await performAPIDelete(API.deleteAffiliation, affiliationToBeDeleted.id, toast);
     setInFlightAffiliations(inFlightAffiliations.filter((id) => id !== affiliationToBeDeleted.id));
-
+    toastBasedOnResponse(response, toast, toastMap);
     if (response.status === HTTP_SUCCESS) {
       const newAffiliations = cloneDeep(affiliations);
+      newAffiliations.splice(index, 1);
       setAffiliations(newAffiliations);
       setCachedAffiliations(cloneDeep(newAffiliations));
     }
@@ -204,7 +210,7 @@ export const EditablePageFooter = () => {
             onTextChange={(value) => updateNewAffiliation('affiliation', value)}
             onLinkChange={(value) => updateNewAffiliation('link', value)}
             onReset={resetNewAffiliation}
-            onSubmit={() => submitAffiliation(newAffiliation, affiliations.length, () => setShowModal(false))}
+            onSubmit={handleModalSubmit}
             affiliationText={newAffiliation.affiliation}
             affiliationLink={newAffiliation.link}
             disabled={inFlightAffiliations.includes(newAffiliation.id)}

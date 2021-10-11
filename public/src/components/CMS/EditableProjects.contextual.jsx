@@ -87,6 +87,9 @@ export const EditableProjects = () => {
     if (response.status === HTTP_BAD_SUBMISSION) {
       setErrors({ ...errors, [response.data.id]: response.data.errors });
     } else {
+      const updatedErrors = cloneDeep(errors);
+      delete updatedErrors[newProject.id];
+      setErrors(updatedErrors);
       setLoadedProjects([...loadedProjects, { ...response.data.project }]);
       setCachedProjects([...JSON.parse(JSON.stringify(loadedProjects)), { ...response.data.project }]);
       setShowModal(false);
@@ -215,11 +218,21 @@ export const EditableProjects = () => {
     setErrors({ ...errors, [updatedProjects[index].id]: existingErrors });
     setLoadedProjects(updatedProjects);
   };
+
+  const setModalVisibility = (value) => {
+    if (!value) {
+      const updatedErrors = cloneDeep(errors);
+      delete updatedErrors[newProject.id];
+      setErrors(updatedErrors);
+    }
+    setShowModal(value);
+  };
+
   return (
     <SpottedSection>
       <Modal
         showModal={showModal}
-        setShowModal={setShowModal}
+        setShowModal={setModalVisibility}
         title={
           <span>Add new Project</span>
       }
