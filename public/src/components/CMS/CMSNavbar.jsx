@@ -4,7 +4,7 @@ import React, {
 import styled, { css, ThemeContext } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faSignOutAlt, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import NavbarBrandImage from '@Assets/NavbarBrand.webp';
 import { ReactComponent as HamburgerMenu } from '@Assets/svg/HamburgerMenu.svg';
 import routes from '@App/router/routes';
@@ -16,6 +16,7 @@ import {
   StyledNavbarButton,
   StyledNavBrand,
 } from '@Components/LandingPage/Navbar';
+import AuthContext from '@App/router/AuthContext';
 
 const NavbarTitle = styled.h1`
   ${({ theme }) => css`
@@ -38,6 +39,7 @@ const ContentManagementNavHeader = styled.a`
 `;
 
 export const CMSNavbar = () => {
+  const { isAuthenticated, logout, goToLogin } = useContext(AuthContext);
   const [collapsed, setCollapsed] = useState(false);
   const [transitioned, setTransitioned] = useState(false);
 
@@ -126,11 +128,22 @@ export const CMSNavbar = () => {
         </StyledNavItem>
         <StyledNavItem>
           <StyledNavLink
-            href={routes.logout}
+            href="#"
+            onClick={isAuthenticated ? () => logout() : () => goToLogin()}
           >
-            Logout
-            {' '}
-            <FontAwesomeIcon icon={faSignOutAlt} />
+            {isAuthenticated ? (
+              <>
+                Logout
+                {' '}
+                <FontAwesomeIcon icon={faSignOutAlt} />
+              </>
+            ) : (
+              <>
+                Login
+                {' '}
+                <FontAwesomeIcon icon={faSignInAlt} />
+              </>
+            )}
           </StyledNavLink>
         </StyledNavItem>
       </StyledNavItems>

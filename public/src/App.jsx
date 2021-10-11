@@ -5,12 +5,13 @@ import {
   Switch,
   Route,
   useLocation,
+  useHistory,
 } from 'react-router-dom';
 import { PageLayout, PageContent } from '@Components/Layout/PageLayout';
 import Navbar from '@Components/LandingPage/Navbar';
 import ContactMe from '@Components/ContactMe.contextual';
 import PageFooter from '@Components/LandingPage/PageFooter.contextual';
-import { ToastContext } from '@Components/ToastManager';
+import { ToastContext, DEFAULT_ERROR_MESSAGE_TITLE } from '@Components/ToastManager';
 import HomePage from '@Views/HomePage';
 import AllProjects from '@Views/AllProjects';
 import CMS from '@Views/CMS';
@@ -46,7 +47,27 @@ function App() {
   }
   /* eslint-enable */
   const location = useLocation();
-
+  const history = useHistory();
+  const goToLogin = () => {
+    history.push(routes.login);
+  };
+  const logout = async () => {
+    const success = await performAPIAction(API.logout, null, null, toast);
+    if (success) {
+      toast(
+        'Goodbye!',
+        'Successfully logged off',
+        flavors.success,
+      );
+      goToLogin();
+    } else {
+      toast(
+        DEFAULT_ERROR_MESSAGE_TITLE,
+        'We couldn\'t log you off properly. Please try again later',
+        flavors.error,
+      );
+    }
+  };
   const validateSession = async () => {
     const sessionValidity = await performAPIAction(API.validateSession, null, null, toast);
     const oldSessionIsValid = isAuthenticated;
@@ -68,7 +89,7 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated }}>
+    <AuthContext.Provider value={{ isAuthenticated, logout, goToLogin }}>
       <Switch>
         <Route exact path={routes.home}>
           <PageLayout>
