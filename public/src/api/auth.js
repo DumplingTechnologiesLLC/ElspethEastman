@@ -1,11 +1,10 @@
-import ENDPOINTS from '@App/endpoints';
+import ENDPOINTS from '@App/api/endpoints';
 import { HTTP_SUCCESS, requestOptionsFactory, responseFactory } from './utils';
 
 export const validateSession = async () => {
   try {
     const response = await fetch(ENDPOINTS.session.validate, {
-      ...requestOptionsFactory('POST'),
-      credentials: 'same-origin',
+      ...requestOptionsFactory('POST', true),
     });
     const { isAuthenticated } = await response.json();
     return isAuthenticated;
@@ -14,11 +13,11 @@ export const validateSession = async () => {
   }
 };
 
-export const login = async () => {
+export const login = async (data) => {
   try {
     const response = await fetch(ENDPOINTS.session.login, {
-      ...requestOptionsFactory('POST'),
-      credentials: 'same-origin',
+      ...requestOptionsFactory('POST', true),
+      body: JSON.stringify(data),
     });
     return await responseFactory(response);
   } catch (err) {
@@ -29,8 +28,7 @@ export const login = async () => {
 export const logout = async () => {
   try {
     const response = await fetch(ENDPOINTS.session.logout, {
-      ...requestOptionsFactory('POST'),
-      credentials: 'same-origin',
+      ...requestOptionsFactory('POST', true),
     });
     return response.status === HTTP_SUCCESS;
   } catch (err) {

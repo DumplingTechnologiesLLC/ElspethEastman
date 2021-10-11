@@ -1,4 +1,4 @@
-import ENDPOINTS from './endpoints';
+import ENDPOINTS from './api/endpoints';
 import {
   createProject,
   retrieveProjects,
@@ -32,6 +32,7 @@ import {
 } from './api/footer';
 
 import submitContactMe from './api/contact';
+import { login, logout, validateSession } from './api/auth';
 
 class API {
   constructor() {
@@ -93,6 +94,15 @@ class API {
   createAffiliation = createAffiliation
 
   retrieveAffiliations = retrieveAffiliations
+
+  /**
+   * Authentication API calls
+   */
+  login = login
+
+  logout = logout
+
+  validateSession = validateSession
 }
 
 const apiInstance = new API();

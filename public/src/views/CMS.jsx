@@ -10,11 +10,11 @@ import CMSNavbar from '@Components/CMS/CMSNavbar';
 import Music from '@Components/LandingPage/Music';
 import EditableProjects from '@Components/CMS/EditableProjects.contextual';
 import EditableExperience from '@Components/CMS/EditableExperience.contextual';
-import routes from '@App/routes';
+import routes from '@App/router/routes';
 import DisabledSectionContainer from '@Components/DisabledSectionContainer';
 import EditablePageFooter from '@Components/CMS/EditablePageFooter.contextual';
 
-const StyledCMSContent = styled.div`
+export const StyledCMSContent = styled.div`
   padding: 0 50px;
   ${({ theme }) => css`
     ${theme.mixins.navbarBreakpoint(css`

@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import NavbarBrandImage from '@Assets/NavbarBrand.webp';
 import { ReactComponent as HamburgerMenu } from '@Assets/svg/HamburgerMenu.svg';
-import routes from '@App/routes';
+import routes from '@App/router/routes';
 import {
   StyledNav,
   StyledNavItems,

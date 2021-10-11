@@ -24,7 +24,7 @@ class Endpoints {
   endpoints() {
     return {
       session: {
-        validate: `${this.baseEndpoints.session}`,
+        validate: `${this.baseEndpoints.session}/`,
         login: `${this.baseEndpoints.session}/login/`,
         logout: `${this.baseEndpoints.session}/logout/`,
       },

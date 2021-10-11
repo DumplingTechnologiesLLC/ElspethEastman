@@ -10,7 +10,7 @@ import { ToastContext, DEFAULT_ERROR_MESSAGE_TITLE } from '@Components/ToastMana
 import FailedToLoad from '@Components/FailedToLoad';
 import { WrappedCenteredContent } from '@Components/Layout/PageLayout';
 import API from '@App/api';
-import routes from '@App/routes';
+import routes from '@App/router/routes';
 import { HTTP_NETWORK_ERROR, HTTP_SERVER_ERROR } from '@App/api/utils';
 
 const CenteredButtonGroup = styled(ButtonGroup)`

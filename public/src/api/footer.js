@@ -1,4 +1,4 @@
-import ENDPOINTS from '@App/endpoints';
+import ENDPOINTS from '@App/api/endpoints';
 import { responseFactory } from './utils';
 
 export const retrieveFooterData = async () => {

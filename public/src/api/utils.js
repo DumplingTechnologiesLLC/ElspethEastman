@@ -125,9 +125,9 @@ export const responseFactory = async (response) => {
  * @param {String} method what HTTP method to make
  * @returns
  */
-export const requestOptionsFactory = (method) => {
+export const requestOptionsFactory = (method, sendCredentials) => {
   const csrftoken = getCookie('csrftoken');
-  return {
+  const options = {
     method,
     cache: 'no-cache',
     headers: {
@@ -135,4 +135,8 @@ export const requestOptionsFactory = (method) => {
       'Content-Type': 'application/json',
     },
   };
+  if (sendCredentials) {
+    options.credentials = 'same-origin';
+  }
+  return options;
 };

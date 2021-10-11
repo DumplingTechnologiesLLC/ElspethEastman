@@ -4,6 +4,7 @@ export const routes = {
   cms: '/cms',
   // mail: '/cms/messages',
   logout: '/logout',
+  login: '/login',
 };
 
 export const routesReverseLookup = Object.entries(routes).reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});

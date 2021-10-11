@@ -1,4 +1,4 @@
-import ENDPOINTS from '../endpoints';
+import ENDPOINTS from './endpoints';
 import { responseFactory, requestOptionsFactory } from './utils';
 
 export const deleteAffiliation = async (id) => {

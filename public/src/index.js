@@ -5,6 +5,11 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createGlobalStyle } from 'styled-components'
 import './assets/fonts.css';
+import {
+  BrowserRouter as Router,
+} from 'react-router-dom';
+import ElspethTheme from '@App/theme';
+import ToastManager from '@Components/ToastManager';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -16,7 +21,13 @@ const GlobalStyle = createGlobalStyle`
 ReactDOM.render(
   <React.StrictMode>
     <GlobalStyle />
-    <App />
+    <Router>
+      <ElspethTheme>
+        <ToastManager>
+          <App />
+        </ToastManager>
+      </ElspethTheme>
+    </Router>
   </React.StrictMode>,
   document.getElementById('root'),
 );

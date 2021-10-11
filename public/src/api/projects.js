@@ -1,4 +1,4 @@
-import ENDPOINTS from '../endpoints';
+import ENDPOINTS from './endpoints';
 import { requestOptionsFactory, responseFactory } from './utils';
 
 export const retrieveProjects = async () => {
