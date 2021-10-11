@@ -17,6 +17,7 @@ from rest_framework import viewsets, status, mixins
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from core.mixins import ProtectCUDWithTokenMixin, retrieve_request_db_token
 
 from core.models import Affiliations, Contact, Experience, FooterStat, Project, Skills
 from core.serializers import (
@@ -71,6 +72,7 @@ class ContactViewSet(
 
 
 class SkillViewSet(
+    ProtectCUDWithTokenMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
@@ -108,8 +110,8 @@ class SkillViewSet(
         })
 
     def patch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         item = self.get_queryset()
         serializer = self.get_serializer(data=request.data, instance=item)
         if not serializer.is_valid():
@@ -119,6 +121,7 @@ class SkillViewSet(
 
 
 class ProjectViewSet(
+        ProtectCUDWithTokenMixin,
         mixins.ListModelMixin,
         mixins.CreateModelMixin,
         mixins.UpdateModelMixin,
@@ -132,8 +135,8 @@ class ProjectViewSet(
 
     @action(detail=False, methods=['PATCH'], name='Update a group of projects at once')
     def batch_update(self, request):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         validated_serializers = []
         for item in request.data:
             try:
@@ -158,15 +161,15 @@ class ProjectViewSet(
         raise MethodNotAllowed('PUT', detail='Use Patch')
 
     def destroy(self, request, pk):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         project = get_object_or_404(Project, pk=pk)
         project.delete()
         return Response({'message': 'Success'})
 
     def create(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response({
@@ -177,8 +180,8 @@ class ProjectViewSet(
         return Response({'message': "Success", 'project': self.get_serializer(project).data})
 
     def patch(self, request, pk,):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         project = self.get_object(pk)
         serializer = self.get_serializer(project, data=request.data)
         if not serializer.is_valid():
@@ -242,6 +245,7 @@ class FooterViewSet(
 
 
 class AffiliationViewSet(
+    ProtectCUDWithTokenMixin,
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
@@ -258,15 +262,15 @@ class AffiliationViewSet(
         raise MethodNotAllowed('PUT', detail='Use Patch')
 
     def destroy(self, request, pk):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         project = get_object_or_404(Affiliations, pk=pk)
         project.delete()
         return Response({'message': 'Success'})
 
     def create(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -274,8 +278,8 @@ class AffiliationViewSet(
         return Response(self.get_serializer(project).data)
 
     def patch(self, request, pk,):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         affiliation = get_object_or_404(Affiliations, pk=pk)
         serializer = self.get_serializer(affiliation, data=request.data)
         if not serializer.is_valid():
@@ -289,6 +293,7 @@ class AffiliationViewSet(
 
 
 class ExperienceViewSet(
+        ProtectCUDWithTokenMixin,
         mixins.ListModelMixin,
         mixins.CreateModelMixin,
         mixins.RetrieveModelMixin,
@@ -319,8 +324,8 @@ class ExperienceViewSet(
         return Response(serializer.data)
 
     def patch(self, request, pk,):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         project = get_object_or_404(self.model, pk=pk)
         serializer = self.creation_serializer(project, data=request.data)
         if not serializer.is_valid():
@@ -332,15 +337,15 @@ class ExperienceViewSet(
         raise MethodNotAllowed('PUT', detail='Use Patch')
 
     def destroy(self, request, pk):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         experience = get_object_or_404(self.model, pk=pk)
         experience.delete()
         return Response({'message': 'Success'})
 
     def create(self, request):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
         data = request.data
         serializer = self.creation_serializer(data=data)
         if serializer.is_valid():
@@ -363,35 +368,37 @@ class AuthenticatedClient(LoginRequiredMixin, View):
         return render(request, 'build/index.html', {})
 
 
-@require_POST
-def login_view(request):
-    data = json.loads(request.body)
-    username = data.get('username')
-    password = data.get('password')
+# @require_POST
+# def login_view(request):
+#     data = json.loads(request.body)
+#     username = data.get('username')
+#     password = data.get('password')
 
-    if username is None or password is None:
-        return JsonResponse({'detail': 'Please provide username and password.'}, status=status.HTTP_400_BAD_REQUEST)
+#     if username is None or password is None:
+#         return JsonResponse({'detail': 'Please provide username and password.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    user = authenticate(username=username, password=password)
+#     user = authenticate(username=username, password=password)
 
-    if user is None:
-        return JsonResponse({'detail': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
+#     if user is None:
+#         return JsonResponse({'detail': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    login(request, user)
-    return JsonResponse({'detail': 'Successfully logged in.'})
+#     login(request, user)
+#     return JsonResponse({'detail': 'Successfully logged in.'})
 
 
 def logout_view(request):
-    if not request.user.is_authenticated:
+    token = retrieve_request_db_token(request)
+    if token is None:
         return JsonResponse({'detail': 'You\'re not logged in.'}, status=status.HTTP_400_BAD_REQUEST)
-
-    logout(request)
+    token.delete()
     return JsonResponse({'detail': 'Successfully logged out.'})
 
 
 @ensure_csrf_cookie
 def session_view(request):
-    if not request.user.is_authenticated:
+    token = retrieve_request_db_token(request)
+    if token is None:
         return JsonResponse({'isAuthenticated': False})
-
+    token.created = timezone.now()
+    token.save()
     return JsonResponse({'isAuthenticated': True})

@@ -1,4 +1,5 @@
 import { DEFAULT_ERROR_MESSAGE_TITLE, flavors } from '@Components/ToastManager';
+import { getAuthToken } from '@App/auth/index';
 
 export const getCookie = (name) => {
   let cookieValue = null;
@@ -82,6 +83,7 @@ export const performAPIAction = async (
       REQUEST_FORBIDDEN_MESSAGE,
       flavors.error,
     );
+    return responseFactory(NULL_RESPONSE);
   }
   return response;
 };
@@ -137,6 +139,7 @@ export const requestOptionsFactory = (method, sendCredentials) => {
   };
   if (sendCredentials) {
     options.credentials = 'same-origin';
+    options.headers.Authorization = `Token ${getAuthToken()}`;
   }
   return options;
 };

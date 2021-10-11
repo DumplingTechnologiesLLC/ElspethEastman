@@ -16,7 +16,7 @@ import {
   StyledNavbarButton,
   StyledNavBrand,
 } from '@Components/LandingPage/Navbar';
-import AuthContext from '@App/router/AuthContext';
+import { AuthContext } from '@App/Auth';
 
 const NavbarTitle = styled.h1`
   ${({ theme }) => css`
@@ -39,7 +39,7 @@ const ContentManagementNavHeader = styled.a`
 `;
 
 export const CMSNavbar = () => {
-  const { isAuthenticated, logout, goToLogin } = useContext(AuthContext);
+  const { isAuthenticated, logout, goToLoginPage } = useContext(AuthContext);
   const [collapsed, setCollapsed] = useState(false);
   const [transitioned, setTransitioned] = useState(false);
 
@@ -129,7 +129,7 @@ export const CMSNavbar = () => {
         <StyledNavItem>
           <StyledNavLink
             href="#"
-            onClick={isAuthenticated ? () => logout() : () => goToLogin()}
+            onClick={isAuthenticated ? () => logout() : () => goToLoginPage()}
           >
             {isAuthenticated ? (
               <>

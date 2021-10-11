@@ -2,7 +2,7 @@ import routes from '@App/router/routes';
 import { useContext } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import AuthContext from './AuthContext';
+import { AuthContext } from '@App/Auth';
 
 const PrivateRoute = ({ children, ...rest }) => {
   const { isAuthenticated } = useContext(AuthContext);

@@ -1,4 +1,4 @@
-import { HTTP_SUCCESS, performAPIAction } from '@App/api/utils';
+import { HTTP_BAD_SUBMISSION, HTTP_SUCCESS, performAPIAction } from '@App/api/utils';
 import PrimaryButton from '@Components/Buttons/PrimaryButton';
 import CMSNavbar from '@Components/CMS/CMSNavbar';
 import FormInput from '@Components/Form/FormInput';
@@ -90,9 +90,9 @@ const Login = ({ onLogin }) => {
         flavors.success,
       );
       setTimeout(() => {
-        onLogin(true);
+        onLogin(response.data.token);
       }, 1000);
-    } else {
+    } else if (response.status === HTTP_BAD_SUBMISSION) {
       badLoginToast();
       setErrors({
         ...errors,

@@ -10,6 +10,7 @@ import {
 } from 'react-router-dom';
 import ElspethTheme from '@App/theme';
 import ToastManager from '@Components/ToastManager';
+import Auth from './Auth';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -24,7 +25,9 @@ ReactDOM.render(
     <Router>
       <ElspethTheme>
         <ToastManager>
-          <App />
+          <Auth>
+            <App />
+          </Auth>
         </ToastManager>
       </ElspethTheme>
     </Router>
