@@ -60,6 +60,13 @@ const Login = ({ onLogin }) => {
       flavors.error,
     );
   };
+
+  const submitOnEnter = (event) => {
+    if (event.key === 'Enter') {
+      handleLogin();
+    }
+  };
+
   const handleLogin = async () => {
     if (!loginInformation.username) {
       setErrors({
@@ -115,6 +122,7 @@ const Login = ({ onLogin }) => {
                 setLoginInformation({ ...loginInformation, username: value });
                 setErrors({ ...errors, username: '' });
               }}
+              onKeyPress={submitOnEnter}
               hasErrors={errors.username}
               errorMessage={errors.username}
               value={loginInformation.username}
@@ -127,6 +135,7 @@ const Login = ({ onLogin }) => {
                 setLoginInformation({ ...loginInformation, password: value });
                 setErrors({ ...errors, password: '' });
               }}
+              onKeyPress={submitOnEnter}
               hasErrors={errors.password}
               errorMessage={errors.password}
               value={loginInformation.password}

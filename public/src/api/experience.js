@@ -3,7 +3,7 @@ import { responseFactory, requestOptionsFactory } from './utils';
 
 export const deleteExperience = async (id) => {
   try {
-    const response = await fetch(`${ENDPOINTS.experience.list}${id}/`, requestOptionsFactory('DELETE'));
+    const response = await fetch(`${ENDPOINTS.experience.list}${id}/`, requestOptionsFactory('DELETE', true));
     return await responseFactory(response);
   } catch (error) {
     return null;
@@ -13,7 +13,7 @@ export const deleteExperience = async (id) => {
 export const updateExperience = async (data, id) => {
   try {
     const response = await fetch(`${ENDPOINTS.experience.list}${id}/`, {
-      ...requestOptionsFactory('PATCH'),
+      ...requestOptionsFactory('PATCH', true),
       body: JSON.stringify(data),
     });
     return await responseFactory(response);
@@ -25,7 +25,7 @@ export const updateExperience = async (data, id) => {
 export const createExperience = async (data) => {
   try {
     const response = await fetch(`${ENDPOINTS.experience.list}`, {
-      ...requestOptionsFactory('POST'),
+      ...requestOptionsFactory('POST', true),
       body: JSON.stringify(data),
     });
     return await responseFactory(response);

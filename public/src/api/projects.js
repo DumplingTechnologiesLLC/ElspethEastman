@@ -16,7 +16,7 @@ export const retrieveProjects = async () => {
 export const createProject = async (data) => {
   try {
     const response = await fetch(`${ENDPOINTS.projects.list}`, {
-      ...requestOptionsFactory('POST'),
+      ...requestOptionsFactory('POST', true),
       body: JSON.stringify(data),
     });
     return await responseFactory(response);
@@ -28,7 +28,7 @@ export const createProject = async (data) => {
 export const updateAllProjects = async (data) => {
   try {
     const response = await fetch(`${ENDPOINTS.projects.list}batch_update/`, {
-      ...requestOptionsFactory('PATCH'),
+      ...requestOptionsFactory('PATCH', true),
       body: JSON.stringify(data),
     });
     return await responseFactory(response);
@@ -39,7 +39,7 @@ export const updateAllProjects = async (data) => {
 
 export const deleteProject = async (id) => {
   try {
-    const response = await fetch(`${ENDPOINTS.projects.list}${id}/`, requestOptionsFactory('DELETE'));
+    const response = await fetch(`${ENDPOINTS.projects.list}${id}/`, requestOptionsFactory('DELETE', true));
     return await responseFactory(response);
   } catch (error) {
     return null;
@@ -49,7 +49,7 @@ export const deleteProject = async (id) => {
 export const updateProject = async (data, id) => {
   try {
     const response = await fetch(`${ENDPOINTS.projects.list}${id}/`, {
-      ...requestOptionsFactory('PATCH'),
+      ...requestOptionsFactory('PATCH', true),
       body: JSON.stringify(data),
     });
     return await responseFactory(response);

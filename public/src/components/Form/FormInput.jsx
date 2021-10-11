@@ -57,7 +57,7 @@ const commonInputProps = {
 export const FormInput = ({
   autoFocus, label, type, value, onChange,
   name, placeholder, errorMessage, hasError,
-  inputCaps,
+  inputCaps, onKeyPress,
 }) => {
   const inputEl = useRef(null);
   useEffect(() => {
@@ -87,6 +87,7 @@ export const FormInput = ({
         type={type}
         error={hasError}
         onChange={(e) => onChange(e.target.value)}
+        onKeyPress={onKeyPress}
         name={name}
         value={value}
         placeholder={placeholder}
@@ -198,7 +199,7 @@ FormInput.propTypes = {
   type: PropTypes.string.isRequired,
   autoFocus: PropTypes.bool,
   placeholder: PropTypes.string,
-
+  onKeyPress: PropTypes.func,
   hasError: PropTypes.bool,
   errorMessage: PropTypes.oneOfType([
     PropTypes.string,

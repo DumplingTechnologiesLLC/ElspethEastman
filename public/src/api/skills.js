@@ -4,7 +4,7 @@ import { requestOptionsFactory, responseFactory } from './utils';
 export const updateSkills = async (data) => {
   try {
     const response = await fetch(ENDPOINTS.skills.list, {
-      ...requestOptionsFactory('PATCH'),
+      ...requestOptionsFactory('PATCH', true),
       body: JSON.stringify(data),
     });
     return await responseFactory(response);

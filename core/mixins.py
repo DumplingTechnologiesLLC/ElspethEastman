@@ -33,6 +33,7 @@ class ProtectCUDWithTokenMixin:
             db_token = Token.objects.filter(key=request_token)
             if not db_token.exists():
                 return JsonResponse({"detail": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
+            db_token = db_token.first()
             if db_token.created < (timezone.now() - timedelta(days=1)):
                 db_token.delete()
                 return JsonResponse({"detail": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
