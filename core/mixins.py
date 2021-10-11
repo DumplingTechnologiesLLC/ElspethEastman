@@ -2,6 +2,8 @@ from django.core.exceptions import PermissionDenied
 from rest_framework.authtoken.models import Token
 from datetime import timedelta
 from django.utils import timezone
+from django.http import JsonResponse
+from rest_framework import status
 
 
 def retrieve_token(token):
@@ -30,8 +32,8 @@ class ProtectCUDWithTokenMixin:
             request_token = retrieve_request_token(request)
             db_token = Token.objects.filter(key=request_token)
             if not db_token.exists():
-                raise PermissionDenied
+                return JsonResponse({"detail": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
             if db_token.created < (timezone.now() - timedelta(days=1)):
                 db_token.delete()
-                raise PermissionDenied
+                return JsonResponse({"detail": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
         return super().dispatch(request, *args, **kwargs)
