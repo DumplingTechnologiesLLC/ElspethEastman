@@ -1,7 +1,7 @@
 from core.views import (
     Client, ContactViewSet, ExperienceViewSet, FooterViewSet,
     PaginatedProjectViewSet, ProjectViewSet, SkillViewSet,
-    AffiliationViewSet,  logout_view, session_view, AuthenticatedClient
+    AffiliationViewSet,  logout_view, session_view
 )
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework import routers
@@ -19,8 +19,8 @@ router.register(r"projects/paginated", PaginatedProjectViewSet,
                 basename="projects-paginated")
 
 urlpatterns = [
-    path('cms/', AuthenticatedClient.as_view(), name="client-cms-slash"),
-    path('cms', AuthenticatedClient.as_view(), name="client-cms"),
+    path('cms/', Client.as_view(), name="client-cms-slash"),
+    path('cms', Client.as_view(), name="client-cms"),
     path('login/', Client.as_view(), name="client-login-slash"),
     path('login', Client.as_view(), name="client-login"),
     path('projects/', Client.as_view(), name="client-projects-slash"),
