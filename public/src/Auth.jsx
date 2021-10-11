@@ -45,6 +45,7 @@ const Auth = ({ children }) => {
         'Successfully logged off',
         flavors.success,
       );
+      setIsAuthenticated(false);
       deleteAuthToken();
       goToLoginPage();
     } else {
