@@ -168,6 +168,7 @@ export const Navbar = ({ handleContactMe }) => {
       }
     };
     window.addEventListener('resize', handleResize);
+    handleResize();
     return () => {
       window.removeEventListener('resize', handleResize);
     };

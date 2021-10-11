@@ -11,7 +11,7 @@ import FailedToLoad from '@Components/FailedToLoad';
 import { WrappedCenteredContent } from '@Components/Layout/PageLayout';
 import API from '@App/api';
 import routes from '@App/router/routes';
-import { HTTP_NETWORK_ERROR, HTTP_SERVER_ERROR } from '@App/api/utils';
+import { HTTP_NETWORK_ERROR, HTTP_SERVER_ERROR, performAPIAction } from '@App/api/utils';
 
 const CenteredButtonGroup = styled(ButtonGroup)`
   margin: 0 auto;
@@ -34,7 +34,7 @@ export const LatestProjects = () => {
   useEffect(() => {
     const fetchPaginatedProjects = async (page) => {
       setLoaded(true);
-      const response = await API.retrievePaginatedProjects(page);
+      const response = await performAPIAction(API.retrievePaginatedProjects, page, null, toast);
       if ([HTTP_NETWORK_ERROR, HTTP_SERVER_ERROR].some((status) => status === response.status)) {
         toast(
           DEFAULT_ERROR_MESSAGE_TITLE,
