@@ -177,6 +177,8 @@ class ProjectViewSet(
                 'errors': serializer.errors,
                 'id': -1}, status=status.HTTP_400_BAD_REQUEST)
         project = serializer.save()
+        project.uuid = project.id
+        project.save()
         return Response({'message': "Success", 'project': self.get_serializer(project).data})
 
     def patch(self, request, pk,):
