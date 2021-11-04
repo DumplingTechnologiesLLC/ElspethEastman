@@ -24,11 +24,15 @@ class ContactAdmin(admin.ModelAdmin):
     list_filter = ['sent']
     ordering = ['-date_created']
     actions = [resend]
+    
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ['title', 'uuid']
+    ordering = ['-uuid']
 
 
 admin.site.register(Experience)
 admin.site.register(FooterStat)
 admin.site.register(Affiliations)
-admin.site.register(Project)
+admin.site.register(Project, ProjectAdmin)
 admin.site.register(Skills)
 admin.site.register(Contact, ContactAdmin)
