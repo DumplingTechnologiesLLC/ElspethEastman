@@ -72,7 +72,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'src',
-            'title'
+            'title',
+            'uuid'
         )
 
 

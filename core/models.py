@@ -67,6 +67,16 @@ class Affiliations(models.Model):
 class Project(models.Model):
     src = models.CharField("Source", max_length=200)
     title = models.CharField("Title", max_length=1000)
+    uuid = models.IntegerField('UUID', blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.date_created = timezone.now()
+            self.uuid = self.id
+
+        if not self.uuid:
+            self.uuid = self.id
+        return super(Project, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.title
