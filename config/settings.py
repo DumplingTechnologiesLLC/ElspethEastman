@@ -16,7 +16,8 @@ PROJECT_ROOT = environ.Path(__file__) - 2
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, True),
-    HEROKU=(bool, False)
+    HEROKU=(bool, False),
+    SSL_REDIRECT=(bool, False),
 )
 
 SECRET_KEY = env("SECRET_KEY")
@@ -28,7 +29,7 @@ HEROKU = env("HEROKU")
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-SECURE_SSL_REDIRECT = env("SSL_REDIRECT", False)
+SECURE_SSL_REDIRECT = env("SSL_REDIRECT")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
