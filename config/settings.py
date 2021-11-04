@@ -158,7 +158,7 @@ USE_L10N = True
 
 USE_TZ = True
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'public', 'build', 'static')
+    os.path.join(PROJECT_ROOT, 'public', 'build', 'static'),
 )
 if not DEBUG:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
