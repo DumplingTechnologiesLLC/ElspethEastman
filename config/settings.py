@@ -127,14 +127,16 @@ if DEBUG:
     DEFAULT_TO_EMAIL = 'debugrecipient@localhost.com'
     EMAIL_USE_TLS = False
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.mailgun.org'
-    EMAIL_PORT = 587
-    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+#     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#     EMAIL_HOST = 'smtp.mailgun.org'
+#     EMAIL_PORT = 587
+#     EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+#     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+    EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
     DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+    SERVER_EMAIL = env('DEFAULT_FROM_EMAIL')
     DEFAULT_TO_EMAIL = env('DEFAULT_TO_EMAIL')
-    EMAIL_USE_TLS = True
+#     EMAIL_USE_TLS = True
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
