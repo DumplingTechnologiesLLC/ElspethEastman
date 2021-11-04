@@ -76,7 +76,7 @@ export const LatestProjects = () => {
           Load more
 
         </SecondaryButton>
-        <SecondaryButton>See all projects</SecondaryButton>
+        <SecondaryButton onClick={() => history.push(routes.projects)}>See all projects</SecondaryButton>
       </CenteredButtonGroup>
     </SpottedSection>
   );

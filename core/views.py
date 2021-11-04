@@ -131,7 +131,7 @@ class ProjectViewSet(
     serializer_class = ProjectSerializer
 
     def get_queryset(self):
-        return Project.objects.all().order_by('id')
+        return Project.objects.all().order_by('-id')
 
     @action(detail=False, methods=['PATCH'], name='Update a group of projects at once')
     def batch_update(self, request):
@@ -203,7 +203,7 @@ class PaginatedProjectViewSet(
     PAGE_SIZE = 4
 
     def get_queryset(self):
-        return Project.objects.all().order_by('id')
+        return Project.objects.all().order_by('-id')
 
     def list(self, request, *args, **kwargs):
         if 'page' not in request.GET:
