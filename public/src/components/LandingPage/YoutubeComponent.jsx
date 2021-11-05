@@ -59,13 +59,15 @@ const ComponentContainer = styled.div`
     margin-bottom: ${theme.spacing.xl};
     max-width: ${block ? '100%' : theme.videoSize}
     width: 100%;
+    min-height: 368px;
   `}
 `;
 const StyledIframe = styled.iframe`
   ${(props) => css`
     margin-top: ${props.theme.spacing.lg};
     height: 270px;
-    width: 100%;
+    width: 480px;
+    max-width: 100%;
   `}
 `;
 const VideoThumbnailContainer = styled.div`
