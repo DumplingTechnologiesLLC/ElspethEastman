@@ -2,6 +2,7 @@ from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
+from django.db.models import Max
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, get_object_or_404
@@ -177,7 +178,7 @@ class ProjectViewSet(
                 'errors': serializer.errors,
                 'id': -1}, status=status.HTTP_400_BAD_REQUEST)
         project = serializer.save()
-        project.uuid = project.id
+        project.uuid = Project.objects.aggregate(Max('uuid'))['uuid__max']
         project.save()
         return Response({'message': "Success", 'project': self.get_serializer(project).data})
 
