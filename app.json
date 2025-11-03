@@ -1,0 +1,72 @@
+{
+  "name": "ElspethEastman",
+  "description": "Elspeth Eastman's portfolio and CMS",
+  "stack": "heroku-24",
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:essential-0"
+    }
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "env": {
+    "DEBUG": {
+      "description": "Enable debug mode",
+      "value": "True"
+    },
+    "HEROKU": {
+      "description": "Running on Heroku",
+      "value": "True"
+    },
+    "SSL_REDIRECT": {
+      "description": "Force SSL redirects",
+      "value": "False"
+    },
+    "SECRET_KEY": {
+      "description": "Django secret key",
+      "generator": "secret"
+    },
+    "CONTACT_EMAIL": {
+      "description": "Contact email address",
+      "value": "elspeth@elspetheastman.com"
+    },
+    "DEFAULT_FROM_EMAIL": {
+      "description": "Default from email",
+      "value": "postmaster@mg.elspetheastman.com"
+    },
+    "DEFAULT_TO_EMAIL": {
+      "description": "Default to email",
+      "value": "elspeth@elspetheastman.com"
+    },
+    "MAILGUN_API_KEY": {
+      "description": "Mailgun API key",
+      "required": false
+    },
+    "MAILGUN_SENDER_DOMAIN": {
+      "description": "Mailgun sender domain",
+      "value": "mg.elspetheastman.com",
+      "required": false
+    }
+  },
+  "environments": {
+    "review": {
+      "stack": "heroku-24",
+      "addons": [
+        "heroku-postgresql:essential-0"
+      ]
+    }
+  },
+  "scripts": {
+    "postdeploy": "python manage.py migrate --run-syncdb"
+  }
+}
+
