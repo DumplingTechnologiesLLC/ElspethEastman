@@ -3,6 +3,10 @@ const { spawnSync } = require('node:child_process');
 const { mkdirSync, writeFileSync, readFileSync, unlinkSync } = require('node:fs');
 const { root, python, environment } = require('./environment.cjs');
 
+test('deliberate Playwright gate canary that must never merge', async () => {
+  expect('intentional regression').toBe('blocked by required Playwright check');
+});
+
 test('public response shapes and fixture content match the current contract', async ({ request }) => {
   const responses = {};
   for (const path of ['/api/skills/', '/api/footerstats/', '/api/experience/', '/api/affiliations/', '/api/projects/list/', '/api/projects/paginated/?page=1']) {
