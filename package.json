@@ -1,0 +1,9 @@
+{
+  "name": "elspeth-eastman-deployment",
+  "private": true,
+  "engines": {"node": "22.x", "yarn": "1.22.22"},
+  "scripts": {
+    "build": "node scripts/build-frontend.cjs",
+    "heroku-postbuild": "node scripts/build-frontend.cjs"
+  }
+}

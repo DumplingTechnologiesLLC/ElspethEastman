@@ -15,13 +15,16 @@
   ],
   "buildpacks": [
     {
+      "url": "heroku/nodejs"
+    },
+    {
       "url": "heroku/python"
     }
   ],
   "env": {
     "DEBUG": {
       "description": "Enable debug mode",
-      "value": "True"
+      "value": "False"
     },
     "HEROKU": {
       "description": "Running on Heroku",
@@ -29,7 +32,7 @@
     },
     "SSL_REDIRECT": {
       "description": "Force SSL redirects",
-      "value": "False"
+      "value": "True"
     },
     "SECRET_KEY": {
       "description": "Django secret key",
@@ -37,24 +40,23 @@
     },
     "CONTACT_EMAIL": {
       "description": "Contact email address",
-      "value": "elspeth@elspetheastman.com"
+      "value": "preview@example.invalid"
     },
     "DEFAULT_FROM_EMAIL": {
       "description": "Default from email",
-      "value": "postmaster@mg.elspetheastman.com"
+      "value": "preview@example.invalid"
     },
     "DEFAULT_TO_EMAIL": {
       "description": "Default to email",
-      "value": "elspeth@elspetheastman.com"
+      "value": "preview@example.invalid"
     },
-    "MAILGUN_API_KEY": {
-      "description": "Mailgun API key",
-      "required": false
+    "DEPLOYMENT_ENV": {
+      "value": "review",
+      "description": "Non-production environment identity"
     },
-    "MAILGUN_SENDER_DOMAIN": {
-      "description": "Mailgun sender domain",
-      "value": "mg.elspetheastman.com",
-      "required": false
+    "EMAIL_BACKEND": {
+      "value": "django.core.mail.backends.console.EmailBackend",
+      "description": "Capture review-app mail in logs instead of delivering it"
     }
   },
   "environments": {
@@ -64,9 +66,5 @@
         "heroku-postgresql:essential-0"
       ]
     }
-  },
-  "scripts": {
-    "postdeploy": "python manage.py migrate --run-syncdb"
   }
 }
-

@@ -1,0 +1,83 @@
+name: CI
+on:
+  push:
+    branches-ignore: [master]
+  pull_request:
+    branches: [development, master]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: yarn
+          cache-dependency-path: public/yarn.lock
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile --non-interactive
+        working-directory: public
+      - run: yarn test --watchAll=false --runInBand
+        working-directory: public
+        env:
+          CI: 'true'
+      - run: yarn build
+        env:
+          CI: 'true'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: public/build
+          retention-days: 7
+  backend:
+    name: Backend
+    needs: frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: elspeth_ci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s
+          --health-timeout 5s --health-retries 5
+    env:
+      SECRET_KEY: ci-only-not-a-production-secret
+      CONTACT_EMAIL: ci@example.invalid
+      DEFAULT_FROM_EMAIL: ci@example.invalid
+      DEFAULT_TO_EMAIL: ci@example.invalid
+      DEBUG: 'False'
+      HEROKU: 'False'
+      DEPLOYMENT_ENV: ci
+      EMAIL_BACKEND: django.core.mail.backends.locmem.EmailBackend
+      DATABASE_URL: postgres://postgres:ci-only-password@localhost:5432/elspeth_ci
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pip check
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: public/build
+      - run: python manage.py collectstatic --noinput
+      - run: python manage.py check
+      - run: python manage.py makemigrations --check --dry-run
+      - run: python manage.py migrate --noinput
+      - run: python manage.py migrate --noinput
+      - run: python manage.py test --noinput
