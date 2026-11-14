@@ -32,6 +32,11 @@ module.exports = defineConfig({
   },
   projects: [
     { name: 'api', testMatch: '**/api.spec.cjs', use: { browserName: 'chromium' } },
+    ...(process.platform === 'linux' ? [{
+      name: 'visual',
+      testMatch: '**/visual.spec.cjs',
+      use: { browserName: 'chromium', deviceScaleFactor: 1 },
+    }] : []),
     ...['chromium', 'firefox', 'webkit'].map(browserName => ({
       name: browserName,
       testIgnore: ['**/visual.spec.cjs', '**/api.spec.cjs'],
@@ -42,11 +47,6 @@ module.exports = defineConfig({
       testMatch: '**/{public,contact}.spec.cjs',
       use: { ...devices['iPhone 13'], browserName, defaultBrowserType: browserName },
     })),
-    ...(process.platform === 'linux' ? [{
-      name: 'visual',
-      testMatch: '**/visual.spec.cjs',
-      use: { browserName: 'chromium', deviceScaleFactor: 1 },
-    }] : []),
   ],
   webServer: {
     command: 'node e2e/start-server.cjs',

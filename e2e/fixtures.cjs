@@ -66,6 +66,22 @@ async function actionResponse(page, method, path, action, status = 200) {
 }
 
 async function stablePage(page) {
+  const pathname = new URL(page.url()).pathname;
+  if (['/', '/projects', '/cms'].includes(pathname)) {
+    for (const label of ['Fixture games', 'Fixture voices', 'Fixture broadcasts']) {
+      await expect(page.getByText(label, { exact: true })).toBeVisible();
+    }
+    if (pathname === '/cms') {
+      await expect(page.locator('input[name="affiliationText"][value="Fixture Studio"]')).toHaveCount(1);
+    } else {
+      await expect(page.getByRole('link', { name: 'Fixture Studio', exact: true })).toBeVisible();
+    }
+  }
+  if (['/', '/cms'].includes(pathname)) {
+    for (const credit of ['(2021) Fixture Voice Credits', '(2022) Fixture Music - Games', '(2023) Fixture Music - Miscellaneous', '(TBA) Fixture Streaming - Credits']) {
+      await expect(page.getByRole('link', { name: credit, exact: true })).toBeVisible();
+    }
+  }
   await page.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all(Array.from(document.images, image => image.decode().catch(() => {})));
