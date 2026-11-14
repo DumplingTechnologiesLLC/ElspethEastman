@@ -31,6 +31,7 @@ export class BrowserHttp implements Http {
     method: Method = 'GET',
     body?: unknown,
     authenticated = false,
+    responseType: 'json' | 'status' = 'json',
   ): Promise<Reply<T>> {
     try {
       const csrf =
@@ -56,6 +57,8 @@ export class BrowserHttp implements Http {
       );
       if (method === 'GET' && !response.ok)
         return { status: null, data: null as T };
+      if (responseType === 'status')
+        return { status: response.status, data: null as T };
       return { status: response.status, data: (await response.json()) as T };
     } catch {
       return { status: null, data: null as T };

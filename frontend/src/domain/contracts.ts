@@ -28,6 +28,7 @@ export interface Http {
     method?: Method,
     body?: unknown,
     authenticated?: boolean,
+    responseType?: 'json' | 'status',
   ) => Promise<Reply<T>>;
 }
 export interface Toast {

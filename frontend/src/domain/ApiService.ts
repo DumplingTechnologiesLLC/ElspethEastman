@@ -6,6 +6,26 @@ export interface Api {
     body?: unknown,
   ) => Promise<Reply<T | null>>;
 }
+export function announceFailure(
+  notifications: Notifications,
+  status: number | null,
+): boolean {
+  if (status === null) notifications.show('Error', 'Network error', 'error');
+  else if (status === 500)
+    notifications.show(
+      'Error',
+      'There was a server error. Please try again later',
+      'error',
+    );
+  else if (status === 403)
+    notifications.show(
+      'Forbidden',
+      'Your session has expired. Please log in again.',
+      'error',
+    );
+  else return false;
+  return true;
+}
 export class ApiService implements Api {
   constructor(
     private http: Http,
@@ -22,22 +42,9 @@ export class ApiService implements Api {
       body,
       method !== 'GET' && path !== '/api/contact-me/',
     );
-    if (reply.status === null)
-      this.notifications.show('Error', 'Network error', 'error');
-    else if (reply.status === 500)
-      this.notifications.show(
-        'Error',
-        'There was a server error. Please try again later',
-        'error',
-      );
-    else if (reply.status === 403)
-      this.notifications.show(
-        'Forbidden',
-        'Your session has expired. Please log in again.',
-        'error',
-      );
-    else return reply;
-    return { status: null, data: null };
+    return announceFailure(this.notifications, reply.status)
+      ? { status: null, data: null }
+      : reply;
   }
 }
 export function submissionToast(

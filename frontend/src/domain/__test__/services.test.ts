@@ -203,7 +203,7 @@ describe('sessions', () => {
     expect(ports.tokens.read()).toBeNull();
     expect(ports.navigation.go).toHaveBeenCalledWith('/login');
   });
-  it.each([null, 400])(
+  it.each([400, 500])(
     'retains authentication when logout fails with %s',
     async (status) => {
       const ports = fixturePorts();
@@ -827,5 +827,50 @@ it('bulk-saves edited project fields after clearing their validation errors', as
     '/api/projects/list/batch_update/',
     'PATCH',
     [{ ...project, title: 'Edited' }],
+  );
+});
+it('preserves login network-error notifications', async () => {
+  const ports = fixturePorts();
+  const notifications = fakeNotifications();
+  const service = new SessionService(
+    ports.http,
+    ports.tokens,
+    ports.navigation,
+    notifications,
+    ports.clock,
+  );
+  service.change('username', 'Editor');
+  service.change('password', 'Password');
+  vi.mocked(ports.http.request).mockResolvedValueOnce(reply(null, null));
+  await service.login();
+  expect(notifications.show).toHaveBeenCalledWith(
+    'Error',
+    'Network error',
+    'error',
+  );
+});
+it('preserves browser logout after a transport failure while the server request is unfulfilled', async () => {
+  const ports = fixturePorts();
+  ports.tokens.write('abc');
+  const notifications = fakeNotifications();
+  const service = new SessionService(
+    ports.http,
+    ports.tokens,
+    ports.navigation,
+    notifications,
+    ports.clock,
+  );
+  vi.mocked(ports.http.request).mockResolvedValueOnce(reply(null, null));
+  await service.logout();
+  expect(ports.tokens.read()).toBeNull();
+  expect(notifications.show).toHaveBeenCalledWith(
+    'Error',
+    'Network error',
+    'error',
+  );
+  expect(notifications.show).toHaveBeenCalledWith(
+    'Goodbye!',
+    'Successfully logged off',
+    'success',
   );
 });

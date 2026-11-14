@@ -109,3 +109,43 @@ test('an invalid saved token is cleared and redirects to login', async ({
     ),
   ).toBeNull();
 });
+
+test('login network failures notify and allow a fresh retry', async ({
+  page,
+}) => {
+  await page.goto('/login');
+  await page.locator('input[name="username"]').fill('e2e-editor');
+  await page.locator('input[name="password"]').fill('e2e-only-password');
+  await page.route('**/api/session/login/', (route) => route.abort('failed'));
+  await page.getByRole('button', { name: 'Login', exact: true }).click();
+  await expect(
+    page.getByRole('alert').filter({ hasText: 'Network error' }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/login$/);
+  await page.unroute('**/api/session/login/');
+  await login(page, true);
+});
+
+test('legacy aborted logout clears browser credentials while retaining the server token', async ({
+  page,
+}) => {
+  await login(page);
+  const token = await page.evaluate(() =>
+    sessionStorage.getItem('ElspethEastmanAuthToken'),
+  );
+  await page.route('**/api/session/logout/', (route) => route.abort('failed'));
+  await page.getByRole('link', { name: 'Logout' }).click();
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(
+    page.getByRole('alert').filter({ hasText: 'Network error' }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem('ElspethEastmanAuthToken'),
+    ),
+  ).toBeNull();
+  const response = await page.request.get('/api/session/', {
+    headers: { Authorization: `Token ${token}` },
+  });
+  expect(await response.json()).toEqual({ isAuthenticated: true });
+});

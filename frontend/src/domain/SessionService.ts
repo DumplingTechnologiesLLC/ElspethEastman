@@ -8,6 +8,7 @@ import type {
   TokenStorage,
 } from './contracts';
 import { Store } from './Store';
+import { announceFailure } from './ApiService';
 export class SessionService extends Store<SessionState> implements Session {
   constructor(
     private http: Http,
@@ -107,6 +108,7 @@ export class SessionService extends Store<SessionState> implements Session {
       true,
     );
     this.patch({ submitting: false, errors: {} });
+    if (announceFailure(this.notifications, reply.status)) return;
     if (reply.status === 200 && reply.data.token) {
       const token = reply.data.token;
       this.notifications.show('Good login', 'Now logging you in', 'success');
@@ -133,8 +135,11 @@ export class SessionService extends Store<SessionState> implements Session {
       'POST',
       undefined,
       true,
+      'status',
     );
-    if (reply.status === 200) {
+    if (reply.status === null) announceFailure(this.notifications, null);
+    // Preserve the legacy browser logout when the request fails in transport.
+    if (reply.status === 200 || reply.status === null) {
       this.notifications.show('Goodbye!', 'Successfully logged off', 'success');
       this.tokens.write(null);
       this.patch({ authenticated: false });

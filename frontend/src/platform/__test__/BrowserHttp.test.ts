@@ -120,3 +120,22 @@ it('allows a failed CSRF bootstrap to retry on the next write', async () => {
   expect((await service.request('/api/one/', 'POST')).status).toBe(200);
   expect(fetcher).toHaveBeenCalledTimes(3);
 });
+it('uses status-only logout responses without requiring JSON bodies', async () => {
+  const fetcher = vi
+    .fn<typeof fetch>()
+    .mockResolvedValueOnce(new Response('upstream error', { status: 500 }));
+  const service = new BrowserHttp(
+    fetcher,
+    () => 'csrftoken=csrf',
+    fixturePorts().tokens,
+  );
+  expect(
+    await service.request(
+      '/api/session/logout/',
+      'POST',
+      undefined,
+      true,
+      'status',
+    ),
+  ).toEqual({ status: 500, data: null });
+});
