@@ -30,3 +30,6 @@ __pycache__/
 staticfiles/
 /node_modules/
 /public/build/
+.e2e/
+playwright-report/
+test-results/

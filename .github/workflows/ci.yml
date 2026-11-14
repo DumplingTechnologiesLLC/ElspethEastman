@@ -81,3 +81,43 @@ jobs:
       - run: python manage.py migrate --noinput
       - run: python manage.py migrate --noinput
       - run: python manage.py test --noinput
+  playwright:
+    name: Playwright
+    needs: frontend
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: e2e-only-password
+          POSTGRES_DB: elspeth_e2e
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s
+          --health-timeout 5s --health-retries 5
+    env:
+      E2E_DATABASE_URL: postgres://postgres:e2e-only-password@127.0.0.1:5432/elspeth_e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: yarn
+          cache-dependency-path: yarn.lock
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile --non-interactive
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: public/build
+      - run: yarn test:e2e:docker
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-results-${{ github.event_name }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
