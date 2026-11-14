@@ -41,11 +41,11 @@ def reset():
         streaming='Streaming fixture: games and community broadcasts.',
     )
     Project.objects.bulk_create([
-        Project(id=index, uuid=index, title=f'Fixture Project {index}', src=f'e2e-video-{index}')
+        Project(uuid=index, title=f'Fixture Project {index}', src=f'e2e-video-{index}')
         for index in range(1, 7)
     ])
     Experience.objects.bulk_create([
-        Experience(id=index, year=2020 + index, credit=f'Fixture {category}', category=category,
+        Experience(year=2020 + index, credit=f'Fixture {category}', category=category,
                    link=f'https://example.invalid/credit-{index}', tba=index == 4)
         for index, (category, _) in enumerate(Experience.CHOICES, 1)
     ])

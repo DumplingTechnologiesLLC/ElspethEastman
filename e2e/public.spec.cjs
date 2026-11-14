@@ -74,7 +74,7 @@ test('failed project requests show a recovery message', async ({ page }) => {
 test('navigation links reach the public sections from the projects page', async ({ page, isMobile }) => {
   await page.goto('/projects');
   if (isMobile) {
-    await expect(page.getByRole('link', { name: 'Latest Projects', exact: true })).not.toBeVisible();
+    await expect(page.locator('nav ul')).toHaveCSS('height', '0px');
     await page.locator('nav button').click();
   }
   await page.getByRole('link', { name: 'Latest Projects', exact: true }).click();
