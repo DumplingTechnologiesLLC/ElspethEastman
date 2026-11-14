@@ -23,3 +23,10 @@ venv/*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+__pycache__/
+*.py[cod]
+.venv/
+staticfiles/
+/node_modules/
+/public/build/

@@ -38,7 +38,11 @@ SECURE_SSL_REDIRECT = env("SSL_REDIRECT")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=(
+    ['.herokuapp.com', 'elspetheastman.com', 'www.elspetheastman.com']
+    if HEROKU else ['localhost', '127.0.0.1']
+))
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 # Application definition
@@ -63,8 +67,8 @@ if not DEBUG:
     THIRD_PARTY_APPS.append('anymail')
 
 ANYMAIL = {
-    'MAILGUN_API_KEY': env("MAILGUN_API_KEY"),
-    'MAILGUN_SENDER_DOMAIN': env('MAILGUN_SENDER_DOMAIN'),
+    'MAILGUN_API_KEY': env('MAILGUN_API_KEY', default=''),
+    'MAILGUN_SENDER_DOMAIN': env('MAILGUN_SENDER_DOMAIN', default=''),
 }
     
 INSTALLED_APPS = DEFAULT_APPS + CUSTOM_APPS + THIRD_PARTY_APPS
@@ -105,12 +109,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+DATABASES = {'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR}/db.sqlite3')}
 
 CONTACT_EMAIL = env('CONTACT_EMAIL')
 
@@ -178,7 +177,26 @@ if not DEBUG:
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = env('STATIC_ROOT', default=os.path.join(BASE_DIR, 'staticfiles'))
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': (
+        'django.contrib.staticfiles.storage.StaticFilesStorage' if DEBUG
+        else 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    )},
+}
+# Allow non-production deployments to exercise production settings without sending mail.
+EMAIL_BACKEND = env('EMAIL_BACKEND', default=EMAIL_BACKEND)
+DEPLOYMENT_ENV = env('DEPLOYMENT_ENV', default='production' if HEROKU else 'development')
+if DEPLOYMENT_ENV in ('review', 'staging', 'ci') and EMAIL_BACKEND not in (
+    'django.core.mail.backends.console.EmailBackend',
+    'django.core.mail.backends.locmem.EmailBackend',
+):
+    raise ValueError('Non-production deployments require a console or in-memory email backend')
 if HEROKU:
-    import django_heroku
-    django_heroku.settings(locals())
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    DATABASES['default']['CONN_MAX_AGE'] = 600
+    if DATABASES['default']['ENGINE'] != 'django.db.backends.postgresql':
+        raise ValueError('Heroku deployments require a Postgres DATABASE_URL')
+    DATABASES['default'].setdefault('OPTIONS', {})['sslmode'] = 'require'
  

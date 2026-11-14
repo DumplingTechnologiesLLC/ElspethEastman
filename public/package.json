@@ -43,6 +43,7 @@
     "sass": "^1.32.6",
     "webp-loader": "^0.6.0"
   },
+  "resolutions": {"**/postcss-safe-parser/postcss": "8.5.33"},
   "scripts": {
     "start": "craco start",
     "build": "craco build",
