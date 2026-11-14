@@ -1,0 +1,146 @@
+import type {
+  Affiliation,
+  Errors,
+  FooterData,
+  Notifications,
+  Readable,
+} from './contracts';
+import { submissionToast, type Api } from './ApiService';
+import { Store } from './Store';
+export interface FooterState {
+  loaded: boolean;
+  data: FooterData;
+  cached: Affiliation[];
+  draft: Affiliation;
+  errors: Record<number, Errors>;
+  busy: number[];
+  open: boolean;
+}
+export interface FooterController extends Readable<FooterState> {
+  load: () => Promise<void>;
+  change: (id: number, key: 'affiliation' | 'link', value: string) => void;
+  reset: (id: number) => void;
+  show: (open: boolean) => void;
+  save: (id: number) => Promise<void>;
+  remove: (id: number) => Promise<void>;
+}
+const blank = (): Affiliation => ({ id: -1, affiliation: '', link: '' });
+const missing = 'Affiliation no longer exists. Perhaps it was already deleted?';
+export class FooterService
+  extends Store<FooterState>
+  implements FooterController
+{
+  constructor(
+    private api: Api,
+    private notifications: Notifications,
+    private confirm: () => boolean,
+  ) {
+    super({
+      loaded: false,
+      data: { stats: [], affiliations: [] },
+      cached: [],
+      draft: blank(),
+      errors: {},
+      busy: [],
+      open: false,
+    });
+  }
+  load = async () => {
+    const reply = await this.api.request<FooterData>('/api/footerstats/');
+    this.patch({ loaded: true });
+    if (reply.status === 200 && reply.data)
+      this.patch({ data: reply.data, cached: reply.data.affiliations });
+    else
+      this.notifications.show(
+        'Error',
+        'Failed to load footer details',
+        'error',
+      );
+  };
+  show = (open: boolean) =>
+    this.patch({ open, ...(open ? { draft: blank() } : {}) });
+  change = (id: number, key: 'affiliation' | 'link', value: string) => {
+    const { draft, data, errors } = this.getSnapshot();
+    if (id === -1) this.patch({ draft: { ...draft, [key]: value } });
+    else {
+      const next = { ...errors[id] };
+      delete next[key];
+      this.patch({
+        data: {
+          ...data,
+          affiliations: data.affiliations.map((item) =>
+            item.id === id ? { ...item, [key]: value } : item,
+          ),
+        },
+        errors: { ...errors, [id]: next },
+      });
+    }
+  };
+  reset = (id: number) => {
+    const { data, cached, errors } = this.getSnapshot();
+    this.patch(
+      id === -1
+        ? { draft: blank(), errors: { ...errors, [-1]: {} } }
+        : {
+            data: {
+              ...data,
+              affiliations: data.affiliations.map((item) =>
+                item.id === id
+                  ? cached.find((affiliation) => affiliation.id === id)!
+                  : item,
+              ),
+            },
+            errors: { ...errors, [id]: {} },
+          },
+    );
+  };
+  private busy(id: number, value: boolean) {
+    const { busy } = this.getSnapshot();
+    this.patch({
+      busy: value ? [...busy, id] : busy.filter((item) => item !== id),
+    });
+  }
+  save = async (id: number) => {
+    const { draft, data, errors } = this.getSnapshot();
+    const affiliation =
+      id === -1 ? draft : data.affiliations.find((item) => item.id === id);
+    if (!affiliation) return;
+    this.patch({ errors: { ...errors, [id]: {} } });
+    this.busy(id, true);
+    const replyPromise = this.api.request<Affiliation & Errors>(
+      '/api/affiliations/' + (id === -1 ? '' : `${id}/`),
+      id === -1 ? 'POST' : 'PATCH',
+      { affiliation: affiliation.affiliation, link: affiliation.link },
+    );
+    // The existing editor closes new-affiliation forms immediately, including invalid submissions.
+    if (id === -1) this.show(false);
+    const reply = await replyPromise;
+    this.busy(id, false);
+    submissionToast(this.notifications, reply.status, missing);
+    if (reply.status === 200 && reply.data) {
+      const current = this.getSnapshot().data;
+      const affiliations =
+        id === -1
+          ? [...current.affiliations, reply.data]
+          : current.affiliations.map((item) =>
+              item.id === id ? reply.data! : item,
+            );
+      this.patch({ data: { ...current, affiliations }, cached: affiliations });
+    } else if (reply.status === 400 && reply.data)
+      this.patch({
+        errors: { ...this.getSnapshot().errors, [id]: reply.data },
+      });
+  };
+  remove = async (id: number) => {
+    if (!this.confirm()) return;
+    this.busy(id, true);
+    const reply = await this.api.request(`/api/affiliations/${id}/`, 'DELETE');
+    this.busy(id, false);
+    submissionToast(this.notifications, reply.status, missing);
+    if (reply.status === 200) {
+      const { data } = this.getSnapshot();
+      const affiliations = data.affiliations.filter((item) => item.id !== id);
+      this.patch({ data: { ...data, affiliations }, cached: affiliations });
+    }
+  };
+}

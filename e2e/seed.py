@@ -34,7 +34,11 @@ def reset():
     from django.core.management import call_command
     from core.models import Affiliations, Experience, FooterStat, Project, Skills
     call_command('flush', interactive=False, verbosity=0)
-    get_user_model().objects.create_user('e2e-editor', password='e2e-only-password')
+    # Reuse Django's production PBKDF2 hash instead of hashing the fixture on every reset.
+    get_user_model().objects.create(
+        username='e2e-editor',
+        password='pbkdf2_sha256$1000000$elspeth-test-fixture$GtF7yLmun8jsr+4/hgyIWke+gcuKVKW1rGNAME25zyA=',
+    )
     Skills.objects.create(
         voice_acting='Voice acting fixture: characters, narration, and animation.',
         game_development='Game development fixture: music and interactive worlds.',

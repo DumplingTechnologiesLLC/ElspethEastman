@@ -1,4 +1,5 @@
 **
-!requirements.txt
+!pyproject.toml
+!poetry.lock
 !e2e/
 !e2e/Dockerfile

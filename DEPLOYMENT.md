@@ -19,7 +19,7 @@ A failed Heroku build or migration release needs investigation even when GitHub 
 
 ## Build and migration behavior
 
-The Node buildpack runs before Python. The root build script installs the frontend with its frozen Yarn lock, compiles React, and writes the full Git commit to `/static/revision.json`. Python then collects the generated static files. Build output is ignored by Git; frontend edits need no manual bundle commit.
+The Node buildpack runs before Python. The Node buildpack installs the root pnpm lockfile and runs `heroku-postbuild`. Vite compiles React and writes the full Git commit to `/static/revision.json`, alongside a Django-compatible asset manifest. The Python buildpack installs `poetry.lock` with Poetry and collects the generated static files. Build output is ignored by Git; frontend edits need no manual bundle commit.
 
 The `release` process runs `python manage.py migrate --noinput` on each release, including subsequent Review App updates. Keep migrations compatible with the previous application version. Data initialization must preserve content already edited through the CMS.
 
@@ -31,17 +31,27 @@ Run the [Playwright regression suite](e2e/README.md) before submitting a behavio
 
 Run `python scripts/smoke-deployment.py <preview-or-staging-url> <full-git-sha>` to verify the served revision, public/CMS routes, JavaScript bundles, and seeded APIs. Add `--contact` to submit a sample message to the console backend. The script rejects production's URL.
 
-For local checks, install Python 3.11 dependencies from `requirements.txt`, use Node 22 and Yarn 1.22.22, then run:
+For local checks, use Node 22.22.3, pnpm 12.18.0, Python 3.11, and Poetry 2.5.1:
 
 ```sh
-yarn build
-yarn --cwd public test --watchAll=false --runInBand
-python manage.py collectstatic --noinput
-python manage.py makemigrations --check --dry-run
-python manage.py test --noinput
+pnpm install --frozen-lockfile
+poetry sync
+pnpm typecheck
+pnpm lint
+pnpm format:check
+pnpm test:coverage
+pnpm build
+pnpm storybook:build
+poetry run python manage.py collectstatic --noinput
+poetry run python manage.py makemigrations --check --dry-run
+poetry run coverage run manage.py test --noinput
+poetry run coverage report
+pnpm test:e2e:docker
 ```
 
-Supply `SECRET_KEY`, `CONTACT_EMAIL`, `DEFAULT_FROM_EMAIL`, and `DEFAULT_TO_EMAIL` in the environment. Use `DEBUG=False`, `DEPLOYMENT_ENV=ci`, and `EMAIL_BACKEND=django.core.mail.backends.locmem.EmailBackend` for deployment-equivalent tests. `DATABASE_URL` selects PostgreSQL; without it, local development uses SQLite. `requirements.in` records compatible runtime ranges and `requirements.txt` freezes the complete tested dependency set. Regenerate the latter in a clean virtual environment when updating dependencies.
+Supply `SECRET_KEY`, `CONTACT_EMAIL`, `DEFAULT_FROM_EMAIL`, and `DEFAULT_TO_EMAIL` in the environment. Use `DEBUG=False`, `HEROKU=False`, `DEPLOYMENT_ENV=ci`, and `EMAIL_BACKEND=django.core.mail.backends.locmem.EmailBackend` for deployment-equivalent tests. `DATABASE_URL` selects PostgreSQL; without it, local development uses SQLite. `pyproject.toml` declares runtime and development dependencies, and `poetry.lock` freezes their resolved versions. Keep lockfile updates in the same PR as dependency changes.
+
+The `Frontend` check enforces strict TypeScript, Oxlint, the architecture checker, Prettier, and 100% unit coverage, then builds the client and Storybook. `Backend` enforces 100% Django statement and branch coverage against PostgreSQL. `Playwright` checks the compiled application and every isolated Storybook story using the pinned Linux browser image. The existing required job names remain stable.
 
 ## Production release boundary
 

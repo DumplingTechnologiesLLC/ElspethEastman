@@ -1,0 +1,15 @@
+node_modules
+pnpm-lock.yaml
+poetry.lock
+public/build
+staticfiles
+coverage
+htmlcov
+playwright-report
+test-results
+storybook-static
+frontend/src/assets
+e2e/snapshots
+.e2e
+.venv
+templates/

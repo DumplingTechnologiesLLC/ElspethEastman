@@ -57,14 +57,16 @@
     "EMAIL_BACKEND": {
       "value": "django.core.mail.backends.console.EmailBackend",
       "description": "Capture review-app mail in logs instead of delivering it"
+    },
+    "POETRY_VERSION": {
+      "value": "2.5.1",
+      "description": "Match the Poetry lockfile tool version"
     }
   },
   "environments": {
     "review": {
       "stack": "heroku-24",
-      "addons": [
-        "heroku-postgresql:essential-0"
-      ]
+      "addons": ["heroku-postgresql:essential-0"]
     }
   }
 }
