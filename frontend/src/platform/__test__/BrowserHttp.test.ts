@@ -73,3 +73,50 @@ it('sends csrf, credentials and token only when requested', async () => {
     }),
   );
 });
+it('bootstraps a fresh Vite CSRF cookie once for concurrent writes and reuses it', async () => {
+  let cookies = '';
+  let release!: () => void;
+  const bootstrap = new Promise<Response>((resolve) => {
+    release = () => {
+      cookies = 'csrftoken=dev-csrf';
+      resolve(new Response('{}'));
+    };
+  });
+  const fetcher = vi
+    .fn<typeof fetch>()
+    .mockImplementation(async (path) =>
+      path === '/api/session/' ? bootstrap : new Response('{}'),
+    );
+  const service = new BrowserHttp(
+    fetcher,
+    () => cookies,
+    fixturePorts().tokens,
+  );
+  const first = service.request('/api/one/', 'POST', {});
+  const second = service.request('/api/two/', 'PATCH', {});
+  expect(fetcher).toHaveBeenCalledOnce();
+  release();
+  await Promise.all([first, second]);
+  expect(fetcher).toHaveBeenCalledTimes(3);
+  expect(fetcher).toHaveBeenLastCalledWith(
+    '/api/two/',
+    expect.objectContaining({
+      headers: {
+        'X-CSRFToken': 'dev-csrf',
+        'Content-Type': 'application/json',
+      },
+    }),
+  );
+  await service.request('/api/three/', 'POST');
+  expect(fetcher).toHaveBeenCalledTimes(4);
+});
+it('allows a failed CSRF bootstrap to retry on the next write', async () => {
+  const fetcher = vi
+    .fn<typeof fetch>()
+    .mockRejectedValueOnce(new TypeError('Offline'))
+    .mockResolvedValue(new Response('{}'));
+  const service = new BrowserHttp(fetcher, () => '', fixturePorts().tokens);
+  expect((await service.request('/api/one/', 'POST')).status).toBeNull();
+  expect((await service.request('/api/one/', 'POST')).status).toBe(200);
+  expect(fetcher).toHaveBeenCalledTimes(3);
+});

@@ -16,7 +16,8 @@ export function deploymentArtifacts(): Plugin {
     transformIndexHtml: {
       order: 'post',
       handler(html, context) {
-        if (!context.bundle) return html;
+        if (!context.bundle) return html.replace('{% csrf_token %}', '');
+        if (!html.includes('/static/media/hero2.84ac3292.webp')) return html;
         const hero = Object.values(context.bundle).find(
           (item) => item.type === 'asset' && item.names.includes('hero2.webp'),
         );

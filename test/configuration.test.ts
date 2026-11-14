@@ -133,3 +133,14 @@ it('rewrites image metadata and preload URLs to the emitted asset', () => {
     }),
   ).toBe('<meta content="/static/media/hero2-hash.webp">');
 });
+it('removes the Django template token only when serving the standalone Vite page', () => {
+  const hook = deploymentArtifacts().transformIndexHtml as {
+    handler: Function;
+  };
+  expect(hook.handler('<body>{% csrf_token %}</body>', {})).toBe(
+    '<body></body>',
+  );
+  expect(hook.handler('<body>{% csrf_token %}</body>', { bundle: {} })).toBe(
+    '<body>{% csrf_token %}</body>',
+  );
+});

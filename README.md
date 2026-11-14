@@ -19,7 +19,7 @@ poetry run python manage.py collectstatic --noinput
 poetry run python manage.py runserver
 ```
 
-For client development, run Django on port 8000 and `pnpm dev` in a second terminal. Vite proxies `/api` to Django. Visit Django once to establish its CSRF cookie before using authenticated writes through Vite. `pnpm storybook` opens isolated presentation components on port 6006.
+For client development, run Django on port 8000 and `pnpm dev` in a second terminal. Vite proxies `/api` to Django. The HTTP adapter obtains Django's CSRF cookie before the first write when the Vite page starts with a fresh browser session. `pnpm storybook` opens isolated presentation components on port 6006.
 
 Run the required checks before opening a PR:
 

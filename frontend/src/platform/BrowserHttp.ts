@@ -7,11 +7,25 @@ export function cookie(cookies: string, name: string): string | null {
   return entry ? decodeURIComponent(entry.slice(name.length + 1)) : null;
 }
 export class BrowserHttp implements Http {
+  private csrfBootstrap: Promise<Response> | undefined;
   constructor(
     private fetcher: typeof fetch,
     private cookies: () => string,
     private tokens: TokenStorage,
   ) {}
+  private async csrfToken(): Promise<string | null> {
+    const existing = cookie(this.cookies(), 'csrftoken');
+    if (existing !== null) return existing;
+    try {
+      this.csrfBootstrap ??= this.fetcher('/api/session/', {
+        credentials: 'same-origin',
+      });
+      await this.csrfBootstrap;
+      return cookie(this.cookies(), 'csrftoken');
+    } finally {
+      this.csrfBootstrap = undefined;
+    }
+  }
   async request<T>(
     path: string,
     method: Method = 'GET',
@@ -19,9 +33,13 @@ export class BrowserHttp implements Http {
     authenticated = false,
   ): Promise<Reply<T>> {
     try {
+      const csrf =
+        method === 'GET'
+          ? cookie(this.cookies(), 'csrftoken')
+          : await this.csrfToken();
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-CSRFToken': cookie(this.cookies(), 'csrftoken') ?? 'null',
+        'X-CSRFToken': csrf ?? 'null',
       };
       if (authenticated) headers.Authorization = `Token ${this.tokens.read()}`;
       const response = await this.fetcher(
