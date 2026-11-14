@@ -1,4 +1,4 @@
-const { test, expect, login } = require('./fixtures.cjs');
+const { test, expect, login, actionResponse } = require('./fixtures.cjs');
 
 test('login validates required credentials', async ({ page }) => {
   await page.goto('/login');
@@ -24,11 +24,11 @@ test('UI login survives reload, public navigation, and logout revokes the token'
   await login(page, true);
   const token = await page.evaluate(() => sessionStorage.getItem('ElspethEastmanAuthToken'));
   expect(token).toMatch(/^[a-f0-9]{40}$/);
-  await page.reload();
+  expect(await actionResponse(page, 'POST', '/api/session/', () => page.reload())).toEqual({ isAuthenticated: true });
   await expect(page.locator('textarea[name="Voice Acting"]')).toHaveValue(/Voice acting fixture/);
-  await page.getByRole('link', { name: 'View Public Site' }).click();
+  expect(await actionResponse(page, 'POST', '/api/session/', () => page.getByRole('link', { name: 'View Public Site' }).click())).toEqual({ isAuthenticated: true });
   await expect(page).toHaveURL(/\/$/);
-  await page.goto('/cms');
+  expect(await actionResponse(page, 'POST', '/api/session/', () => page.goto('/cms'))).toEqual({ isAuthenticated: true });
   await page.getByRole('link', { name: 'Logout' }).click();
   await expect(page).toHaveURL(/\/login$/);
   expect(await page.evaluate(() => sessionStorage.getItem('ElspethEastmanAuthToken'))).toBeNull();
@@ -36,6 +36,18 @@ test('UI login survives reload, public navigation, and logout revokes the token'
   expect(await validation.json()).toEqual({ isAuthenticated: false });
   await page.goto('/cms');
   await expect(page).toHaveURL(/\/login$/);
+});
+
+test('current aborted session validation clears browser credentials while the server token remains valid', async ({ page }) => {
+  await login(page);
+  const token = await page.evaluate(() => sessionStorage.getItem('ElspethEastmanAuthToken'));
+  await page.route('**/api/session/', route => route.abort('failed'));
+  await page.getByRole('link', { name: 'View Public Site' }).click();
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(page.getByRole('alert').filter({ hasText: 'Session has expired' })).toBeVisible();
+  expect(await page.evaluate(() => sessionStorage.getItem('ElspethEastmanAuthToken'))).toBeNull();
+  const response = await page.request.get('/api/session/', { headers: { Authorization: `Token ${token}` } });
+  expect(await response.json()).toEqual({ isAuthenticated: true });
 });
 
 test('an invalid saved token is cleared and redirects to login', async ({ page }) => {

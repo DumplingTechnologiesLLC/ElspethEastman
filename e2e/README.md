@@ -62,4 +62,6 @@ YouTube thumbnails and YouTube/SoundCloud embeds use deterministic local respons
 
 The baseline records existing behavior, including the current narrow layouts. Existing form labels lack matching input IDs; tests use stable input names where label selectors cannot work. Invalid affiliation creation currently closes its modal after server validation, and a characterization test records that behavior while checking that no record was created.
 
+An aborted session-validation request currently clears browser credentials and returns to login even though the server token remains valid. A separate failure scenario records that behavior. Normal navigation scenarios wait for completed session validation before starting another navigation so they exercise the settled login flow.
+
 Review these characterizations when deliberately changing those flows. Keep unrelated behavior changes out of baseline maintenance.
