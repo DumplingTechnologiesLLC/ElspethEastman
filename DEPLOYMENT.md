@@ -10,10 +10,12 @@ After integration, staging tracks `development` and waits for CI. Its persistent
 
 1. Branch from the current `development` revision and open a pull request with `development` as its base. Direct pushes, force pushes, and deletion are blocked, including for administrators.
 2. Wait for both required GitHub Actions checks and the Heroku Review App deployment. Open the preview, exercise the changed behavior, and run the revision smoke check below with the PR's full head SHA.
-3. Push any follow-up changes to the same feature branch. Each update reruns CI and rebuilds the preview after success. Confirm the preview serves the new SHA before integrating.
+3. Push any follow-up changes to the same feature branch. Each update reruns CI and rebuilds the preview. Confirm both the required checks and the preview's new SHA before integrating.
 4. Merge the passing PR, then wait for the `development` push checks and staging deployment. Validate staging against the merge commit SHA before starting dependent work.
 
-A failed check blocks integration. A failed Heroku build or migration release needs investigation even when GitHub CI is green. Use a corrective PR or, if staging is unusable, roll back a known staging release with `heroku rollback vNN --app elspetheastman-staging`. An application rollback does not reverse database migrations.
+A failed check blocks integration. Heroku's initial Review App creation waits for CI, but [updates to existing previews can deploy even when CI fails](https://devcenter.heroku.com/articles/github-integration-review-apps#review-apps-and-ci). Required branch checks enforce integration into `development`, and staging separately waits for CI before deployment.
+
+A failed Heroku build or migration release needs investigation even when GitHub CI is green. Use a corrective PR or, if staging is unusable, roll back a known staging release with `heroku rollback vNN --app elspetheastman-staging`. An application rollback does not reverse database migrations.
 
 ## Build and migration behavior
 
