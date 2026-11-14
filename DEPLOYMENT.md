@@ -4,7 +4,16 @@ Develop on a feature branch and open its pull request against `development`. Git
 
 Heroku creates a disposable Review App for the pull request after CI succeeds. Its database is provisioned separately, the existing data migrations provide sample content, and email goes to the console backend. Review Apps expire after one day of inactivity. Treat the URL as temporary and use example data when testing.
 
-After integration, staging tracks `development` and waits for CI. Open its URL from the `elspetheastman-cicd` pipeline. Check the build and release logs when a deployment fails; a successful build can still have a failed migration release.
+After integration, staging tracks `development` and waits for CI. Its persistent URL is [elspetheastman-staging](https://elspetheastman-staging-88aaa77aa136.herokuapp.com/), also available from the `elspetheastman-cicd` pipeline. Check the build and release logs when a deployment fails; a successful build can still have a failed migration release.
+
+## Iterate on a change
+
+1. Branch from the current `development` revision and open a pull request with `development` as its base. Direct pushes, force pushes, and deletion are blocked, including for administrators.
+2. Wait for both required GitHub Actions checks and the Heroku Review App deployment. Open the preview, exercise the changed behavior, and run the revision smoke check below with the PR's full head SHA.
+3. Push any follow-up changes to the same feature branch. Each update reruns CI and rebuilds the preview after success. Confirm the preview serves the new SHA before integrating.
+4. Merge the passing PR, then wait for the `development` push checks and staging deployment. Validate staging against the merge commit SHA before starting dependent work.
+
+A failed check blocks integration. A failed Heroku build or migration release needs investigation even when GitHub CI is green. Use a corrective PR or, if staging is unusable, roll back a known staging release with `heroku rollback vNN --app elspetheastman-staging`. An application rollback does not reverse database migrations.
 
 ## Build and migration behavior
 
