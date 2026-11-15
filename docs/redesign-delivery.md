@@ -69,7 +69,9 @@ Each feature keeps its presentational component, wired component, state hook, st
 
 **[#43 Press public/CMS page](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/43).** Review canonical coverage cards/hero/detail, shared DOM focus restoration, publication metadata, and independent appearance rows. [Visual evidence](redesign-evidence/press/README.md) includes collection and selected states.
 
-**Bio public/CMS page.** Review portrait/short-copy ownership, ordered chapters and current work, and registry-derived Explore navigation. [Visual evidence](redesign-evidence/bio/README.md) includes desktop/mobile and CMS.
+**[#44 Bio public/CMS page](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/44).** Review portrait/short-copy ownership, ordered chapters and current work, and registry-derived Explore navigation. [Visual evidence](redesign-evidence/bio/README.md) includes desktop/mobile and CMS.
+
+**Initial renderer content.** Review frozen, idempotent migration defaults, bundled immutable image files, preserved CMS/legacy data, and verified existing role/album destinations. [Content handoff](redesign-content.md) distinguishes initialized content from client entry.
 
 All six page implementations now have independent state-hook/presentation tests and Storybook views. Remaining reviews initialize approved data, activate the application, retire unused rendering, and expand full browser validation. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
 
