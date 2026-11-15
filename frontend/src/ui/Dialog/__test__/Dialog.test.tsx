@@ -14,6 +14,16 @@ it('opens a native modal, delegates dismissals, locks scrolling, and restores th
     </Dialog>,
   );
   const dialog = screen.getByRole('dialog');
+  const first = screen.getByRole('button', { name: 'Close editor' });
+  const last = screen.getByLabelText('Title');
+  first.focus();
+  fireEvent.keyDown(first, { key: 'Enter' });
+  fireEvent.keyDown(first, { key: 'Tab', shiftKey: true });
+  expect(document.activeElement).toBe(last);
+  fireEvent.keyDown(last, { key: 'Tab', shiftKey: true });
+  fireEvent.keyDown(last, { key: 'Tab' });
+  expect(document.activeElement).toBe(first);
+  fireEvent.keyDown(first, { key: 'Tab' });
   expect(dialog).toHaveAttribute('open');
   expect(document.body.style.overflow).toBe('hidden');
   fireEvent.click(screen.getByLabelText('Title'));
