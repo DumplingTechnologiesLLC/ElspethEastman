@@ -59,7 +59,7 @@ class ContentReadTests(TestCase):
                          ["/media/uploads/portrait.webp", "/media/uploads/detail.webp"])
 
     def test_unknown_and_not_yet_implemented_pages_return_explicit_missing_responses(self):
-        for page_id in (999999, self.voiceover.pk):
+        for page_id in (999999, Page.objects.get(kind=PageKind.MUSIC).pk):
             with self.subTest(page_id=page_id):
                 response = self.client.get(f"/api/pages/{page_id}/")
                 self.assertEqual(response.status_code, 404)

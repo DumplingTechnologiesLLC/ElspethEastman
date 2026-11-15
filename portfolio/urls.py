@@ -6,6 +6,7 @@ from portfolio.views.collections import EyebrowAPIView, EyebrowDetailAPIView, Tr
 from portfolio.views.page_image import PageImageAPIView
 from portfolio.views.reorder import ReorderAPIView
 from portfolio.views.media import MediaAssetAPIView
+from portfolio.views.content_entries import ContentEntryAPIView, ContentEntryDetailAPIView
 
 app_name = "portfolio"
 urlpatterns = [
@@ -19,4 +20,6 @@ urlpatterns = [
     path("trivia/<int:item_id>/", TriviaDetailAPIView.as_view(), name="trivia-detail"),
     path("collections/reorder/", ReorderAPIView.as_view(), name="reorder"),
     path("media-assets/", MediaAssetAPIView.as_view(), name="media-assets"),
+    path("content-entries/", ContentEntryAPIView.as_view(), name="content-entries"),
+    path("content-entries/<int:item_id>/", ContentEntryDetailAPIView.as_view(), name="content-entry-detail"),
 ]
