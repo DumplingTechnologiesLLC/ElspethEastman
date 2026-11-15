@@ -6,6 +6,7 @@ import { tokens } from '../tokens.stylex';
 
 const css = stylex.create({
   dialog: {
+    boxSizing: 'border-box',
     width: 'calc(100% - 32px)',
     maxWidth: 568,
     maxHeight: 'calc(100dvh - 40px)',
