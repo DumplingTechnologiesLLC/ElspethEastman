@@ -65,6 +65,7 @@ async function attemptEdits(service: ContentEditorService) {
   service.addRow();
   service.changeRow('outlet', 'value', 'Blocked');
   service.removeRow('detail-1');
+  service.moveRow('outlet', 1);
   service.removeImage();
   service.confirmDelete(true);
   await service.upload(file);
@@ -124,6 +125,14 @@ it('keeps ordered metadata keys stable, protects required rows, and enforces the
     { key: 'detail-2', label: 'Two', value: 'Second' },
   ]);
   expect(rich.rows.items).toHaveLength(2);
+  service.moveRow('missing', 1);
+  service.moveRow('outlet', -1);
+  service.moveRow('detail-2', 1);
+  service.moveRow('outlet', 1);
+  service.moveRow('outlet', -1);
+  expect(
+    service.getSnapshot().draft!.rows!.items.map((row) => row.key),
+  ).toEqual(['outlet', 'detail-2']);
   service.cancel();
   service.open({ type: 'practice' });
   expect(service.getSnapshot().draft).toBe(rich);
