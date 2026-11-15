@@ -14,23 +14,26 @@ Each feature keeps its presentational component, wired component, state hook, st
 
 `feature/redesign` is the integration destination. Dependent PRs use their immediate parent as the review base so Files changed shows one slice. As parents land, their children can retarget to the integration branch. Each PR description links its parent and describes its caller, ownership boundary, and verification. Redesign PRs remain open for review.
 
-1. **Review rails and specification.** Preserve the local TDD, record architectural precedence, and run CI for integration and dependent PR bases.
-2. **Page identity and shared records.** Establish immutable page identities, keyed copy/image slots, identity labels, facts, and deterministic initialization. Review database ownership and constraints.
-3. **Registry and aggregate reads.** Resolve pages by stable IDs and return ordered page content. Review read contracts and query behavior.
-4. **Shared content mutations.** Add metadata, copy, labels, facts, and atomic ordering. Review validation, immutable ownership, authorization, and failure rollback.
-5. **Media uploads and storage.** Validate uploads and configure persistent storage. Review content-type/size checks, contextual alt text, and environment boundaries.
-6. **Client contracts and services.** Add clustered domain types, DTO mappings, content ports/adapters, routing state, and canonical mutation reconciliation. Review 2xx/204, multipart, expiry, and failed-draft behavior.
-7. **Design primitives and responsive shell.** Translate Figma tokens, navigation, forms, typography, cards, and footer into StyleX components and isolated stories.
-8. **Shared CMS controls.** Add reusable text, image, external-link, collection, and page-settings editors with service-backed state and presentational slots.
-9. **Home.** Prove the public/CMS load-edit cycle, hero imagery, responsive layout, and retained contact pipeline.
-10. **Voiceover.** Add role CRUD, metadata, promotion, and URL-selected detail. Review canonical identity across card, hero, and detail.
-11. **Music.** Add the practice singleton and independent release collection, including artwork and external actions.
-12. **Streaming.** Add recent streams, eligible hero promotion, and independent clips.
-13. **Press.** Add coverage, required outlet metadata, UTC publication timestamps, selected detail, and appearances.
-14. **Bio.** Add authored biography, chapters, current work, and registry-driven explore navigation.
-15. **Cutover and regression coverage.** Connect approved content, preserve ambiguous legacy data, retire unused legacy rendering/endpoints, and validate the complete redesign.
+1. **[#9 Review rails and specification](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/9).** Preserve the local TDD, record architecture precedence, and run CI for dependent PR bases.
+2. **[#10 Page identity and shared records](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/10).** Review immutable identities, keyed content, media ownership, and initialization.
+3. **[#11 Registry and shared reads](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/11).** Review the public wire contract and query behavior.
+4. **[#12 Shared content mutations](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/12).** Review authorization, immutable ownership, field errors, and atomic ordering.
+5. **[#13 Media uploads and storage](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/13).** Review decoded image validation, contextual uses, and persistent/disposable environment boundaries.
+6. **[#14 Canonical content entries](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/14).** Review roles, coverage, recent streams, and atomic nested metadata.
+7. **[#15 Hero promotion](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/15).** Review one-record identity, image eligibility, manual positions, and concurrency.
+8. **[#16 Music content](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/16).** Review the practice singleton and independent releases.
+9. **[#17 Independent page collections](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/17).** Review clips, appearances, chapters/current work, and complete aggregate reads.
+10. **[#18 Client transport](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/18).** Review preserved HTTP status, bodyless success, multipart, and query-aware navigation.
+11. **[#19 Domain contracts and routing](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/19).** Review model/type clustering, typed ports, and current-slug route policies.
+12. **[#22 Wire schemas](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/22).** Review DTO declarations independently of domain interfaces.
+13. **[#20 Read mappings](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/20).** Review discriminators, nested values, and DTO/domain reference separation.
+14. **[#23 Write and failure mappings](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/23).** Review whitelists, omission/null semantics, and domain field errors.
+15. **[#21 HTTP content adapter](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/21).** Review endpoint/verb binding, canonical results, and multipart requests.
+16. **Site registry service.** Review shared loading, route state, cached metadata, and query-preserving rename behavior in [SiteService](../frontend/src/application/services/SiteService.ts).
 
-These are review boundaries rather than fixed commit-size targets. A page may split further when its backend rules or editor interactions need a separate review. Shared contracts land before their consumers; page-specific fields stay with their domain owner.
+The remaining reviews connect page-scoped loading and canonical reconciliation, shared editor state, Figma primitives and the responsive shell, then each public/CMS page pair. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
+
+Each page review includes its own backend contract, presentation, state hook, stories, and interaction evidence. These are review boundaries; a complex page can split further. DTO and write-mapping parents were extracted using additive ancestry merges, preserving published history. Merge reviewed parents with merge commits so children can retarget with focused diffs.
 
 ## Acceptance for each slice
 

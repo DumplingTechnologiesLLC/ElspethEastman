@@ -6,6 +6,8 @@ import { UIAlertService } from '../application/services/UIAlertService';
 import { ProjectsService } from '../application/services/ProjectsService';
 import { SessionService } from '../application/services/SessionService';
 import { SkillsService } from '../application/services/SkillsService';
+import { SiteService } from '../application/services/SiteService';
+import { HttpContentRepository } from '../platform/HttpContentRepository';
 import type { ServiceContainer } from './ServiceContainer';
 import type { ServiceDependencies } from './ServiceDependencies';
 export function createServiceContainer({
@@ -17,9 +19,21 @@ export function createServiceContainer({
 }: ServiceDependencies): ServiceContainer {
   const notifications = new UIAlertService(clock);
   const api = new ApiService(http, notifications);
+  const session = new SessionService(
+    http,
+    tokens,
+    navigation,
+    notifications,
+    clock,
+  );
   return {
     notifications,
-    session: new SessionService(http, tokens, navigation, notifications, clock),
+    session,
+    site: new SiteService(
+      new HttpContentRepository(http),
+      session,
+      notifications,
+    ),
     contact: new ContactService(api, notifications),
     skills: (editor) => new SkillsService(api, notifications, editor),
     projects: (mode) => new ProjectsService(api, notifications, confirm, mode),
