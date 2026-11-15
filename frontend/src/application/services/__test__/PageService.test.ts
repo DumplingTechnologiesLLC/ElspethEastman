@@ -1,7 +1,8 @@
-import { expect, it, vi } from 'vitest';
+import { expect, it } from 'vitest';
 import { aHomeDTO, aVoiceoverDTO } from '../../../../../test/contentFixtures';
 import { fakeNotifications } from '../../../../../test/fakes';
-import type { ContentRepository } from '../../../domain/ports/ContentRepository';
+import { mockContentRepository } from '../../../../../test/mockContentRepository';
+import { mockServices } from '../../../../../test/mockServices';
 import type { ContentResult } from '../../../domain/models/ContentResult';
 import type { PageContent } from '../../../domain/models/PageContent';
 import { toPageContent } from '../../mappers/contentAggregate';
@@ -14,16 +15,14 @@ const tick = async () => {
   await Promise.resolve();
 };
 function fixture() {
-  const repository = {
-    page: vi
-      .fn<ContentRepository['page']>()
-      .mockResolvedValue({ ok: true, value: home }),
-  };
+  const repository = mockContentRepository();
+  repository.page.mockResolvedValue({ ok: true, value: home });
+  const { site, session } = mockServices();
   const alerts = fakeNotifications();
   return {
     repository,
     alerts,
-    service: new PageService(1, repository, alerts),
+    service: new PageService(1, repository, alerts, site, session),
   };
 }
 
@@ -136,10 +135,15 @@ it('keeps page identity and caches isolated between page services', async () => 
     content: null,
   });
   await service.load();
+  const otherRepository = mockContentRepository();
+  otherRepository.page.mockResolvedValue({ ok: true, value: voiceover });
+  const { site, session } = mockServices();
   const other = new PageService(
     2,
-    { page: vi.fn().mockResolvedValue({ ok: true, value: voiceover }) },
+    otherRepository,
     fakeNotifications(),
+    site,
+    session,
   );
   await other.load();
   expect(service.getSnapshot().content).toBe(home);

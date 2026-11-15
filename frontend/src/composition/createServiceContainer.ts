@@ -30,15 +30,22 @@ export function createServiceContainer({
     clock,
   );
   const repository = new HttpContentRepository(http);
+  const site = new SiteService(repository, session, notifications);
   const pages = new Map<PageId, PageController>();
   return {
     notifications,
     session,
-    site: new SiteService(repository, session, notifications),
+    site,
     page: (pageId) => {
       let page = pages.get(pageId);
       if (page === undefined) {
-        page = new PageService(pageId, repository, notifications);
+        page = new PageService(
+          pageId,
+          repository,
+          notifications,
+          site,
+          session,
+        );
         pages.set(pageId, page);
       }
       return page;

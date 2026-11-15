@@ -74,8 +74,9 @@ export function aCopyDTO(overrides: Partial<PageCopyDTO> = {}): PageCopyDTO {
 export function anEntryDTO(
   overrides: Partial<ContentEntryDTO> = {},
 ): ContentEntryDTO {
+  const entryId = overrides.id ?? 40;
   return {
-    id: 40,
+    id: entryId,
     page_id: 2,
     title: 'Tristana',
     eyebrow: 'League of Legends',
@@ -90,8 +91,8 @@ export function anEntryDTO(
     published_at: null,
     metadata: [
       {
-        id: 41,
-        entry_id: 40,
+        id: entryId + 1,
+        entry_id: entryId,
         key: 'details',
         label: 'Details',
         value: 'Character detail',
@@ -253,7 +254,7 @@ export function aStreamingDTO(
 ): StreamingContentDTO {
   return {
     ...sharedDTO('streaming'),
-    entries: [anEntryDTO({ page_id: 4 })],
+    entries: [anEntryDTO({ page_id: 4, is_featured: true })],
     clips: [aClipDTO()],
     feature: { page_id: 4, item_id: 40 },
     ...overrides,
@@ -267,6 +268,7 @@ export function aPressDTO(
     entries: [
       anEntryDTO({
         page_id: 5,
+        is_featured: true,
         published_at: '2026-10-01T14:30:00Z',
         metadata: [
           {
