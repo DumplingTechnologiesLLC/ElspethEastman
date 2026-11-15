@@ -4,6 +4,14 @@ import { CopyKind } from '../../domain/models/PageCopy';
 import { Editable } from '../Editable/Editable.presentational';
 import { tokens } from '../tokens.stylex';
 const css = stylex.create({
+  sectionHeading: {
+    fontSize: { default: 40, '@media (max-width: 760px)': 38 },
+    fontFamily: tokens.serif,
+    letterSpacing: '-1px',
+    lineHeight: 1.16,
+    textTransform: 'none',
+    color: tokens.foreground,
+  },
   group: { display: 'flex', flexDirection: 'column', gap: 14 },
   headline: {
     fontFamily: tokens.serif,
@@ -58,8 +66,10 @@ const elements = {
 } as const;
 export function CopyBlocks({
   blocks,
+  sectionHeading = false,
 }: {
   readonly blocks: readonly CopyBlockView[];
+  readonly sectionHeading?: boolean;
 }) {
   return (
     <div {...stylex.props(css.group)}>
@@ -67,7 +77,14 @@ export function CopyBlocks({
         const Element = elements[block.kind];
         return (
           <Editable key={block.key} label="text block" actions={block.actions}>
-            <Element {...stylex.props(treatments[block.kind])}>
+            <Element
+              {...stylex.props(
+                treatments[block.kind],
+                sectionHeading &&
+                  block.kind === CopyKind.SectionLabel &&
+                  css.sectionHeading,
+              )}
+            >
               {block.text}
             </Element>
           </Editable>
