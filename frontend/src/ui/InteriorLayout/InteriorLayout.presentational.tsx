@@ -27,6 +27,8 @@ const css = stylex.create({
   selected: {
     display: { default: 'block', '@media (max-width: 760px)': 'none' },
   },
+  stretch: { alignItems: 'stretch' },
+  stretchIntro: { position: 'relative' },
   body: {
     minWidth: 0,
     paddingBlockStart: { default: 39.84, '@media (max-width: 760px)': 24 },
@@ -45,15 +47,25 @@ const css = stylex.create({
 export function InteriorLayout({
   intro,
   selected = false,
+  stretchIntro = false,
   children,
 }: {
   readonly intro: ReactNode;
   readonly selected?: boolean;
+  readonly stretchIntro?: boolean;
   readonly children: ReactNode;
 }) {
   return (
-    <div {...stylex.props(css.layout)}>
-      <div {...stylex.props(css.intro, selected && css.selected)}>{intro}</div>
+    <div {...stylex.props(css.layout, stretchIntro && css.stretch)}>
+      <div
+        {...stylex.props(
+          css.intro,
+          selected && css.selected,
+          stretchIntro && css.stretchIntro,
+        )}
+      >
+        {intro}
+      </div>
       <div {...stylex.props(css.body, selected && css.detailBody)}>
         {children}
       </div>

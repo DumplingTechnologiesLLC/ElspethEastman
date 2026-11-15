@@ -67,9 +67,11 @@ Each feature keeps its presentational component, wired component, state hook, st
 
 **[#42 Streaming public/CMS page](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/42).** Review canonical stream promotion, complete CMS membership, independent clips, and responsive image/text cards. [Visual evidence](redesign-evidence/streaming/README.md) covers public desktop/mobile and mobile CMS.
 
-**Press public/CMS page.** Review canonical coverage cards/hero/detail, shared DOM focus restoration, publication metadata, and independent appearance rows. [Visual evidence](redesign-evidence/press/README.md) includes collection and selected states.
+**[#43 Press public/CMS page](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/43).** Review canonical coverage cards/hero/detail, shared DOM focus restoration, publication metadata, and independent appearance rows. [Visual evidence](redesign-evidence/press/README.md) includes collection and selected states.
 
-The next page review completes Bio. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
+**Bio public/CMS page.** Review portrait/short-copy ownership, ordered chapters and current work, and registry-derived Explore navigation. [Visual evidence](redesign-evidence/bio/README.md) includes desktop/mobile and CMS.
+
+All six page implementations now have independent state-hook/presentation tests and Storybook views. Remaining reviews initialize approved data, activate the application, retire unused rendering, and expand full browser validation. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
 
 Page presentation reviews link their backend contracts and include state hooks, stories, and interaction evidence. These are review boundaries; a complex page can split further. DTO and write-mapping parents were extracted using additive ancestry merges, preserving published history. Merge reviewed parents with merge commits so children can retarget with focused diffs.
 
