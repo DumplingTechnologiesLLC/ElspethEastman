@@ -131,12 +131,13 @@ export function IconButton({
 }
 export function ActionLink({
   external = false,
+  icon,
   children,
   ...props
 }: Omit<
   AnchorHTMLAttributes<HTMLAnchorElement>,
   'className' | 'style' | 'target' | 'rel'
-> & { external?: boolean }) {
+> & { external?: boolean; icon?: ReactNode }) {
   return (
     <a
       {...props}
@@ -145,7 +146,7 @@ export function ActionLink({
       rel={external ? 'noopener noreferrer' : undefined}
     >
       {children}
-      {external && <img src={externalIcon} alt="" />}
+      {icon ?? (external && <img src={externalIcon} alt="" />)}
     </a>
   );
 }
