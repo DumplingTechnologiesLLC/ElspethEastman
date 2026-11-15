@@ -5,5 +5,6 @@ from .media_asset import MediaAsset, MediaMime
 from .page_image import PageImage
 from .eyebrow import Eyebrow
 from .trivia_item import TriviaItem
+from .content_entry import ContentEntry, ContentEntryMetadata
 
-__all__ = ["Page", "PageKind", "PageCopy", "CopyKind", "MediaAsset", "MediaMime", "PageImage", "Eyebrow", "TriviaItem"]
+__all__ = ["Page", "PageKind", "PageCopy", "CopyKind", "MediaAsset", "MediaMime", "PageImage", "Eyebrow", "TriviaItem", "ContentEntry", "ContentEntryMetadata"]
