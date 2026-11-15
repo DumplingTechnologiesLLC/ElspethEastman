@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import type { ServiceContainer } from '../../composition/ServiceContainer';
 import type { PageId } from '../../domain/models/Page';
 import { useContentEditorService } from '../../hooks/useContentEditorService';
@@ -8,6 +8,7 @@ export interface ContentEditorWiring {
 }
 export function useContentEditorState(props: ContentEditorWiring) {
   const controller = useContentEditorService(props);
+  useEffect(() => () => controller.cancel(), [controller]);
   const state = useSyncExternalStore(
     controller.subscribe,
     controller.getSnapshot,

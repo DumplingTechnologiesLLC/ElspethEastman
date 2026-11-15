@@ -34,7 +34,12 @@ export function createServiceContainer({
     clock,
   );
   const repository = new HttpContentRepository(http);
-  const site = new SiteService(repository, session, notifications);
+  const site = new SiteService(
+    repository,
+    session,
+    notifications,
+    new Date(clock.now()).getFullYear(),
+  );
   const pages = new Map<PageId, PageController>();
   const editors = new Map<PageId, ContentEditorController>();
   const media = new MediaService(repository, notifications, session);

@@ -91,6 +91,7 @@ export function mockServices() {
     expire: vi.fn(),
   };
   const site = {
+    year: 2026,
     ...observable<SiteState>({
       pages: [],
       path: '/',
