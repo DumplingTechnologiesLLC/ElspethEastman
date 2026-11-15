@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from portfolio.views.local_media import local_media
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('portfolio.urls')),
+    path('media/<path:path>', local_media, name='local-media'),
     path('', include('core.urls'))
 ]

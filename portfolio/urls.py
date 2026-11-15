@@ -5,6 +5,7 @@ from portfolio.views.copy import CopyAPIView
 from portfolio.views.collections import EyebrowAPIView, EyebrowDetailAPIView, TriviaAPIView, TriviaDetailAPIView
 from portfolio.views.page_image import PageImageAPIView
 from portfolio.views.reorder import ReorderAPIView
+from portfolio.views.media import MediaAssetAPIView
 
 app_name = "portfolio"
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path("trivia/", TriviaAPIView.as_view(), name="trivia"),
     path("trivia/<int:item_id>/", TriviaDetailAPIView.as_view(), name="trivia-detail"),
     path("collections/reorder/", ReorderAPIView.as_view(), name="reorder"),
+    path("media-assets/", MediaAssetAPIView.as_view(), name="media-assets"),
 ]

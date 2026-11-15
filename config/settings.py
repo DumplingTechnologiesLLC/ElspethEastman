@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import environ
+from config.media import media_settings
 PROJECT_ROOT = environ.Path(__file__) - 2
 env = environ.Env(
     # set casting, default value
@@ -189,6 +190,12 @@ STORAGES = {
 # Allow non-production deployments to exercise production settings without sending mail.
 EMAIL_BACKEND = env('EMAIL_BACKEND', default=EMAIL_BACKEND)
 DEPLOYMENT_ENV = env('DEPLOYMENT_ENV', default='production' if HEROKU else 'development')
+_media = media_settings(env, BASE_DIR, DEPLOYMENT_ENV)
+MEDIA_ROOT = _media['MEDIA_ROOT']
+MEDIA_URL = _media['MEDIA_URL']
+MEDIA_UPLOADS_ENABLED = _media['MEDIA_UPLOADS_ENABLED']
+MEDIA_UPLOAD_MAX_BYTES = _media['MEDIA_UPLOAD_MAX_BYTES']
+STORAGES['default'] = _media['storage']
 if DEPLOYMENT_ENV in ('review', 'staging', 'ci') and EMAIL_BACKEND not in (
     'django.core.mail.backends.console.EmailBackend',
     'django.core.mail.backends.locmem.EmailBackend',

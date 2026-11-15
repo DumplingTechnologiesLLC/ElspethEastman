@@ -56,7 +56,7 @@ class ContentReadTests(TestCase):
         with self.assertNumQueries(5):
             response = self.client.get(f"/api/pages/{self.home.pk}/")
         self.assertEqual([row["image"]["asset"]["url"] for row in response.json()["images"]],
-                         ["/uploads/portrait.webp", "/uploads/detail.webp"])
+                         ["/media/uploads/portrait.webp", "/media/uploads/detail.webp"])
 
     def test_unknown_and_not_yet_implemented_pages_return_explicit_missing_responses(self):
         for page_id in (999999, self.voiceover.pk):
