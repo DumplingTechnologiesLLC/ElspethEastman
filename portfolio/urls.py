@@ -9,6 +9,8 @@ from portfolio.views.media import MediaAssetAPIView
 from portfolio.views.content_entries import ContentEntryAPIView, ContentEntryDetailAPIView
 from portfolio.views.feature import FeaturedItemAPIView
 from portfolio.views.music import MusicFeatureAPIView, MusicReleaseAPIView, MusicReleaseDetailAPIView
+from portfolio.views.page_collections import (AppearanceAPIView, AppearanceDetailAPIView, BioChapterAPIView, BioChapterDetailAPIView,
+                                              CurrentItemAPIView, CurrentItemDetailAPIView, StreamClipAPIView, StreamClipDetailAPIView)
 
 app_name = "portfolio"
 urlpatterns = [
@@ -28,4 +30,12 @@ urlpatterns = [
     path("music-features/", MusicFeatureAPIView.as_view(), name="music-features"),
     path("music-releases/", MusicReleaseAPIView.as_view(), name="music-releases"),
     path("music-releases/<int:item_id>/", MusicReleaseDetailAPIView.as_view(), name="music-release-detail"),
+    path("stream-clips/", StreamClipAPIView.as_view(), name="stream-clips"),
+    path("stream-clips/<int:item_id>/", StreamClipDetailAPIView.as_view(), name="stream-clip-detail"),
+    path("appearances/", AppearanceAPIView.as_view(), name="appearances"),
+    path("appearances/<int:item_id>/", AppearanceDetailAPIView.as_view(), name="appearance-detail"),
+    path("bio-chapters/", BioChapterAPIView.as_view(), name="bio-chapters"),
+    path("bio-chapters/<int:item_id>/", BioChapterDetailAPIView.as_view(), name="bio-chapter-detail"),
+    path("current-items/", CurrentItemAPIView.as_view(), name="current-items"),
+    path("current-items/<int:item_id>/", CurrentItemDetailAPIView.as_view(), name="current-item-detail"),
 ]

@@ -58,12 +58,10 @@ class ContentReadTests(TestCase):
         self.assertEqual([row["image"]["asset"]["url"] for row in response.json()["images"]],
                          ["/media/uploads/portrait.webp", "/media/uploads/detail.webp"])
 
-    def test_unknown_and_not_yet_implemented_pages_return_explicit_missing_responses(self):
-        for page_id in (999999, Page.objects.get(kind=PageKind.STREAMING).pk):
-            with self.subTest(page_id=page_id):
-                response = self.client.get(f"/api/pages/{page_id}/")
-                self.assertEqual(response.status_code, 404)
-                self.assertIn("detail", response.json())
+    def test_unknown_pages_return_explicit_missing_responses(self):
+        response = self.client.get("/api/pages/999999/")
+        self.assertEqual(response.status_code, 404)
+        self.assertIn("detail", response.json())
 
     def test_read_only_surfaces_cannot_be_changed_anonymously(self):
         before = list(Page.objects.values())

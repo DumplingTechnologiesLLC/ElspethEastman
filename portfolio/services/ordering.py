@@ -1,13 +1,15 @@
 from rest_framework.exceptions import ValidationError
 
-from portfolio.models import ContentEntry, Eyebrow, MusicRelease, PageCopy, PageKind, TriviaItem
+from portfolio.models import Appearance, BioChapter, ContentEntry, CurrentItem, Eyebrow, MusicRelease, PageCopy, PageKind, StreamClip, TriviaItem
 from portfolio.services.content_entries import ENTRY_PAGE_KINDS
 from portfolio.serializers.copy_input import COPY_SECTIONS
 from portfolio.services.ownership import locked_page
 
 
-COLLECTION_MODELS = {"copy": PageCopy, "eyebrows": Eyebrow, "trivia": TriviaItem, "content_entries": ContentEntry, "releases": MusicRelease}
-COLLECTION_PAGE_KINDS = {"content_entries": ENTRY_PAGE_KINDS, "releases": {PageKind.MUSIC}}
+COLLECTION_MODELS = {"copy": PageCopy, "eyebrows": Eyebrow, "trivia": TriviaItem, "content_entries": ContentEntry, "releases": MusicRelease,
+                     "stream_clips": StreamClip, "appearances": Appearance, "bio_chapters": BioChapter, "current_items": CurrentItem}
+COLLECTION_PAGE_KINDS = {"content_entries": ENTRY_PAGE_KINDS, "releases": {PageKind.MUSIC}, "stream_clips": {PageKind.STREAMING},
+                        "appearances": {PageKind.PRESS}, "bio_chapters": {PageKind.BIO}, "current_items": {PageKind.BIO}}
 
 
 def reorder_collection(data):
