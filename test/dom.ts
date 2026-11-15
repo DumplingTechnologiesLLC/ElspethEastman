@@ -25,6 +25,21 @@ export const canvasContext = {
   lineWidth: 0,
 };
 export function installDom() {
+  // jsdom supplies the element but not native dialog methods; browser tests cover the top layer and focus trap.
+  Object.defineProperties(HTMLDialogElement.prototype, {
+    showModal: {
+      configurable: true,
+      value: vi.fn(function (this: HTMLDialogElement) {
+        this.open = true;
+      }),
+    },
+    close: {
+      configurable: true,
+      value: vi.fn(function (this: HTMLDialogElement) {
+        this.open = false;
+      }),
+    },
+  });
   observers.length = 0;
   frames.length = 0;
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(

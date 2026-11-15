@@ -43,7 +43,9 @@ Each feature keeps its presentational component, wired component, state hook, st
 
 22. **[#30 Shared resource editors](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/30).** Review explicit input construction for page settings, keyed text, fixed image uses, identity labels, and facts. Editors are scoped through the service container and consume page interfaces.
 
-23. **Page collection editors.** Review field/input mappings for entries, music practice/releases, clips, appearances, and Bio chapters/current work. Metadata keys and UTC publication values retain their ownership through edits.
+23. **[#31 Page collection editors](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/31).** Review field/input mappings for entries, music practice/releases, clips, appearances, and Bio chapters/current work. Metadata keys and UTC publication values retain their ownership through edits.
+
+24. **Figma controls and modal.** Review cream/amber typography and control tokens, accessible fields, safe action links, and native modal dismissal/focus/scroll behavior before the pages consume them.
 
 The remaining reviews connect mutation lifecycles, shared editor state, Figma primitives and the responsive shell, then each public/CMS page pair. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
 
