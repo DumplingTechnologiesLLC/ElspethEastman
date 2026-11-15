@@ -1,13 +1,12 @@
 import { useSyncExternalStore } from 'react';
-import {
-  useNotificationService,
-  type ServiceContainer,
-} from '../../domain/ServiceContainer';
+import { useUIAlertService } from '../../hooks/useUIAlertService';
+import type { ServiceContainer } from '../../composition/ServiceContainer';
+
 export interface NotificationsWiring {
   services: ServiceContainer;
 }
 export function useNotificationsState({ services }: NotificationsWiring) {
-  const controller = useNotificationService(services);
+  const controller = useUIAlertService(services);
   const state = useSyncExternalStore(
     controller.subscribe,
     controller.getSnapshot,

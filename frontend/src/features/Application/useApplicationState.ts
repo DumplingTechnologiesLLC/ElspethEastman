@@ -1,9 +1,9 @@
+import { getApplicationView } from './getApplicationView';
 import { useEffect, useSyncExternalStore } from 'react';
-import {
-  useSessionService,
-  useContactService,
-  type ServiceContainer,
-} from '../../domain/ServiceContainer';
+import { useSessionService } from '../../hooks/useSessionService';
+import { useContactService } from '../../hooks/useContactService';
+import type { ServiceContainer } from '../../composition/ServiceContainer';
+
 export interface ApplicationWiring {
   services: ServiceContainer;
 }
@@ -17,7 +17,7 @@ export function useApplicationState({ services }: ApplicationWiring) {
   );
   useEffect(() => session.start(), [session]);
   return {
-    page: session.getPage(),
+    ...getApplicationView(session.getPage()),
     onContact: () => contact.show(true),
   };
 }

@@ -1,3 +1,4 @@
+import { NEW_AFFILIATION_ID } from '../../../domain/models/NEW_AFFILIATION_ID';
 import { it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { Footer } from '../Footer.presentational';
@@ -59,9 +60,9 @@ it('delegates changes, reset, save, delete and modal visibility in editor mode',
   );
   fireEvent.click(within(modal).getByRole('button', { name: 'Close Modal' }));
   expect(change).toHaveBeenCalledTimes(4);
-  expect(save).toHaveBeenCalledWith(-1);
+  expect(save).toHaveBeenCalledWith(NEW_AFFILIATION_ID);
   expect(save).toHaveBeenCalledWith(1);
-  expect(reset).toHaveBeenCalledWith(-1);
+  expect(reset).toHaveBeenCalledWith(NEW_AFFILIATION_ID);
   expect(reset).toHaveBeenCalledWith(1);
   expect(remove).toHaveBeenCalledWith(1);
   expect(show).toHaveBeenCalledWith(true);

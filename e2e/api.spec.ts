@@ -1,30 +1,22 @@
-import { test, expect, database } from './fixtures.ts';
+import { it, expect, database } from './fixtures.ts';
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, readFileSync, unlinkSync } from 'node:fs';
 import { root, python, environment } from './environment.ts';
 
-test('public response shapes and fixture content match the current contract', async ({
-  request,
-}) => {
-  const responses: Record<string, unknown> = {};
-  for (const path of [
-    '/api/skills/',
-    '/api/footerstats/',
-    '/api/experience/',
-    '/api/affiliations/',
-    '/api/projects/list/',
-    '/api/projects/paginated/?page=1',
-  ] as const) {
+const publicAPI = JSON.parse(
+  readFileSync('e2e/snapshots/api.spec.ts/public-api.json', 'utf8'),
+) as Record<string, unknown>;
+it.each(Object.entries(publicAPI))(([path, expected]) =>
+  it(`preserves the public response contract for ${path}`, async ({
+    request,
+  }) => {
     const response = await request.get(path);
-    expect(response.status(), path).toBe(200);
-    responses[path] = await response.json();
-  }
-  expect(JSON.stringify(responses, null, 2) + '\n').toMatchSnapshot(
-    'public-api.json',
-  );
-});
+    expect(response.status()).toBe(200);
+    expect(await response.json()).toEqual(expected);
+  }),
+);
 
-for (const [method, path] of [
+it.each([
   ['PATCH', '/api/skills/'],
   ['POST', '/api/projects/list/'],
   ['PATCH', '/api/projects/list/6/'],
@@ -36,8 +28,8 @@ for (const [method, path] of [
   ['POST', '/api/affiliations/'],
   ['PATCH', '/api/affiliations/1/'],
   ['DELETE', '/api/affiliations/1/'],
-] as const) {
-  test(`anonymous ${method} ${path} cannot modify content`, async ({
+] as const)(([method, path]) =>
+  it(`rejects anonymous ${method} ${path} without modifying content`, async ({
     request,
   }) => {
     const before = database();
@@ -45,10 +37,10 @@ for (const [method, path] of [
     expect(response.status()).toBe(403);
     expect(await response.json()).toEqual({ detail: 'Forbidden' });
     expect(database()).toEqual(before);
-  });
-}
+  }),
+);
 
-test('contact listing is private and session POSTs enforce CSRF', async ({
+it('keeps contact listing private and enforces CSRF for session POSTs', async ({
   request,
 }) => {
   expect((await request.get('/api/contact-me/')).status()).toBe(403);
@@ -66,29 +58,30 @@ test('contact listing is private and session POSTs enforce CSRF', async ({
   expect(await validPost.json()).toEqual({ isAuthenticated: false });
 });
 
-test('pagination rejects missing and nonnumeric page parameters', async ({
-  request,
-}) => {
-  const missing = await request.get('/api/projects/paginated/');
-  expect(missing.status()).toBe(400);
-  expect(await missing.text()).toBe('Page is required');
-  const invalid = await request.get('/api/projects/paginated/?page=invalid');
-  expect(invalid.status()).toBe(400);
-  expect(await invalid.text()).toBe('Page must be an integer');
-});
+it.each([
+  ['/api/projects/paginated/', 'Page is required'],
+  ['/api/projects/paginated/?page=invalid', 'Page must be an integer'],
+] as const)(([path, message]) =>
+  it(`rejects an invalid pagination request: ${path}`, async ({ request }) => {
+    const response = await request.get(path);
+    expect(response.status()).toBe(400);
+    expect(await response.text()).toBe(message);
+  }),
+);
 
-test('fixture reset refuses other database targets without changing them', async () => {
-  const sentinel = `${root}/.e2e/do-not-reset.sqlite3`;
-  const before = database();
-  mkdirSync(`${root}/.e2e`, { recursive: true });
-  writeFileSync(sentinel, 'Preserve this unrelated database target', {
-    flag: 'wx',
-  });
-  try {
-    for (const url of [
-      `sqlite:///${sentinel}`,
-      'postgres://test:test@not-local.invalid/elspeth_e2e',
-    ] as const) {
+it.each(['sqlite', 'postgres'] as const)((target) =>
+  it(`refuses to reset a non-E2E ${target} database without changing content`, async () => {
+    const sentinel = `${root}/.e2e/do-not-reset.sqlite3`;
+    const before = database();
+    mkdirSync(`${root}/.e2e`, { recursive: true });
+    writeFileSync(sentinel, 'Preserve this unrelated database target', {
+      flag: 'wx',
+    });
+    try {
+      const url =
+        target === 'sqlite'
+          ? `sqlite:///${sentinel}`
+          : 'postgres://test:test@not-local.invalid/elspeth_e2e';
       const result = spawnSync(python, ['e2e/seed.py', 'reset'], {
         cwd: root,
         encoding: 'utf8',
@@ -97,12 +90,12 @@ test('fixture reset refuses other database targets without changing them', async
       });
       expect(result.status).toBe(1);
       expect(result.stderr).toContain('Refusing to reset a non-E2E');
+      expect(readFileSync(sentinel, 'utf8')).toBe(
+        'Preserve this unrelated database target',
+      );
+      expect(database()).toEqual(before);
+    } finally {
+      unlinkSync(sentinel);
     }
-    expect(readFileSync(sentinel, 'utf8')).toBe(
-      'Preserve this unrelated database target',
-    );
-    expect(database()).toEqual(before);
-  } finally {
-    unlinkSync(sentinel);
-  }
-});
+  }),
+);

@@ -4,6 +4,9 @@ const config: StorybookConfig = {
   stories: ['../frontend/src/**/*.stories.tsx'],
   addons: ['@storybook/addon-docs'],
   core: { disableTelemetry: true },
-  viteFinal: (config) => ({ ...config, root: process.cwd() + '/frontend' }),
+  viteFinal: (viteConfig) => ({
+    ...viteConfig,
+    root: process.cwd() + '/frontend',
+  }),
 };
 export default config;

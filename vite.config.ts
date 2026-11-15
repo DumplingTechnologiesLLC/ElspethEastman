@@ -1,12 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import stylex from '@stylexjs/unplugin';
+import stylex from '@stylexjs/unplugin/vite';
 import svgr from 'vite-plugin-svgr';
 import { deploymentArtifacts } from './tooling/deploymentArtifacts.ts';
 export default defineConfig({
   root: 'frontend',
   plugins: [
-    stylex.vite({ useCSSLayers: false, runtimeInjection: false }),
+    stylex({ useCSSLayers: false, runtimeInjection: false }),
     svgr(),
     react(),
     deploymentArtifacts(),

@@ -1,4 +1,7 @@
-import type { Http, Method, Reply, TokenStorage } from '../domain/contracts';
+import type { Http } from '../domain/ports/Http';
+import type { Method } from '../domain/models/Method';
+import type { Reply } from '../domain/models/Reply';
+import type { TokenStorage } from '../domain/ports/TokenStorage';
 export function cookie(cookies: string, name: string): string | null {
   const entry = cookies
     .split(';')

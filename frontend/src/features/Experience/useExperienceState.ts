@@ -1,8 +1,7 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
-import {
-  useExperienceService,
-  type ServiceContainer,
-} from '../../domain/ServiceContainer';
+import { useEffect, useSyncExternalStore } from 'react';
+import { useExperienceService } from '../../hooks/useExperienceService';
+import type { ServiceContainer } from '../../composition/ServiceContainer';
+
 export interface ExperienceWiring {
   services: ServiceContainer;
   editor?: boolean;
@@ -11,8 +10,7 @@ export function useExperienceState({
   services,
   editor = false,
 }: ExperienceWiring) {
-  const create = useExperienceService(services);
-  const [controller] = useState(create);
+  const controller = useExperienceService({ services });
   const state = useSyncExternalStore(
     controller.subscribe,
     controller.getSnapshot,

@@ -2,11 +2,15 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "react", "unicorn", "import"],
   "categories": {
-    "correctness": "error"
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
   },
   "rules": {
     "typescript/no-explicit-any": "error",
-    "react/jsx-key": "error"
+    "react/jsx-key": "error",
+    "typescript/prefer-enum-initializers": "error",
+    "react/react-in-jsx-scope": "off"
   },
   "ignorePatterns": [
     "public/",

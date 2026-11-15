@@ -1,9 +1,8 @@
 import { useSyncExternalStore } from 'react';
-import {
-  useSessionService,
-  useContactService,
-  type ServiceContainer,
-} from '../../domain/ServiceContainer';
+import { useSessionService } from '../../hooks/useSessionService';
+import { useContactService } from '../../hooks/useContactService';
+import type { ServiceContainer } from '../../composition/ServiceContainer';
+
 export interface NavbarWiring {
   services: ServiceContainer;
   cms: boolean;

@@ -1,6 +1,6 @@
-import { test, expect, login, actionResponse } from './fixtures.ts';
+import { it, expect, login, actionResponse } from './fixtures.ts';
 
-test('login validates required credentials', async ({ page }) => {
+it('validates required login credentials', async ({ page }) => {
   await page.goto('/login');
   const submit = page.getByRole('button', { name: 'Login', exact: true });
   await submit.click();
@@ -10,7 +10,7 @@ test('login validates required credentials', async ({ page }) => {
   await expect(page.getByText('Password is required')).toBeVisible();
 });
 
-test('incorrect credentials keep the user outside the CMS', async ({
+it('keeps the user outside the CMS with incorrect credentials', async ({
   page,
 }) => {
   await page.goto('/login');
@@ -28,7 +28,7 @@ test('incorrect credentials keep the user outside the CMS', async ({
   ).toBeNull();
 });
 
-test('UI login survives reload, public navigation, and logout revokes the token', async ({
+it('preserves UI login through reload and navigation and revokes the token on logout', async ({
   page,
 }) => {
   await login(page, true);
@@ -68,7 +68,7 @@ test('UI login survives reload, public navigation, and logout revokes the token'
   await expect(page).toHaveURL(/\/login$/);
 });
 
-test('current aborted session validation clears browser credentials while the server token remains valid', async ({
+it('clears browser credentials after aborted validation and preserves the server token', async ({
   page,
 }) => {
   await login(page);
@@ -92,9 +92,7 @@ test('current aborted session validation clears browser credentials while the se
   expect(await response.json()).toEqual({ isAuthenticated: true });
 });
 
-test('an invalid saved token is cleared and redirects to login', async ({
-  page,
-}) => {
+it('clears an invalid saved token and redirects to login', async ({ page }) => {
   await page.addInitScript(() =>
     sessionStorage.setItem('ElspethEastmanAuthToken', 'invalid-token'),
   );
@@ -110,7 +108,7 @@ test('an invalid saved token is cleared and redirects to login', async ({
   ).toBeNull();
 });
 
-test('login network failures notify and allow a fresh retry', async ({
+it('reports login network failures and allows a fresh retry', async ({
   page,
 }) => {
   await page.goto('/login');
@@ -126,7 +124,7 @@ test('login network failures notify and allow a fresh retry', async ({
   await login(page, true);
 });
 
-test('legacy aborted logout clears browser credentials while retaining the server token', async ({
+it('clears browser credentials after aborted logout and retains the server token', async ({
   page,
 }) => {
   await login(page);

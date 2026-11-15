@@ -4,9 +4,9 @@ import { useNotificationsState } from '../useNotificationsState';
 import { mockServices } from '../../../../../test/mockServices';
 it('subscribes to the service and exposes its view state', () => {
   const mock = mockServices();
-  const hook = renderHook(() =>
-    useNotificationsState({ services: mock.services }),
-  );
+  const hook = renderHook(useNotificationsState, {
+    initialProps: { services: mock.services },
+  });
   act(() => mock.notifications.publish([]));
   expect(hook.result.current.toasts).toEqual([]);
   hook.unmount();

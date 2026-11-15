@@ -1,8 +1,7 @@
 import { useSyncExternalStore } from 'react';
-import {
-  useSessionService,
-  type ServiceContainer,
-} from '../../domain/ServiceContainer';
+import { useSessionService } from '../../hooks/useSessionService';
+import type { ServiceContainer } from '../../composition/ServiceContainer';
+
 export interface LoginWiring {
   services: ServiceContainer;
 }

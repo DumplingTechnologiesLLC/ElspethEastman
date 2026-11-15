@@ -49,11 +49,11 @@ const css = stylex.create({
 export interface HeroProps {
   onContact: () => void;
 }
+const scrollToWork = () =>
+  document
+    .querySelector('#latestProjects')!
+    .scrollIntoView({ behavior: 'smooth' });
 export function Hero({ onContact }: HeroProps) {
-  const scrollToWork = () =>
-    document
-      .querySelector('#latestProjects')!
-      .scrollIntoView({ behavior: 'smooth' });
   return (
     <div {...stylex.props(styles.row, css.container)}>
       <div {...stylex.props(styles.column, css.text)}>

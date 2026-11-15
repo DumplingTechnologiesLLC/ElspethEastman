@@ -4,9 +4,9 @@ import { useExperienceState } from '../useExperienceState';
 import { mockServices } from '../../../../../test/mockServices';
 it('subscribes to the service and exposes its view state', () => {
   const mock = mockServices();
-  const hook = renderHook(() =>
-    useExperienceState({ services: mock.services }),
-  );
+  const hook = renderHook(useExperienceState, {
+    initialProps: { services: mock.services },
+  });
   expect(mock.experience.load).toHaveBeenCalledOnce();
   act(() =>
     mock.experience.publish({
@@ -20,8 +20,8 @@ it('subscribes to the service and exposes its view state', () => {
 });
 it('constructs an editor controller explicitly', () => {
   const mock = mockServices();
-  const { result } = renderHook(() =>
-    useExperienceState({ services: mock.services, editor: true }),
-  );
+  const { result } = renderHook(useExperienceState, {
+    initialProps: { services: mock.services, editor: true },
+  });
   expect(result.current.editor).toBe(true);
 });

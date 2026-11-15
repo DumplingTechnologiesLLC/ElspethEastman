@@ -26,12 +26,12 @@ it('rejects wired imports from presentations and stories and accepts ordinary im
   expect(
     inspectArchitecture(
       'Foo.presentational.tsx',
-      `import type {Data} from '../../domain/contracts';import {Button} from './Button.presentational';`,
+      `import type {Data} from '../../domain/models/Data';import {Category} from '../../domain/models/Category';import {Button} from './Button.presentational';`,
     ),
   ).toEqual([]);
 });
 it('rejects service imports, hooks, contexts and business IO from presentations', () => {
-  const source = `import {session} from '../../domain/SessionService';import {useFooState} from './useFooState';createContext();React.useContext(x);fetch('/api');useFooService();useSyncExternalStore();window.sessionStorage.getItem('token');`;
+  const source = `import {session} from '../../application/services/SessionService';import {useFooState} from './useFooState';createContext();React.useContext(x);fetch('/api');useFooService();useSyncExternalStore();window.sessionStorage.getItem('token');`;
   expect(inspectArchitecture('Foo.presentational.tsx', source)).toHaveLength(8);
   expect(
     inspectArchitecture(
@@ -75,4 +75,48 @@ it('reports syntax failures and surfaces violations to the CLI reporter', async 
     reportViolations(['broken'], (message) => messages.push(message)),
   ).toBe(1);
   expect(messages).toEqual(['broken']);
+});
+it.each([
+  'const state=useFooState();const mode=state.page === "cms";',
+  'const state=useFooState();const mode=state.page ? "all" : "latest";',
+  'const state=useFooState();const mode=state.page || "latest";',
+  'const state=useFooState();if(state.page){}',
+  'const state=useFooState();switch(state.page){}',
+])('rejects policy decisions at the wired boundary: %s', (source) => {
+  expect(inspectArchitecture('Foo/Foo.wired.tsx', source)).toEqual([
+    expect.objectContaining({
+      message: expect.stringContaining('cannot make policy decisions'),
+    }),
+  ]);
+});
+it.each([
+  'renderHook(() => useFooState(props));',
+  'renderHook(function(){return useFooState(props)});',
+  'RTL.renderHook(() => useFooState(props));',
+  'renderHook();',
+  "import {renderHook as renderState} from '@testing-library/react';renderState(()=>useFooState(props));",
+])('rejects renderHook wrappers: %s', (source) => {
+  expect(inspectArchitecture('Foo.test.ts', source)).toHaveLength(1);
+});
+it('accepts a direct hook and initialProps', () => {
+  expect(
+    inspectArchitecture(
+      'Foo.test.ts',
+      'renderHook(useFooState,{initialProps:props});',
+    ),
+  ).toEqual([]);
+});
+it('keeps domain models and ports independent of implementations', () => {
+  expect(
+    inspectArchitecture(
+      'frontend/src/domain/ports/Api.ts',
+      "import {ApiService} from '../../application/services/ApiService';",
+    ),
+  ).toHaveLength(1);
+  expect(
+    inspectArchitecture(
+      'frontend/src/domain/models/Project.ts',
+      "import type {ProjectId} from './ProjectId';",
+    ),
+  ).toEqual([]);
 });

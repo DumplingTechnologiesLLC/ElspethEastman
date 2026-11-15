@@ -1,8 +1,7 @@
 import { useSyncExternalStore } from 'react';
-import {
-  useContactService,
-  type ServiceContainer,
-} from '../../domain/ServiceContainer';
+import { useContactService } from '../../hooks/useContactService';
+import type { ServiceContainer } from '../../composition/ServiceContainer';
+
 export interface ContactWiring {
   services: ServiceContainer;
 }

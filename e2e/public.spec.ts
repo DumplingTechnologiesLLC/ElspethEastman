@@ -1,6 +1,6 @@
-import { test, expect, database } from './fixtures.ts';
+import { it, expect, database } from './fixtures.ts';
 
-test('home renders every content section from the API', async ({ page }) => {
+it('renders every home content section from the API', async ({ page }) => {
   await page.goto('/');
   await expect(
     page.getByRole('heading', { name: /HI, I'M ELSPETH/ }),
@@ -10,19 +10,23 @@ test('home renders every content section from the API', async ({ page }) => {
       'Voice acting fixture: characters, narration, and animation.',
     ),
   ).toBeVisible();
-  for (const category of [
-    'Voice Credits',
-    'Music - Games',
-    'Music - Miscellaneous',
-    'Streaming - Credits',
-  ] as const) {
-    await expect(
-      page.getByRole('heading', { name: category, exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: new RegExp(`Fixture ${category}`) }),
-    ).toHaveAttribute('target', '_blank');
-  }
+  await Promise.all(
+    (
+      [
+        'Voice Credits',
+        'Music - Games',
+        'Music - Miscellaneous',
+        'Streaming - Credits',
+      ] as const
+    ).flatMap((category) => [
+      expect(
+        page.getByRole('heading', { name: category, exact: true }),
+      ).toBeVisible(),
+      expect(
+        page.getByRole('link', { name: new RegExp(`Fixture ${category}`) }),
+      ).toHaveAttribute('target', '_blank'),
+    ]),
+  );
   await expect(
     page.getByRole('link', { name: 'Fixture Studio' }),
   ).toHaveAttribute('href', 'https://example.invalid/studio');
@@ -32,25 +36,29 @@ test('home renders every content section from the API', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('skill selector switches all three descriptions', async ({ page }) => {
-  await page.goto('/');
-  for (const [name, description] of [
-    ['Streaming', 'Streaming fixture: games and community broadcasts.'],
-    [
-      'Game Development',
-      'Game development fixture: music and interactive worlds.',
-    ],
-    [
-      'Voice Acting',
-      'Voice acting fixture: characters, narration, and animation.',
-    ],
-  ] as const) {
+it.each([
+  ['Streaming', 'Streaming fixture: games and community broadcasts.'],
+  [
+    'Game Development',
+    'Game development fixture: music and interactive worlds.',
+  ],
+  [
+    'Voice Acting',
+    'Voice acting fixture: characters, narration, and animation.',
+  ],
+] as const)(([name, description]) =>
+  it(`switches to the ${name} skill description`, async ({ page }) => {
+    await page.goto('/');
+    if (name === 'Voice Acting')
+      await page
+        .getByRole('button', { name: 'Streaming', exact: true })
+        .click();
     await page.getByRole('button', { name, exact: true }).click();
     await expect(page.getByText(description, { exact: true })).toBeVisible();
-  }
-});
+  }),
+);
 
-test('latest projects paginate without duplicates and stop at the last page', async ({
+it('paginates latest projects without duplicates and stops at the last page', async ({
   page,
 }) => {
   await page.goto('/');
@@ -67,13 +75,16 @@ test('latest projects paginate without duplicates and stop at the last page', as
   await expect(
     page.getByRole('button', { name: 'Load more', exact: true }),
   ).toBeDisabled();
-  for (let index = 1; index <= 6; index++)
-    await expect(
-      page.getByText(`Fixture Project ${index}`, { exact: true }),
-    ).toHaveCount(1);
+  await Promise.all(
+    Array.from({ length: 6 }, (_, index) =>
+      expect(
+        page.getByText(`Fixture Project ${index + 1}`, { exact: true }),
+      ).toHaveCount(1),
+    ),
+  );
 });
 
-test('all projects supports direct entry, reload, and returning home', async ({
+it('supports direct project entry, reload, and returning home', async ({
   page,
 }) => {
   await page.goto('/projects/');
@@ -98,7 +109,7 @@ test('all projects supports direct entry, reload, and returning home', async ({
   await expect(page).toHaveURL(/\/projects$/);
 });
 
-test('video loads only after activation and preserves the embed URL', async ({
+it('loads video only after activation and preserves the embed URL', async ({
   page,
 }) => {
   await page.goto('/projects');
@@ -122,7 +133,7 @@ test('video loads only after activation and preserves the embed URL', async ({
   );
 });
 
-test('empty project lists show the current fallback', async ({ page }) => {
+it('shows the current fallback for empty project lists', async ({ page }) => {
   database('empty-projects');
   await page.goto('/projects');
   await expect(
@@ -133,7 +144,9 @@ test('empty project lists show the current fallback', async ({ page }) => {
   );
 });
 
-test('failed project requests show a recovery message', async ({ page }) => {
+it('shows a recovery message after failed project requests', async ({
+  page,
+}) => {
   await page.route('**/api/projects/list/', (route) =>
     route.fulfill({ status: 503, contentType: 'application/json', body: '{}' }),
   );
@@ -146,7 +159,7 @@ test('failed project requests show a recovery message', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('navigation links reach the public sections from the projects page', async ({
+it('navigates to public sections from the projects page', async ({
   page,
   isMobile,
 }) => {
@@ -164,13 +177,13 @@ test('navigation links reach the public sections from the projects page', async 
   ).toBeVisible();
 });
 
-test('anonymous CMS deep links redirect to login', async ({ page }) => {
-  for (const path of ['/cms', '/cms/'] as const) {
+it.each(['/cms', '/cms/'] as const)((path) =>
+  it(`redirects anonymous ${path} deep links to login`, async ({ page }) => {
     await page.goto(path);
     await expect(page).toHaveURL(/\/login$/);
     await expect(page.locator('input[name="username"]')).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Save All Changes' }),
     ).toHaveCount(0);
-  }
-});
+  }),
+);

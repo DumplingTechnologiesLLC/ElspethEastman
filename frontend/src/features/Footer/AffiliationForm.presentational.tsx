@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
 import { Button, Field } from '../../ui/Primitives.presentational';
 import { styles } from '../../ui/styles';
-import type { Errors } from '../../domain/contracts';
+import type { Errors } from '../../domain/models/Errors';
 const css = stylex.create({
   form: { backgroundColor: 'white', padding: '1em', marginBottom: '1em' },
   buttons: { marginTop: '1em' },

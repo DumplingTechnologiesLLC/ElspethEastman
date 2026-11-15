@@ -4,9 +4,9 @@ import { useNavbarState } from '../useNavbarState';
 import { mockServices } from '../../../../../test/mockServices';
 it('subscribes to the service and exposes its view state', () => {
   const mock = mockServices();
-  const hook = renderHook(() =>
-    useNavbarState({ services: mock.services, cms: false }),
-  );
+  const hook = renderHook(useNavbarState, {
+    initialProps: { services: mock.services, cms: false },
+  });
   hook.result.current.onContact();
   expect(mock.contact.show).toHaveBeenCalledWith(true);
   act(() =>

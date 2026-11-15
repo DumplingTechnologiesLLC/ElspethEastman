@@ -45,9 +45,10 @@ Run the relevant update command, inspect the changed screenshots or JSON, and co
 
 ```sh
 pnpm test:e2e:docker --project=visual --update-snapshots
-pnpm test:e2e:docker --project=api --update-snapshots
 git diff -- e2e/snapshots
 ```
+
+For an intentional API contract change, edit the corresponding endpoint entry in `e2e/snapshots/api.spec.ts/public-api.json`, review the JSON diff, and run `pnpm test:e2e:docker --project=api`. Each endpoint has its own `it.each` case against that shared baseline. Playwright tables register through native `it` callbacks so fixture discovery, source locations, and snapshot paths remain intact.
 
 Ordinary runs compare committed baselines and fail if a baseline is missing. CI never regenerates them. Screenshot comparison permits at most 100 differing pixels to accommodate minor rendering noise.
 

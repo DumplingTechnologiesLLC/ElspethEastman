@@ -4,7 +4,9 @@ import { useProjectsState } from '../useProjectsState';
 import { mockServices } from '../../../../../test/mockServices';
 it('subscribes to the service and exposes its view state', () => {
   const mock = mockServices();
-  const hook = renderHook(() => useProjectsState({ services: mock.services }));
+  const hook = renderHook(useProjectsState, {
+    initialProps: { services: mock.services },
+  });
   expect(mock.projects.load).toHaveBeenCalledOnce();
   void hook.result.current.nextPage();
   expect(mock.projects.nextPage).toHaveBeenCalledOnce();
@@ -17,9 +19,9 @@ it('subscribes to the service and exposes its view state', () => {
 });
 it('constructs an editor controller explicitly', () => {
   const mock = mockServices();
-  const { result } = renderHook(() =>
-    useProjectsState({ services: mock.services, mode: 'editor' }),
-  );
+  const { result } = renderHook(useProjectsState, {
+    initialProps: { services: mock.services, mode: 'editor' },
+  });
   expect(result.current.mode).toBe('editor');
   expect(mock.services.projects).toHaveBeenCalledWith('editor');
 });

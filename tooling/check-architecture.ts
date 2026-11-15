@@ -20,4 +20,6 @@ export function reportViolations(
   for (const violation of violations) reporter(violation);
   return Number(violations.length > 0);
 }
-process.exitCode = reportViolations(checkDirectory('frontend/src'));
+process.exitCode = reportViolations(
+  ['frontend/src', 'test', 'e2e'].flatMap(checkDirectory),
+);

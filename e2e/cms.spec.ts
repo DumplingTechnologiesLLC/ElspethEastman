@@ -1,6 +1,6 @@
-import type { Project } from '../frontend/src/domain/contracts';
+import type { ProjectDTO } from '../frontend/src/application/dto/ProjectDTO';
 import {
-  test,
+  it,
   expect,
   database,
   login,
@@ -9,9 +9,9 @@ import {
   actionResponse,
 } from './fixtures.ts';
 
-test.beforeEach(async ({ page }) => login(page));
+it.beforeEach(async ({ page }) => login(page));
 
-test('skills switch, reset unsaved changes, and persist to the public page', async ({
+it('switches skills, resets unsaved changes, and persists to the public page', async ({
   page,
 }) => {
   const field = page.locator('textarea[name="Voice Acting"]');
@@ -49,7 +49,7 @@ test('skills switch, reset unsaved changes, and persist to the public page', asy
   ).toBeVisible();
 });
 
-test('blank skills return validation without replacing saved content', async ({
+it('validates blank skills without replacing saved content', async ({
   page,
 }) => {
   await page.locator('textarea[name="Voice Acting"]').fill('');
@@ -71,7 +71,7 @@ test('blank skills return validation without replacing saved content', async ({
   expect(database().skills[0]!.voice_acting).toMatch(/^Voice acting fixture/);
 });
 
-test('expired write tokens show an error and leave saved skills intact', async ({
+it('reports expired write tokens and leaves saved skills intact', async ({
   page,
 }) => {
   database('expire-tokens');
@@ -96,7 +96,9 @@ test('expired write tokens show an error and leave saved skills intact', async (
   expect(database().skills[0]!.voice_acting).toMatch(/^Voice acting fixture/);
 });
 
-test('project preview and reset preserve the cached form', async ({ page }) => {
+it('preserves the cached project form through preview and reset', async ({
+  page,
+}) => {
   const card = projectCards(page).first();
   await expect(card.locator('input[name$="-title"]')).toHaveValue(
     'Fixture Project 6',
@@ -114,7 +116,7 @@ test('project preview and reset preserve the cached form', async ({ page }) => {
   expect(database().projects[0]!.title).toBe('Fixture Project 6');
 });
 
-test('projects create, edit, and delete through the browser and public API', async ({
+it('creates, edits, and deletes projects through the browser and public API', async ({
   page,
 }) => {
   await page
@@ -151,13 +153,13 @@ test('projects create, edit, and delete through the browser and public API', asy
     has: page.locator('input[value="Updated integration project"]'),
   });
   await expect(updated).toHaveCount(1);
-  const publicProjects: Project[] = await (
+  const publicProjects: ProjectDTO[] = await (
     await page.request.get('/api/projects/list/')
   ).json();
   expect(
     publicProjects.find((project) => project.id === created.project.id)!.title,
   ).toBe('Updated integration project');
-  page.once('dialog', (dialog) => dialog.accept());
+  page.once('dialog', (confirmation) => confirmation.accept());
   await actionResponse(
     page,
     'DELETE',
@@ -170,7 +172,7 @@ test('projects create, edit, and delete through the browser and public API', asy
   ).toBe(false);
 });
 
-test('project Save All persists a batch and delete cancellation keeps the record', async ({
+it('persists a project batch and keeps records after delete cancellation', async ({
   page,
 }) => {
   const cards = projectCards(page);
@@ -191,7 +193,7 @@ test('project Save All persists a batch and delete cancellation keeps the record
   await expect(cards.nth(1).locator('input[name$="-title"]')).toHaveValue(
     'Batch project five',
   );
-  page.once('dialog', (dialog) => dialog.dismiss());
+  page.once('dialog', (confirmation) => confirmation.dismiss());
   await cards
     .first()
     .getByRole('button', { name: 'Delete', exact: true })
@@ -200,7 +202,7 @@ test('project Save All persists a batch and delete cancellation keeps the record
   expect(database().projects).toHaveLength(6);
 });
 
-test('invalid new projects show server errors and are not created', async ({
+it('reports server errors without creating invalid projects', async ({
   page,
 }) => {
   await page
@@ -221,13 +223,13 @@ test('invalid new projects show server errors and are not created', async ({
   expect(database().projects).toHaveLength(6);
 });
 
-for (const [category, button] of [
+it.each([
   ['Voice Credits', 'Add new credit'],
   ['Music - Games', 'Add new music'],
   ['Music - Miscellaneous', 'Add new music'],
   ['Streaming - Credits', 'Add new credit'],
-] as const) {
-  test(`experience CRUD and TBA formatting in ${category}`, async ({
+] as const)(([category, button]) =>
+  it(`creates, edits, and deletes experience with TBA formatting in ${category}`, async ({
     page,
   }) => {
     const section = page
@@ -276,12 +278,12 @@ for (const [category, button] of [
       .getByRole('link', { name: `(TBA) Updated ${category}`, exact: true })
       .locator('..');
     await expect(updated).toBeVisible();
-    page.once('dialog', (dialog) => dialog.dismiss());
+    page.once('dialog', (confirmation) => confirmation.dismiss());
     await updated.getByRole('button').nth(0).click();
     expect(
       database().experience.some((item) => item.id === created.object.id),
     ).toBe(true);
-    page.once('dialog', (dialog) => dialog.accept());
+    page.once('dialog', (confirmation) => confirmation.accept());
     await actionResponse(
       page,
       'DELETE',
@@ -292,10 +294,10 @@ for (const [category, button] of [
     expect(
       database().experience.some((item) => item.id === created.object.id),
     ).toBe(false);
-  });
-}
+  }),
+);
 
-test('experience reset and required-credit validation keep the saved record unchanged', async ({
+it('preserves saved experience through reset and required-credit validation', async ({
   page,
 }) => {
   const row = page
@@ -329,7 +331,7 @@ test('experience reset and required-credit validation keep the saved record unch
   );
 });
 
-test('affiliations reset, create, edit, and delete with confirmation', async ({
+it('resets, creates, edits, and deletes affiliations with confirmation', async ({
   page,
 }) => {
   const form = page
@@ -372,10 +374,10 @@ test('affiliations reset, create, edit, and delete with confirmation', async ({
   await expect(newForm.locator('input[name="affiliationLink"]')).toHaveValue(
     'https://example.invalid/updated-studio',
   );
-  page.once('dialog', (dialog) => dialog.dismiss());
+  page.once('dialog', (confirmation) => confirmation.dismiss());
   await newForm.getByRole('button', { name: 'Delete', exact: true }).click();
   expect(database().affiliations).toHaveLength(2);
-  page.once('dialog', (dialog) => dialog.accept());
+  page.once('dialog', (confirmation) => confirmation.accept());
   await actionResponse(page, 'DELETE', `/api/affiliations/${created.id}/`, () =>
     newForm.getByRole('button', { name: 'Delete', exact: true }).click(),
   );
@@ -383,7 +385,7 @@ test('affiliations reset, create, edit, and delete with confirmation', async ({
   expect(database().affiliations).toHaveLength(1);
 });
 
-test('saved affiliations are visible on the public site', async ({ page }) => {
+it('shows saved affiliations on the public site', async ({ page }) => {
   const form = page
     .locator('form')
     .filter({ has: page.locator('input[value="Fixture Studio"]') });
@@ -400,7 +402,7 @@ test('saved affiliations are visible on the public site', async ({ page }) => {
   ).toHaveAttribute('href', 'https://example.invalid/public-studio');
 });
 
-test('current invalid-affiliation behavior closes the form without creating a record', async ({
+it('closes the invalid-affiliation form without creating a record', async ({
   page,
 }) => {
   await page.getByRole('button', { name: 'Create new affiliation' }).click();

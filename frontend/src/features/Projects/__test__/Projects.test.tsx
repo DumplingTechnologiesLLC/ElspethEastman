@@ -1,3 +1,4 @@
+import { NEW_PROJECT_ID } from '../../../domain/models/NEW_PROJECT_ID';
 import { it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { Projects } from '../Projects.presentational';
@@ -69,9 +70,9 @@ it('composes independent editor forms and delegates every action', () => {
   fireEvent.click(screen.getByRole('button', { name: 'Add New Project' }));
   fireEvent.click(screen.getByRole('button', { name: 'Close Modal' }));
   expect(change).toHaveBeenCalledTimes(4);
-  expect(save).toHaveBeenCalledWith(-1);
+  expect(save).toHaveBeenCalledWith(NEW_PROJECT_ID);
   expect(save).toHaveBeenCalledWith(1);
-  expect(reset).toHaveBeenCalledWith(-1);
+  expect(reset).toHaveBeenCalledWith(NEW_PROJECT_ID);
   expect(reset).toHaveBeenCalledWith(1);
   expect(remove).toHaveBeenCalledWith(1);
   expect(show).toHaveBeenCalledWith(true);

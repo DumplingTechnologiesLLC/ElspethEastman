@@ -1,10 +1,9 @@
-import { projectView } from '../../domain/projectView';
-import { useEffect, useState, useSyncExternalStore } from 'react';
-import {
-  useProjectsService,
-  useSessionService,
-  type ServiceContainer,
-} from '../../domain/ServiceContainer';
+import { toProjectViewModel } from './toProjectViewModel';
+import { useEffect, useSyncExternalStore } from 'react';
+import { useProjectsService } from '../../hooks/useProjectsService';
+import { useSessionService } from '../../hooks/useSessionService';
+import type { ServiceContainer } from '../../composition/ServiceContainer';
+
 export interface ProjectsWiring {
   services: ServiceContainer;
   mode?: 'latest' | 'all' | 'editor';
@@ -13,9 +12,8 @@ export function useProjectsState({
   services,
   mode = 'latest',
 }: ProjectsWiring) {
-  const create = useProjectsService(services);
   const session = useSessionService(services);
-  const [controller] = useState(() => create(mode));
+  const controller = useProjectsService({ services, mode });
   const state = useSyncExternalStore(
     controller.subscribe,
     controller.getSnapshot,
@@ -27,8 +25,8 @@ export function useProjectsState({
   return {
     mode,
     ...state,
-    projects: state.projects.map(projectView),
-    draft: projectView(state.draft),
+    projects: state.projects.map(toProjectViewModel),
+    draft: toProjectViewModel(state.draft),
     change: controller.change,
     reset: controller.reset,
     show: controller.show,

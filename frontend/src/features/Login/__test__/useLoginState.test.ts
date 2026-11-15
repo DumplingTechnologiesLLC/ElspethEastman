@@ -4,7 +4,9 @@ import { useLoginState } from '../useLoginState';
 import { mockServices } from '../../../../../test/mockServices';
 it('subscribes to the service and exposes its view state', () => {
   const mock = mockServices();
-  const hook = renderHook(() => useLoginState({ services: mock.services }));
+  const hook = renderHook(useLoginState, {
+    initialProps: { services: mock.services },
+  });
   act(() =>
     mock.session.publish({
       ...mock.session.getSnapshot(),

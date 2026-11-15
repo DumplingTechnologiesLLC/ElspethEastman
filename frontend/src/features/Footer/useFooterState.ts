@@ -1,15 +1,13 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
-import {
-  useFooterService,
-  type ServiceContainer,
-} from '../../domain/ServiceContainer';
+import { useEffect, useSyncExternalStore } from 'react';
+import { useFooterService } from '../../hooks/useFooterService';
+import type { ServiceContainer } from '../../composition/ServiceContainer';
+
 export interface FooterWiring {
   services: ServiceContainer;
   editor?: boolean;
 }
 export function useFooterState({ services, editor = false }: FooterWiring) {
-  const create = useFooterService(services);
-  const [controller] = useState(create);
+  const controller = useFooterService({ services });
   const state = useSyncExternalStore(
     controller.subscribe,
     controller.getSnapshot,

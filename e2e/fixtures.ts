@@ -1,20 +1,19 @@
+import { withCases } from '../tooling/withCases.ts';
 import type { Page } from '@playwright/test';
-import type {
-  Project,
-  Skills,
-  Affiliation,
-  ContactDraft,
-} from '../frontend/src/domain/contracts';
+import type { ProjectDTO } from '../frontend/src/application/dto/ProjectDTO';
+import type { Skills } from '../frontend/src/domain/models/Skills';
+import type { Affiliation } from '../frontend/src/domain/models/Affiliation';
+import type { ContactDraft } from '../frontend/src/domain/models/ContactDraft';
+import { test as base, expect } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
+import { root, python, baseURL, environment } from './environment.ts';
 interface DatabaseSnapshot {
-  projects: Project[];
+  projects: ProjectDTO[];
   skills: Skills[];
   affiliations: Affiliation[];
   contacts: (ContactDraft & { sent: boolean })[];
   experience: { id: number; credit: string }[];
 }
-import { test as base, expect } from '@playwright/test';
-import { execFileSync } from 'node:child_process';
-import { root, python, baseURL, environment } from './environment.ts';
 
 function database(
   command: 'inspect' | 'reset' | 'empty-projects' | 'expire-tokens' = 'inspect',
@@ -32,35 +31,37 @@ const thumbnail =
 const embeddedMedia =
   '<!doctype html><html><body style="margin:0;background:#e4eff4;font:16px sans-serif;display:grid;place-items:center;height:100vh">External media fixture</body></html>';
 
-const test = base.extend<{ baseline: void }>({
-  baseline: [
-    async ({ page, context }, use) => {
-      database('reset');
-      await page.clock.setFixedTime(new Date('2026-11-14T12:00:00Z'));
-      await context.route('**/*', (route) => {
-        const url = new URL(route.request().url());
-        if (url.origin === baseURL) return route.continue();
-        if (url.hostname === 'img.youtube.com')
-          return route.fulfill({
-            contentType: 'image/svg+xml',
-            body: thumbnail,
-          });
-        if (['www.youtube.com', 'w.soundcloud.com'].includes(url.hostname)) {
-          return route.fulfill({
-            contentType: 'text/html',
-            body: embeddedMedia,
-          });
-        }
-        return route.abort('blockedbyclient');
-      });
-      const errors: string[] = [];
-      page.on('pageerror', (error) => errors.push(error.message));
-      await use();
-      expect(errors, 'Unexpected browser exceptions').toEqual([]);
-    },
-    { auto: true },
-  ],
-});
+const it = withCases(
+  base.extend<{ baseline: void }>({
+    baseline: [
+      async ({ page, context }, use) => {
+        database('reset');
+        await page.clock.setFixedTime(new Date('2026-11-14T12:00:00Z'));
+        await context.route('**/*', (route) => {
+          const url = new URL(route.request().url());
+          if (url.origin === baseURL) return route.continue();
+          if (url.hostname === 'img.youtube.com')
+            return route.fulfill({
+              contentType: 'image/svg+xml',
+              body: thumbnail,
+            });
+          if (['www.youtube.com', 'w.soundcloud.com'].includes(url.hostname)) {
+            return route.fulfill({
+              contentType: 'text/html',
+              body: embeddedMedia,
+            });
+          }
+          return route.abort('blockedbyclient');
+        });
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        await use();
+        expect(errors, 'Unexpected browser exceptions').toEqual([]);
+      },
+      { auto: true },
+    ],
+  }),
+);
 
 async function login(page: Page, ui = false) {
   if (ui) {
@@ -75,7 +76,8 @@ async function login(page: Page, ui = false) {
     expect(response.status()).toBe(200);
     const { token } = await response.json();
     await page.addInitScript(
-      (token) => sessionStorage.setItem('ElspethEastmanAuthToken', token),
+      (savedToken) =>
+        sessionStorage.setItem('ElspethEastmanAuthToken', savedToken),
       token,
     );
     await page.goto('/cms');
@@ -122,13 +124,11 @@ async function actionResponse<T = unknown>(
 async function stablePage(page: Page) {
   const pathname = new URL(page.url()).pathname;
   if (['/', '/projects', '/cms'].includes(pathname)) {
-    for (const label of [
-      'Fixture games',
-      'Fixture voices',
-      'Fixture broadcasts',
-    ]) {
-      await expect(page.getByText(label, { exact: true })).toBeVisible();
-    }
+    await Promise.all(
+      ['Fixture games', 'Fixture voices', 'Fixture broadcasts'].map((label) =>
+        expect(page.getByText(label, { exact: true })).toBeVisible(),
+      ),
+    );
     if (pathname === '/cms') {
       await expect(
         page.locator('input[name="affiliationText"][value="Fixture Studio"]'),
@@ -140,16 +140,18 @@ async function stablePage(page: Page) {
     }
   }
   if (['/', '/cms'].includes(pathname)) {
-    for (const credit of [
-      '(2021) Fixture Voice Credits',
-      '(2022) Fixture Music - Games',
-      '(2023) Fixture Music - Miscellaneous',
-      '(TBA) Fixture Streaming - Credits',
-    ]) {
-      await expect(
-        page.getByRole('link', { name: credit, exact: true }),
-      ).toBeVisible();
-    }
+    await Promise.all(
+      [
+        '(2021) Fixture Voice Credits',
+        '(2022) Fixture Music - Games',
+        '(2023) Fixture Music - Miscellaneous',
+        '(TBA) Fixture Streaming - Credits',
+      ].map((credit) =>
+        expect(
+          page.getByRole('link', { name: credit, exact: true }),
+        ).toBeVisible(),
+      ),
+    );
   }
   await page.evaluate(async () => {
     await document.fonts.ready;
@@ -170,7 +172,7 @@ async function stablePage(page: Page) {
 }
 
 export {
-  test,
+  it,
   expect,
   database,
   login,

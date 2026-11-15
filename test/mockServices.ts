@@ -1,5 +1,7 @@
+import { toProject } from '../frontend/src/application/mappers/toProject';
 import { vi } from 'vitest';
-import type { ServiceContainer } from '../frontend/src/domain/ServiceContainer';
+import type { ServiceContainer } from '../frontend/src/composition/ServiceContainer';
+
 import {
   contactView,
   skillsView,
@@ -41,7 +43,11 @@ export function mockServices() {
   };
   const projects = {
     ...projectsView,
-    ...observable(projectsState),
+    ...observable({
+      ...projectsState,
+      projects: projectsState.projects.map(toProject),
+      draft: toProject(projectsState.draft),
+    }),
     load: vi.fn().mockResolvedValue(undefined),
     page: vi.fn().mockResolvedValue(undefined),
   };
@@ -67,7 +73,7 @@ export function mockServices() {
     ...loginView,
     ...observable(loginView),
     getPage: vi.fn<
-      () => import('../frontend/src/domain/contracts').ApplicationPage
+      () => import('../frontend/src/domain/models/ApplicationPage').ApplicationPage
     >(() => 'home'),
     start: vi.fn(() => stopSession),
     logout: vi.fn().mockResolvedValue(undefined),

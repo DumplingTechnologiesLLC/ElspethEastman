@@ -15,37 +15,17 @@ export function ApplicationWired(props: ApplicationWiring) {
   const state = useApplicationState(props);
   return (
     <Application
-      {...state}
-      navbar={
-        <NavbarWired
-          services={props.services}
-          cms={state.page === 'cms' || state.page === 'login'}
-        />
-      }
-      skills={
-        <SkillsWired services={props.services} editor={state.page === 'cms'} />
-      }
+      page={state.page}
+      onContact={state.onContact}
+      navbar={<NavbarWired services={props.services} {...state.navbarProps} />}
+      skills={<SkillsWired services={props.services} {...state.skillsProps} />}
       projects={
-        <ProjectsWired
-          services={props.services}
-          mode={
-            state.page === 'cms'
-              ? 'editor'
-              : state.page === 'projects'
-                ? 'all'
-                : 'latest'
-          }
-        />
+        <ProjectsWired services={props.services} {...state.projectsProps} />
       }
       experience={
-        <ExperienceWired
-          services={props.services}
-          editor={state.page === 'cms'}
-        />
+        <ExperienceWired services={props.services} {...state.experienceProps} />
       }
-      footer={
-        <FooterWired services={props.services} editor={state.page === 'cms'} />
-      }
+      footer={<FooterWired services={props.services} {...state.footerProps} />}
       contact={<ContactWired services={props.services} />}
       login={<LoginWired services={props.services} />}
       notifications={<NotificationsWired services={props.services} />}

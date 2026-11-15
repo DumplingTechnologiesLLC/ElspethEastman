@@ -1,14 +1,15 @@
+import { Category } from '../../../domain/models/Category';
 import { it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { Experience } from '../Experience.presentational';
 import { experienceView } from '../../../stories/viewModels';
-it('renders category lists, empty categories, plain credits and loading states', () => {
+it('renders category lists, empty Object.values(Category), plain credits and loading states', () => {
   const view = render(
     <Experience
       {...experienceView}
       groups={{
         ...experienceView.groups,
-        'Music - Games': [
+        [Category.MusicGames]: [
           { id: 2, year: '', credit: 'Plain credit', link: null, tba: false },
         ],
       }}
@@ -31,7 +32,7 @@ it('delegates edit, deletion and category creation', () => {
   fireEvent.click(buttons[1]!);
   for (const button of screen.getAllByRole('button', { name: /Add new/ }))
     fireEvent.click(button);
-  expect(remove).toHaveBeenCalledWith('Voice Credits', 1);
+  expect(remove).toHaveBeenCalledWith(Category.VoiceCredits, 1);
   expect(edit).toHaveBeenCalledTimes(5);
 });
 it('renders an independent form with prop-driven validation and checkbox state', () => {

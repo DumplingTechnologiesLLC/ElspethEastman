@@ -78,6 +78,7 @@ export function Music() {
       <Title>Music </Title>
       <div {...stylex.props(css.frameContainer)}>
         {ready ? (
+          // oxlint-disable-next-line react/iframe-missing-sandbox -- Preserve the existing media provider capabilities during the tooling migration.
           <iframe
             {...stylex.props(css.frame)}
             title="My soundcloud"

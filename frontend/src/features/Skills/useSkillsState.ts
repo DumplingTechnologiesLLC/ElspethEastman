@@ -1,15 +1,13 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
-import {
-  useSkillsService,
-  type ServiceContainer,
-} from '../../domain/ServiceContainer';
+import { useEffect, useSyncExternalStore } from 'react';
+import { useSkillsService } from '../../hooks/useSkillsService';
+import type { ServiceContainer } from '../../composition/ServiceContainer';
+
 export interface SkillsWiring {
   services: ServiceContainer;
   editor?: boolean;
 }
 export function useSkillsState({ services, editor = false }: SkillsWiring) {
-  const create = useSkillsService(services);
-  const [controller] = useState(() => create(editor));
+  const controller = useSkillsService({ services, editor });
   const state = useSyncExternalStore(
     controller.subscribe,
     controller.getSnapshot,

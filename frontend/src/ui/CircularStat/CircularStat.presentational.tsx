@@ -31,9 +31,9 @@ export function CircularStat({ value, label, percent }: CircularStatProps) {
   useEffect(() => {
     const target = ref.current!;
     const observer = new IntersectionObserver(
-      (entries, observer) => {
+      (entries, activeObserver) => {
         for (const entry of entries)
-          setVisible(entry.intersectionRatio >= observer.thresholds[0]!);
+          setVisible(entry.intersectionRatio >= activeObserver.thresholds[0]!);
       },
       { root: null, threshold: 1 },
     );

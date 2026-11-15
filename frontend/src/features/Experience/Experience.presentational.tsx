@@ -1,3 +1,4 @@
+import { Category } from '../../domain/models/Category';
 import * as stylex from '@stylexjs/stylex';
 import {
   faCheckSquare,
@@ -102,28 +103,28 @@ const css = stylex.create({
 });
 const sections = [
   {
-    category: 'Voice Credits',
+    category: Category.VoiceCredits,
     public: css.voice,
     editor: css.voiceEditor,
     title: css.voiceTitle,
     add: 'Add new credit',
   },
   {
-    category: 'Music - Games',
+    category: Category.MusicGames,
     public: css.games,
     editor: css.gamesEditor,
     title: css.gamesTitle,
     add: 'Add new music',
   },
   {
-    category: 'Music - Miscellaneous',
+    category: Category.MusicMiscellaneous,
     public: css.music,
     editor: css.musicEditor,
     title: css.musicTitle,
     add: 'Add new music',
   },
   {
-    category: 'Streaming - Credits',
+    category: Category.StreamingCredits,
     public: css.streaming,
     editor: css.streamingEditor,
     title: css.streamingTitle,

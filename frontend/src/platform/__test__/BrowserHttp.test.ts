@@ -21,6 +21,7 @@ it('uses public GET requests and normalizes failed responses', async () => {
   });
   expect(fetcher).toHaveBeenCalledWith('/api', undefined);
   for (let i = 0; i < 3; i++)
+    // oxlint-disable-next-line no-await-in-loop -- Consume the queued responses in order.
     expect(await service.request('/api')).toEqual({ status: null, data: null });
 });
 it('sends csrf, credentials and token only when requested', async () => {

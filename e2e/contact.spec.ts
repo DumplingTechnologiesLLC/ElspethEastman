@@ -1,5 +1,5 @@
 import type { Page, Locator, Route } from '@playwright/test';
-import { test, expect, database, actionResponse } from './fixtures.ts';
+import { it, expect, database, actionResponse } from './fixtures.ts';
 
 async function contact(page: Page) {
   await page.goto('/');
@@ -17,19 +17,22 @@ async function fillContact(dialog: Locator) {
     .fill('An isolated integration test message.');
 }
 
-test('contact validates required fields without sending a request', async ({
+it('validates required contact fields without sending a request', async ({
   page,
 }) => {
   const dialog = await contact(page);
   await dialog.getByRole('button', { name: 'Get in touch' }).click();
-  for (const field of ['Name', 'Email', 'Message'])
-    await expect(
-      dialog.getByText(`${field} is required`, { exact: true }),
-    ).toBeVisible();
+  await Promise.all(
+    ['Name', 'Email', 'Message'].map((field) =>
+      expect(
+        dialog.getByText(`${field} is required`, { exact: true }),
+      ).toBeVisible(),
+    ),
+  );
   expect(database().contacts).toEqual([]);
 });
 
-test('anonymous contact reaches Django, persists, and clears after success', async ({
+it('persists anonymous contact through Django and clears after success', async ({
   page,
 }) => {
   const dialog = await contact(page);
@@ -62,7 +65,7 @@ test('anonymous contact reaches Django, persists, and clears after success', asy
   ]);
 });
 
-test('contact disables submission while its real request is pending', async ({
+it('disables contact submission while its real request is pending', async ({
   page,
 }) => {
   const dialog = await contact(page);
@@ -76,7 +79,8 @@ test('contact disables submission while its real request is pending', async ({
     await route.continue();
   });
   const response = page.waitForResponse(
-    (response) => new URL(response.url()).pathname === '/api/contact-me/',
+    (pendingResponse) =>
+      new URL(pendingResponse.url()).pathname === '/api/contact-me/',
   );
   const submit = dialog.getByRole('button', { name: 'Get in touch' });
   try {
@@ -90,7 +94,7 @@ test('contact disables submission while its real request is pending', async ({
   expect(database().contacts).toHaveLength(1);
 });
 
-test('invalid email returns Django validation and retains the draft', async ({
+it('retains the draft and returns Django validation for invalid email', async ({
   page,
 }) => {
   const dialog = await contact(page);
@@ -108,7 +112,7 @@ test('invalid email returns Django validation and retains the draft', async ({
   expect(database().contacts).toEqual([]);
 });
 
-test('closing and reopening contact discards the draft and validation', async ({
+it('discards the draft and validation when reopening contact', async ({
   page,
 }) => {
   const dialog = await contact(page);
@@ -120,8 +124,8 @@ test('closing and reopening contact discards the draft and validation', async ({
   await expect(dialog.locator('textarea')).toHaveValue('');
 });
 
-for (const failure of ['server', 'network'] as const) {
-  test(`${failure} failure preserves the contact draft and allows retry`, async ({
+it.each(['server', 'network'] as const)((failure) =>
+  it(`preserves the contact draft and allows retry after ${failure} failure`, async ({
     page,
   }) => {
     const dialog = await contact(page);
@@ -151,5 +155,5 @@ for (const failure of ['server', 'network'] as const) {
       dialog.getByRole('button', { name: 'Get in touch' }).click(),
     );
     expect(database().contacts).toHaveLength(1);
-  });
-}
+  }),
+);

@@ -1,5 +1,8 @@
-import { createServiceContainer } from '../domain/ServiceContainer';
-import type { Clock, Navigation, TokenStorage } from '../domain/contracts';
+import { createServiceContainer } from '../composition/createServiceContainer';
+
+import type { Clock } from '../domain/ports/Clock';
+import type { Navigation } from '../domain/ports/Navigation';
+import type { TokenStorage } from '../domain/ports/TokenStorage';
 import { BrowserHttp } from './BrowserHttp';
 export const tokenKey = 'ElspethEastmanAuthToken';
 /** Browser effects are bound here so domain services also run without a DOM. */

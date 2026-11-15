@@ -4,7 +4,7 @@ import { faSave, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { Button, Field, Icon } from '../../ui/Primitives.presentational';
 import { styles } from '../../ui/styles';
 import { Video } from '../../ui/Video/Video.presentational';
-import type { Errors } from '../../domain/contracts';
+import type { Errors } from '../../domain/models/Errors';
 const css = stylex.create({
   form: {
     width: '100%',

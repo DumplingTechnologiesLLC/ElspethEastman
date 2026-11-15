@@ -1,14 +1,13 @@
 import { vi } from 'vitest';
-import { createServiceContainer } from '../frontend/src/domain/ServiceContainer';
-import type {
-  Clock,
-  Http,
-  Navigation,
-  Notifications,
-  Reply,
-  TokenStorage,
-} from '../frontend/src/domain/contracts';
-import type { Api } from '../frontend/src/domain/ApiService';
+import { createServiceContainer } from '../frontend/src/composition/createServiceContainer';
+
+import type { Clock } from '../frontend/src/domain/ports/Clock';
+import type { Http } from '../frontend/src/domain/ports/Http';
+import type { Navigation } from '../frontend/src/domain/ports/Navigation';
+import type { Notifications } from '../frontend/src/domain/ports/Notifications';
+import type { Reply } from '../frontend/src/domain/models/Reply';
+import type { TokenStorage } from '../frontend/src/domain/ports/TokenStorage';
+import type { Api } from '../frontend/src/domain/ports/Api';
 export function fakeApi() {
   const replies: Reply<unknown>[] = [];
   const request = vi.fn<Api['request']>(async () => {
@@ -27,11 +26,12 @@ export function fakeNotifications(): Notifications {
     subscribe: () => () => {},
   };
 }
+const noop = () => {};
 export function fixturePorts() {
   let token: string | null = null;
   let path = '/';
-  let navigationListener = () => {};
-  let storageListener = () => {};
+  let navigationListener = noop;
+  let storageListener = noop;
   const pending: {
     callback: () => void;
     milliseconds: number;

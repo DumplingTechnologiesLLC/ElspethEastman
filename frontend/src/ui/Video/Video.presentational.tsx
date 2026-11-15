@@ -74,6 +74,7 @@ export function Video({ title, thumbnail, embed, block = false }: VideoProps) {
         <div {...stylex.props(css.line)} />
       </div>
       {loaded ? (
+        // oxlint-disable-next-line react/iframe-missing-sandbox -- Preserve the existing media provider capabilities during the tooling migration.
         <iframe
           {...stylex.props(css.iframe)}
           title={`Embedded Youtube Video: ${title}`}

@@ -1,8 +1,9 @@
-// @vitest-environment node
 import { it, expect } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { ApplicationWired } from '../frontend/src/features/Application/Application.wired';
 import { fixturePorts } from './fakes';
+// @vitest-environment node
+
 it('renders separate request-scoped service containers without DOM globals or provider state', () => {
   const anonymous = fixturePorts();
   const editor = fixturePorts();

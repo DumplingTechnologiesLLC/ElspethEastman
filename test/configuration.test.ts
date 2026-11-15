@@ -93,6 +93,7 @@ it('keeps required browser projects, snapshot controls and local server boundari
       Object.defineProperty(process, 'platform', { value: platform });
       vi.stubEnv('CI', ci);
       vi.resetModules();
+      // oxlint-disable-next-line no-await-in-loop -- Each case mutates process.platform and the module cache.
       const { default: config } = await import('../playwright.config');
       expect(config.retries).toBe(0);
       expect(config.maxFailures).toBe(ci ? 1 : 0);

@@ -1,3 +1,6 @@
+import { NEW_PROJECT_ID } from '../domain/models/NEW_PROJECT_ID';
+import { NEW_AFFILIATION_ID } from '../domain/models/NEW_AFFILIATION_ID';
+import { Category } from '../domain/models/Category';
 import { fn } from 'storybook/test';
 import type { useContactState } from '../features/Contact/useContactState';
 import type { useSkillsState } from '../features/Skills/useSkillsState';
@@ -54,11 +57,11 @@ export const projectsView: ReturnType<typeof useProjectsState> = {
   mode: 'latest',
   loaded: true,
   projects: [sampleProject],
-  cached: [sampleProject],
+  cached: [],
   page: 1,
   pages: 2,
   errors: {},
-  draft: { ...sampleProject, id: -1, title: '', src: '' },
+  draft: { ...sampleProject, id: NEW_PROJECT_ID, title: '', src: '' },
   open: false,
   busy: [],
   change: fn(),
@@ -74,7 +77,7 @@ export const experienceView: ReturnType<typeof useExperienceState> = {
   editor: false,
   loaded: true,
   groups: {
-    'Voice Credits': [
+    [Category.VoiceCredits]: [
       {
         id: 1,
         year: '(2026)',
@@ -83,23 +86,23 @@ export const experienceView: ReturnType<typeof useExperienceState> = {
         tba: false,
       },
     ],
-    'Music - Games': [],
-    'Music - Miscellaneous': [],
-    'Streaming - Credits': [],
+    [Category.MusicGames]: [],
+    [Category.MusicMiscellaneous]: [],
+    [Category.StreamingCredits]: [],
   },
   draft: {
     year: '2026',
     credit: '',
     link: '',
     tba: false,
-    category: 'Voice Credits',
+    category: Category.VoiceCredits,
   },
   cached: {
     year: '2026',
     credit: '',
     link: '',
     tba: false,
-    category: 'Voice Credits',
+    category: Category.VoiceCredits,
   },
   id: null,
   open: false,
@@ -122,7 +125,7 @@ export const footerView: ReturnType<typeof useFooterState> = {
     ],
   },
   cached: [{ id: 1, affiliation: 'Studio', link: 'https://example.invalid' }],
-  draft: { id: -1, affiliation: '', link: '' },
+  draft: { id: NEW_AFFILIATION_ID, affiliation: '', link: '' },
   errors: {},
   busy: [],
   open: false,
