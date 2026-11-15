@@ -1,6 +1,7 @@
 import { toProject } from '../frontend/src/application/mappers/toProject';
 import { vi } from 'vitest';
 import type { ServiceContainer } from '../frontend/src/composition/ServiceContainer';
+import type { SiteState } from '../frontend/src/domain/models/Site';
 
 import {
   contactView,
@@ -81,10 +82,26 @@ export function mockServices() {
     replace: vi.fn(),
     expire: vi.fn(),
   };
+  const site = {
+    ...observable<SiteState>({
+      pages: [],
+      path: '/',
+      authenticated: false,
+      route: { type: 'missing', editor: false },
+      status: 'idle',
+      error: null,
+    }),
+    load: vi.fn().mockResolvedValue(undefined),
+    start: vi.fn(() => vi.fn()),
+    navigate: vi.fn(),
+    select: vi.fn(),
+    updatePage: vi.fn(),
+  };
   const services: ServiceContainer = {
     session,
     notifications,
     contact,
+    site,
     skills: vi.fn(() => skills),
     projects: vi.fn(() => projects),
     experience: vi.fn(() => experience),
@@ -100,6 +117,7 @@ export function mockServices() {
     contact,
     notifications,
     session,
+    site,
     stopSession,
   };
 }

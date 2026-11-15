@@ -8,6 +8,7 @@ import { useSkillsService } from '../../hooks/useSkillsService';
 import { useProjectsService } from '../../hooks/useProjectsService';
 import { useExperienceService } from '../../hooks/useExperienceService';
 import { useFooterService } from '../../hooks/useFooterService';
+import { useSiteService } from '../../hooks/useSiteService';
 
 import { fixturePorts } from '../../../../test/fakes';
 it('creates independent request-scoped domain aggregates with interface-based accessors', () => {
@@ -16,6 +17,8 @@ it('creates independent request-scoped domain aggregates with interface-based ac
   const second = a.services();
   expect(first.session).not.toBe(second.session);
   expect(first.notifications).not.toBe(second.notifications);
+  expect(first.site).not.toBe(second.site);
+  expect(useSiteService(first)).toBe(first.site);
   expect(useSessionService(first)).toBe(first.session);
   expect(useUIAlertService(first)).toBe(first.notifications);
   expect(useContactService(first)).toBe(first.contact);
