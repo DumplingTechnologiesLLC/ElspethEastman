@@ -8,11 +8,13 @@ import type { SkillsController } from '../domain/ports/SkillsController';
 import type { SiteController } from '../domain/ports/SiteController';
 import type { PageController } from '../domain/ports/PageController';
 import type { PageId } from '../domain/models/Page';
+import type { MediaController } from '../domain/ports/MediaController';
 export interface ServiceContainer {
   readonly session: Session;
   readonly notifications: Notifications;
   readonly contact: Contact;
   readonly site: SiteController;
+  readonly media: MediaController;
   page: (pageId: PageId) => PageController;
   skills: (editor: boolean) => SkillsController;
   projects: (mode: 'latest' | 'all' | 'editor') => ProjectsController;

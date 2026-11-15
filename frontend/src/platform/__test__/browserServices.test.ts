@@ -10,6 +10,7 @@ import { useExperienceService } from '../../hooks/useExperienceService';
 import { useFooterService } from '../../hooks/useFooterService';
 import { useSiteService } from '../../hooks/useSiteService';
 import { usePageService } from '../../hooks/usePageService';
+import { useMediaService } from '../../hooks/useMediaService';
 
 import { fixturePorts } from '../../../../test/fakes';
 it('creates independent request-scoped domain aggregates with interface-based accessors', () => {
@@ -20,6 +21,8 @@ it('creates independent request-scoped domain aggregates with interface-based ac
   expect(first.notifications).not.toBe(second.notifications);
   expect(first.site).not.toBe(second.site);
   expect(useSiteService(first)).toBe(first.site);
+  expect(useMediaService(first)).toBe(first.media);
+  expect(first.media).not.toBe(second.media);
   expect(first.page(1)).not.toBe(second.page(1));
   expect(first.page(1)).not.toBe(first.page(2));
   const page = renderHook(usePageService, {

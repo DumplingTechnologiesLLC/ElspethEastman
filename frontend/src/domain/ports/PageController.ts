@@ -15,6 +15,9 @@ import type { StreamClip, StreamClipInput } from '../models/StreamClip';
 import type { Appearance, AppearanceInput } from '../models/Appearance';
 import type { BioChapter, BioChapterInput } from '../models/BioChapter';
 import type { CurrentItem, CurrentItemInput } from '../models/CurrentItem';
+import type { MusicFeature, MusicFeatureInput } from '../models/MusicFeature';
+import type { FeaturedItem } from '../models/ContentEntry';
+import type { CollectionOrder } from '../models/PageCollection';
 import type { PageContentState } from '../models/PageContent';
 import type { Readable } from './Readable';
 import type { Unsubscribe } from './Unsubscribe';
@@ -53,4 +56,11 @@ export interface PageController extends Readable<PageContentState> {
   appearances: PageCollectionController<Appearance, AppearanceInput>;
   chapters: PageCollectionController<BioChapter, BioChapterInput>;
   currentItems: PageCollectionController<CurrentItem, CurrentItemInput>;
+  practice: (
+    input: Omit<MusicFeatureInput, 'pageId'>,
+  ) => Promise<ContentResult<MusicFeature>>;
+  feature: (itemId: number | null) => Promise<ContentResult<FeaturedItem>>;
+  reorder: (
+    input: Omit<CollectionOrder, 'pageId'>,
+  ) => Promise<ContentResult<CollectionOrder>>;
 }

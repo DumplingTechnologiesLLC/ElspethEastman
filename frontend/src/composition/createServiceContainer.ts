@@ -9,6 +9,7 @@ import { SkillsService } from '../application/services/SkillsService';
 import { SiteService } from '../application/services/SiteService';
 import { HttpContentRepository } from '../platform/HttpContentRepository';
 import { PageService } from '../application/services/PageService';
+import { MediaService } from '../application/services/MediaService';
 import type { PageId } from '../domain/models/Page';
 import type { PageController } from '../domain/ports/PageController';
 import type { ServiceContainer } from './ServiceContainer';
@@ -36,6 +37,7 @@ export function createServiceContainer({
     notifications,
     session,
     site,
+    media: new MediaService(repository, notifications, session),
     page: (pageId) => {
       let page = pages.get(pageId);
       if (page === undefined) {
