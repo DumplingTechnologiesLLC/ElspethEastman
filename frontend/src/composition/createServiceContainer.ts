@@ -8,6 +8,9 @@ import { SessionService } from '../application/services/SessionService';
 import { SkillsService } from '../application/services/SkillsService';
 import { SiteService } from '../application/services/SiteService';
 import { HttpContentRepository } from '../platform/HttpContentRepository';
+import { PageService } from '../application/services/PageService';
+import type { PageId } from '../domain/models/Page';
+import type { PageController } from '../domain/ports/PageController';
 import type { ServiceContainer } from './ServiceContainer';
 import type { ServiceDependencies } from './ServiceDependencies';
 export function createServiceContainer({
@@ -26,14 +29,20 @@ export function createServiceContainer({
     notifications,
     clock,
   );
+  const repository = new HttpContentRepository(http);
+  const pages = new Map<PageId, PageController>();
   return {
     notifications,
     session,
-    site: new SiteService(
-      new HttpContentRepository(http),
-      session,
-      notifications,
-    ),
+    site: new SiteService(repository, session, notifications),
+    page: (pageId) => {
+      let page = pages.get(pageId);
+      if (page === undefined) {
+        page = new PageService(pageId, repository, notifications);
+        pages.set(pageId, page);
+      }
+      return page;
+    },
     contact: new ContactService(api, notifications),
     skills: (editor) => new SkillsService(api, notifications, editor),
     projects: (mode) => new ProjectsService(api, notifications, confirm, mode),

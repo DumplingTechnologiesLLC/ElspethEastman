@@ -5,7 +5,8 @@ import type { CurrentItem } from './CurrentItem';
 import type { Eyebrow } from './Eyebrow';
 import type { MusicFeature } from './MusicFeature';
 import type { MusicRelease } from './MusicRelease';
-import type { Page, PageKind } from './Page';
+import type { Page, PageId, PageKind } from './Page';
+import type { ContentFailure } from './ContentResult';
 import type { PageCopy } from './PageCopy';
 import type { PageImage } from './PageImage';
 import type { StreamClip } from './StreamClip';
@@ -55,3 +56,11 @@ export type PageContent =
   | StreamingContent
   | PressContent
   | BioContent;
+
+export interface PageContentState {
+  readonly pageId: PageId;
+  readonly content: PageContent | null;
+  readonly status: 'idle' | 'loading' | 'ready' | 'error';
+  readonly error: ContentFailure | null;
+  readonly mutating: boolean;
+}
