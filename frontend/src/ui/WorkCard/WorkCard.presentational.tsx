@@ -20,6 +20,21 @@ const css = stylex.create({
       ':hover': 'rgba(242,238,231,.32)',
     },
   },
+  banner: { height: { default: 418.32, '@media (max-width: 760px)': 'auto' } },
+  bannerImage: {
+    minWidth: 0,
+    position: { default: 'absolute', '@media (max-width: 760px)': 'relative' },
+    height: { default: '100%', '@media (max-width: 760px)': 300 },
+  },
+  bannerText: {
+    position: { default: 'absolute', '@media (max-width: 760px)': 'relative' },
+    padding: { default: 38, '@media (max-width: 760px)': 20 },
+  },
+  bannerTitle: {
+    fontSize: { default: 64, '@media (max-width: 760px)': 32 },
+    lineHeight: 0.98,
+    letterSpacing: '-.035em',
+  },
   hero: { height: { default: 470, '@media (max-width: 760px)': 418.3 } },
   image: {
     minWidth: { default: 0, '@media (max-width: 760px)': 495.602 },
@@ -105,16 +120,27 @@ const css = stylex.create({
     textTransform: 'uppercase',
     letterSpacing: '1px',
   },
+  bannerDescription: {
+    whiteSpace: { default: 'nowrap', '@media (max-width: 760px)': 'normal' },
+    fontSize: { default: 12.16, '@media (max-width: 760px)': 12.2 },
+    lineHeight: 1.48,
+  },
+  bannerOverlay: {
+    height: { default: '100%', '@media (max-width: 760px)': 300 },
+    bottom: 'auto',
+  },
   action: { position: 'absolute', top: 16, right: 16 },
 });
 export function WorkCard({
   entry,
   onOpen,
   hero = false,
+  banner = false,
 }: {
   readonly entry: WorkEntryView;
   readonly onOpen?: (button: HTMLButtonElement) => void;
   readonly hero?: boolean;
+  readonly banner?: boolean;
 }) {
   const [hovered, setHovered] = useState(false),
     [focused, setFocused] = useState(false);
@@ -122,7 +148,7 @@ export function WorkCard({
   return (
     <Editable actions={entry.actions} label={entry.title} placement="inside">
       <article
-        {...stylex.props(css.card, hero && css.hero)}
+        {...stylex.props(css.card, hero && css.hero, banner && css.banner)}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onFocus={() => setFocused(true)}
@@ -133,19 +159,32 @@ export function WorkCard({
       >
         {entry.image !== null && (
           <img
-            {...stylex.props(css.image, active && css.active)}
+            {...stylex.props(
+              css.image,
+              banner && css.bannerImage,
+              active && css.active,
+            )}
             src={entry.image.url}
             alt={entry.image.altText}
             loading={hero ? 'eager' : 'lazy'}
           />
         )}
-        <div {...stylex.props(css.overlay)} />
+        <div {...stylex.props(css.overlay, banner && css.bannerOverlay)} />
         {onOpen === undefined ? (
           <>
-            <div {...stylex.props(css.text)}>
+            <div {...stylex.props(css.text, banner && css.bannerText)}>
               <p {...stylex.props(css.eyebrow)}>{entry.eyebrow}</p>
-              <h2 {...stylex.props(css.title)}>{entry.title}</h2>
-              <p {...stylex.props(css.description)}>{entry.description}</p>
+              <h2 {...stylex.props(css.title, banner && css.bannerTitle)}>
+                {entry.title}
+              </h2>
+              <p
+                {...stylex.props(
+                  css.description,
+                  banner && css.bannerDescription,
+                )}
+              >
+                {entry.description}
+              </p>
             </div>
             {entry.action !== null && (
               <div {...stylex.props(css.action)}>
@@ -166,10 +205,17 @@ export function WorkCard({
             data-entry-focus={entry.id + (hero ? '-hero' : '-card')}
             onClick={(event) => onOpen(event.currentTarget)}
           >
-            <span {...stylex.props(css.text)}>
+            <span {...stylex.props(css.text, banner && css.bannerText)}>
               <span {...stylex.props(css.eyebrow)}>{entry.eyebrow}</span>
-              <span {...stylex.props(css.title)}>{entry.title}</span>
-              <span {...stylex.props(css.description)}>
+              <span {...stylex.props(css.title, banner && css.bannerTitle)}>
+                {entry.title}
+              </span>
+              <span
+                {...stylex.props(
+                  css.description,
+                  banner && css.bannerDescription,
+                )}
+              >
                 {entry.description}
               </span>
             </span>
