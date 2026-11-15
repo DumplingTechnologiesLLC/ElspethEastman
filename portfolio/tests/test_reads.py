@@ -1,4 +1,4 @@
-from django.test import TestCase
+from portfolio.tests.base import EmptyPortfolioTestCase as TestCase
 from portfolio.models import Eyebrow, MediaAsset, Page, PageCopy, PageImage, PageKind, TriviaItem
 
 

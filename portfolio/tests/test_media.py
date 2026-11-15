@@ -6,7 +6,8 @@ from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import SimpleTestCase, TestCase, override_settings
+from django.test import SimpleTestCase, override_settings
+from portfolio.tests.base import EmptyPortfolioTestCase as TestCase
 import environ
 from PIL import Image
 from rest_framework.authtoken.models import Token

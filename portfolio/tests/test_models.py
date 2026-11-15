@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from django.apps import apps
 from django.db import IntegrityError, connection, transaction
 from django.db.models.deletion import ProtectedError
-from django.test import TestCase
+from portfolio.tests.base import EmptyPortfolioTestCase as TestCase
 
 from portfolio.models import (
     Eyebrow, MediaAsset, Page, PageCopy, PageImage, PageKind, TriviaItem,
