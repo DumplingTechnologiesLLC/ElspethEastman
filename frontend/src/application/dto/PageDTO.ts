@@ -1,4 +1,4 @@
-import type { LinkDTO } from './LinkDTO';
+import type { LinkDTO, LinkInputDTO } from './LinkDTO';
 
 export type PageKindDTO =
   'home' | 'voiceover' | 'music' | 'streaming' | 'press' | 'bio';
@@ -21,4 +21,9 @@ export interface OrderedPageRecordDTO extends PageScopeDTO {
 }
 export interface SiteDTO {
   pages: PageDTO[];
+}
+export interface PageMetadataInputDTO {
+  title?: string;
+  slug?: string;
+  primary_action?: LinkInputDTO | null;
 }

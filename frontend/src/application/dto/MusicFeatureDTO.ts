@@ -1,5 +1,5 @@
-import type { LinkDTO } from './LinkDTO';
-import type { ImageUseDTO } from './MediaAssetDTO';
+import type { LinkDTO, LinkInputDTO } from './LinkDTO';
+import type { ImageUseDTO, ImageUseInputDTO } from './MediaAssetDTO';
 import type { PageScopeDTO } from './PageDTO';
 
 export interface PracticeFactDTO {
@@ -13,4 +13,12 @@ export interface MusicFeatureDTO extends PageScopeDTO {
   image: ImageUseDTO;
   facts: PracticeFactDTO[];
   action: LinkDTO;
+}
+export interface MusicFeatureInputDTO extends PageScopeDTO {
+  eyebrow: string;
+  title: string;
+  description: string;
+  image: ImageUseInputDTO;
+  facts: PracticeFactDTO[];
+  action: LinkInputDTO;
 }
