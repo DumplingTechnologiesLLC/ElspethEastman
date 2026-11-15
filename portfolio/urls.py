@@ -7,6 +7,7 @@ from portfolio.views.page_image import PageImageAPIView
 from portfolio.views.reorder import ReorderAPIView
 from portfolio.views.media import MediaAssetAPIView
 from portfolio.views.content_entries import ContentEntryAPIView, ContentEntryDetailAPIView
+from portfolio.views.feature import FeaturedItemAPIView
 
 app_name = "portfolio"
 urlpatterns = [
@@ -22,4 +23,5 @@ urlpatterns = [
     path("media-assets/", MediaAssetAPIView.as_view(), name="media-assets"),
     path("content-entries/", ContentEntryAPIView.as_view(), name="content-entries"),
     path("content-entries/<int:item_id>/", ContentEntryDetailAPIView.as_view(), name="content-entry-detail"),
+    path("featured-items/", FeaturedItemAPIView.as_view(), name="featured-items"),
 ]

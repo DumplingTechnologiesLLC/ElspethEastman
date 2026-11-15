@@ -8,7 +8,7 @@ from django.test import TransactionTestCase
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
-from portfolio.models import Page, PageKind, TriviaItem
+from portfolio.models import ContentEntry, MediaAsset, Page, PageKind, TriviaItem
 
 
 @skipUnless(connection.vendor == "postgresql", "Row-lock guarantees run against PostgreSQL in CI.")
@@ -51,3 +51,36 @@ class ContentConcurrencyTests(TransactionTestCase):
         ])
         self.assertEqual(statuses, [200, 400])
         self.assertEqual(Page.objects.filter(slug="shared-route").count(), 1)
+
+    def test_competing_promotions_finish_with_one_canonical_hero(self):
+        asset = MediaAsset.objects.create(file="seed/image.png", width=10, height=10, mime_type="image/png")
+        entries = [ContentEntry.objects.create(page=self.voice, title=title, eyebrow="Game", description="Summary", asset=asset, alt_text=title)
+                   for title in ("First", "Second")]
+        statuses = self.run_concurrently([("patch", "/api/featured-items/", {"page_id": self.voice.pk, "item_id": entry.pk}) for entry in entries])
+        self.assertEqual(statuses, [200, 200])
+        self.assertEqual(self.voice.entries.filter(is_featured=True).count(), 1)
+        self.assertEqual(self.voice.entries.count(), 2)
+
+    def test_image_removal_and_promotion_cannot_leave_an_imageless_hero(self):
+        stream, _ = Page.objects.get_or_create(kind=PageKind.STREAMING, defaults={"title": "Streaming", "slug": "streaming"})
+        asset = MediaAsset.objects.create(file="seed/image.png", width=10, height=10, mime_type="image/png")
+        entry = ContentEntry.objects.create(page=stream, title="Stream", eyebrow="Game", description="Summary", asset=asset,
+                                            alt_text="Stream", action_label="Watch", action_url="https://example.invalid/watch")
+        statuses = self.run_concurrently([
+            ("patch", "/api/featured-items/", {"page_id": stream.pk, "item_id": entry.pk}),
+            ("patch", f"/api/content-entries/{entry.pk}/", {"image": None}),
+        ])
+        self.assertEqual(statuses, [200, 400])
+        entry.refresh_from_db()
+        self.assertFalse(entry.is_featured and entry.asset_id is None)
+
+    def test_create_and_reorder_share_one_membership_boundary(self):
+        first = TriviaItem.objects.create(page=self.voice, label="First", value="Fact", sort_order=0)
+        second = TriviaItem.objects.create(page=self.voice, label="Second", value="Fact", sort_order=1)
+        statuses = self.run_concurrently([
+            ("post", "/api/trivia/", {"page_id": self.voice.pk, "label": "Third", "value": "Fact"}),
+            ("patch", "/api/collections/reorder/", {"page_id": self.voice.pk, "collection": "trivia", "section": None, "ordered_ids": [second.pk, first.pk]}),
+        ])
+        self.assertIn(statuses, ([200, 201], [201, 400]))
+        rows = list(self.voice.trivia.values_list("label", "sort_order"))
+        self.assertIn(rows, ([('First', 0), ('Second', 1), ('Third', 2)], [('Second', 0), ('First', 1), ('Third', 2)]))
