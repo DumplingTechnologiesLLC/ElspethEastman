@@ -14,6 +14,8 @@ import type { usePortfolioState } from './usePortfolioState';
 
 const css = stylex.create({
   root: {
+    WebkitFontSmoothing: 'antialiased',
+    MozOsxFontSmoothing: 'grayscale',
     minHeight: '100dvh',
     display: 'flex',
     flexDirection: 'column',

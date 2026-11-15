@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './Controls.presentational';
+import { withSurface } from '../../stories/withSurface';
 const meta = {
   component: Button,
+  decorators: [withSurface],
   args: { children: 'Publish changes' },
   tags: ['autodocs'],
 } satisfies Meta<typeof Button>;

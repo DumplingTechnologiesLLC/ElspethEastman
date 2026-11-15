@@ -51,7 +51,9 @@ Each feature keeps its presentational component, wired component, state hook, st
 
 26. **[#34 Responsive site shell](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/34).** Review canonical navigation, mobile disclosure behavior, footer credits, public/editor switching, and page/login/editor slots. The registry and session own routing and authentication state.
 
-27. **Page composition and CMS controls.** Review page-scoped subscriptions, loading/error boundaries, typed edit/delete intents, accessible ordering buttons, scoped native drag/drop, and full-membership moves against the canonical cache.
+27. **[#35 Page composition and CMS controls](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/35).** Review page-scoped subscriptions, loading/error boundaries, typed edit/delete intents, accessible ordering buttons, scoped native drag/drop, and full-membership moves against the canonical cache.
+
+28. **Inline contact form.** Review the retained public contact contract in Figma's inline form, server field errors, duplicate prevention, and isolated Storybook surface. The next review composes it into Home through a slot.
 
 The remaining reviews connect mutation lifecycles, shared editor state, Figma primitives and the responsive shell, then each public/CMS page pair. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
 

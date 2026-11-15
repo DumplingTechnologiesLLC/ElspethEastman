@@ -71,7 +71,7 @@ const css = stylex.create({
     boxSizing: 'border-box',
     fontFamily: tokens.sans,
     fontSize: 16,
-    lineHeight: 1.4,
+    lineHeight: 1.15,
     color: tokens.foreground,
     backgroundColor: 'transparent',
     borderWidth: 0,
@@ -165,6 +165,8 @@ export interface FieldProps {
   readonly required?: boolean;
   readonly disabled?: boolean;
   readonly error?: string;
+  readonly placeholder?: string;
+  readonly name?: string;
 }
 const emptyOptions: readonly string[] = [];
 export function Field({
@@ -176,6 +178,8 @@ export function Field({
   required = false,
   disabled = false,
   error = '',
+  placeholder = '',
+  name = '',
 }: FieldProps) {
   const id = useId();
   const inputProps = {
@@ -183,6 +187,8 @@ export function Field({
     value,
     required,
     disabled,
+    placeholder,
+    name,
     'aria-invalid': error !== '',
     'aria-describedby': error === '' ? undefined : id + '-error',
     ...stylex.props(css.input, error !== '' && css.invalid),
@@ -196,7 +202,7 @@ export function Field({
       {kind === 'textarea' ? (
         <textarea
           {...inputProps}
-          rows={3}
+          rows={2}
           onChange={(event) => onChange(event.currentTarget.value)}
         />
       ) : kind === 'select' ? (
