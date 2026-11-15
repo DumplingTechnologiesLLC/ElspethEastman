@@ -1,5 +1,8 @@
-import { NEW_PROJECT_ID } from '../../../domain/models/NEW_PROJECT_ID';
-import { NEW_AFFILIATION_ID } from '../../../domain/models/NEW_AFFILIATION_ID';
+import { NEW_PROJECT_ID } from '../../../domain/models/Project';
+import {
+  NEW_AFFILIATION_ID,
+  type Affiliation,
+} from '../../../domain/models/Affiliation';
 import { getSubmissionAlert } from '../../alerts/getSubmissionAlert';
 import { Category } from '../../../domain/models/Category';
 import { describe, it, expect, vi } from 'vitest';
@@ -24,7 +27,7 @@ import type { Errors } from '../../../domain/models/Errors';
 import type { ProjectDTO } from '../../dto/ProjectDTO';
 import type { SkillsData } from '../../../domain/models/SkillsData';
 import type { Experience } from '../../../domain/models/Experience';
-import type { Affiliation } from '../../../domain/models/Affiliation';
+
 import type { FooterData } from '../../../domain/models/FooterData';
 const project: ProjectDTO = { id: 1, src: 'abc', title: 'One', uuid: 1 };
 const experience: Experience = {

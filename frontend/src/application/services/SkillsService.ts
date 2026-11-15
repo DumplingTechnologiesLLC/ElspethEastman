@@ -1,8 +1,8 @@
 import { getSubmissionAlert } from '../alerts/getSubmissionAlert';
 import type { Errors } from '../../domain/models/Errors';
 import type { UIAlerts } from '../../domain/ports/UIAlerts';
-import type { SkillKey } from '../../domain/models/SkillKey';
-import type { Skills } from '../../domain/models/Skills';
+import type { SkillKey, Skills } from '../../domain/models/Skills';
+
 import type { SkillsData } from '../../domain/models/SkillsData';
 
 import type { Api } from '../../domain/ports/Api';

@@ -1,5 +1,5 @@
-import { NEW_PROJECT_ID } from '../domain/models/NEW_PROJECT_ID';
-import { NEW_AFFILIATION_ID } from '../domain/models/NEW_AFFILIATION_ID';
+import { NEW_PROJECT_ID } from '../domain/models/Project';
+import { NEW_AFFILIATION_ID } from '../domain/models/Affiliation';
 import { Category } from '../domain/models/Category';
 import { fn } from 'storybook/test';
 import type { useContactState } from '../features/Contact/useContactState';

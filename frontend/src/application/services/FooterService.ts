@@ -1,6 +1,9 @@
-import { NEW_AFFILIATION_ID } from '../../domain/models/NEW_AFFILIATION_ID';
+import {
+  NEW_AFFILIATION_ID,
+  type Affiliation,
+} from '../../domain/models/Affiliation';
 import { getSubmissionAlert } from '../alerts/getSubmissionAlert';
-import type { Affiliation } from '../../domain/models/Affiliation';
+
 import type { Errors } from '../../domain/models/Errors';
 import type { FooterData } from '../../domain/models/FooterData';
 import type { UIAlerts } from '../../domain/ports/UIAlerts';

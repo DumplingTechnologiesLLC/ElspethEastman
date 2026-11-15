@@ -1,4 +1,4 @@
-import { NEW_PROJECT_ID } from '../../../domain/models/NEW_PROJECT_ID';
+import { NEW_PROJECT_ID } from '../../../domain/models/Project';
 import { it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { Projects } from '../Projects.presentational';

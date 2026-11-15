@@ -1,3 +1,5 @@
+export const NEW_PROJECT_ID = -1;
+
 export class Project {
   constructor(
     readonly id: number,

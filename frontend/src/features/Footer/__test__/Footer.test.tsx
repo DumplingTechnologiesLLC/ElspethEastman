@@ -1,4 +1,4 @@
-import { NEW_AFFILIATION_ID } from '../../../domain/models/NEW_AFFILIATION_ID';
+import { NEW_AFFILIATION_ID } from '../../../domain/models/Affiliation';
 import { it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { Footer } from '../Footer.presentational';

@@ -1,4 +1,4 @@
-import { NEW_PROJECT_ID } from '../../domain/models/NEW_PROJECT_ID';
+import { NEW_PROJECT_ID, Project } from '../../domain/models/Project';
 import { normalizeVideoId } from '../../domain/models/normalizeVideoId';
 import type { ProjectDTO } from '../dto/ProjectDTO';
 import { toProject } from '../mappers/toProject';
@@ -6,7 +6,6 @@ import { toProjectDTO } from '../mappers/toProjectDTO';
 import { getSubmissionAlert } from '../alerts/getSubmissionAlert';
 import type { Errors } from '../../domain/models/Errors';
 import type { UIAlerts } from '../../domain/ports/UIAlerts';
-import { Project } from '../../domain/models/Project';
 
 import type { Api } from '../../domain/ports/Api';
 import { Store } from './Store';

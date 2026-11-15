@@ -1,8 +1,6 @@
 import type { Errors } from './Errors';
 
-import type { SkillKey } from './SkillKey';
-
-import type { Skills } from './Skills';
+import type { SkillKey, Skills } from './Skills';
 
 export interface SkillsState {
   loaded: boolean;
