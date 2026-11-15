@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Editable } from './Editable.presentational';
+import { withSurface } from '../../stories/withSurface';
 import type { EditableActions } from '../../application/viewModels/EditableActions';
 const noop = () => {};
 export const editableView: EditableActions = {
@@ -17,6 +18,8 @@ export const editableView: EditableActions = {
 };
 const meta = {
   component: Editable,
+  decorators: [withSurface],
+  excludeStories: /.*View$/,
   args: {
     actions: editableView,
     label: 'identity label',

@@ -141,6 +141,8 @@ describe('contact submission', () => {
     api.replies.push(reply({}));
     const pending = service.submit();
     expect(service.getSnapshot().submitting).toBe(true);
+    await service.submit();
+    expect(api.request).toHaveBeenCalledOnce();
     await pending;
     expect(api.request).toHaveBeenCalledWith('/api/contact-me/', 'POST', {
       name: 'Visitor',

@@ -37,6 +37,7 @@ export const portfolioView = {
 } satisfies Parameters<typeof Portfolio>[0];
 const meta = {
   component: Portfolio,
+  excludeStories: /.*View$/,
   args: portfolioView,
   parameters: { layout: 'fullscreen' },
   tags: ['autodocs'],
