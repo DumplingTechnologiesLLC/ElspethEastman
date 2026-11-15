@@ -131,6 +131,27 @@ export function mockServices() {
     feature: vi.fn(),
     reorder: vi.fn(),
   };
+  const editor = {
+    ...observable<ContentEditorState>({
+      draft: null,
+      saving: false,
+      uploading: false,
+      confirmingDelete: false,
+      error: null,
+    }),
+    open: vi.fn(),
+    cancel: vi.fn(),
+    change: vi.fn(),
+    addRow: vi.fn(),
+    changeRow: vi.fn(),
+    removeRow: vi.fn(),
+    moveRow: vi.fn(),
+    upload: vi.fn(),
+    removeImage: vi.fn(),
+    save: vi.fn(),
+    confirmDelete: vi.fn(),
+    remove: vi.fn(),
+  };
   const services: ServiceContainer = {
     session,
     notifications,
@@ -138,27 +159,7 @@ export function mockServices() {
     site,
     media: { ...observable({ uploading: false }), upload: vi.fn() },
     page: vi.fn(() => page),
-    editor: vi.fn(() => ({
-      ...observable<ContentEditorState>({
-        draft: null,
-        saving: false,
-        uploading: false,
-        confirmingDelete: false,
-        error: null,
-      }),
-      open: vi.fn(),
-      cancel: vi.fn(),
-      change: vi.fn(),
-      addRow: vi.fn(),
-      changeRow: vi.fn(),
-      removeRow: vi.fn(),
-      moveRow: vi.fn(),
-      upload: vi.fn(),
-      removeImage: vi.fn(),
-      save: vi.fn(),
-      confirmDelete: vi.fn(),
-      remove: vi.fn(),
-    })),
+    editor: vi.fn(() => editor),
     skills: vi.fn(() => skills),
     projects: vi.fn(() => projects),
     experience: vi.fn(() => experience),
@@ -177,5 +178,6 @@ export function mockServices() {
     site,
     stopSession,
     page,
+    editor,
   };
 }
