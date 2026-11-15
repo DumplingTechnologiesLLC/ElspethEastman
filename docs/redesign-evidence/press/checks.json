@@ -1,0 +1,198 @@
+{
+  "environment": "macOS, pinned Playwright Chromium",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1728,
+      "documentWidth": 1728,
+      "height": 2038,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 15,
+          "naturalHeight": 15,
+          "renderedWidth": 15,
+          "renderedHeight": 15
+        },
+        {
+          "source": "/assets/press-podcast-D0Ke7G13.png",
+          "alt": "The Patrick Scott Patterson Project interview",
+          "naturalWidth": 750,
+          "naturalHeight": 750,
+          "renderedWidth": 1020.2811889648438,
+          "renderedHeight": 424.587158203125
+        },
+        {
+          "source": "/assets/press-health-De4AWubE.png",
+          "alt": "Elspeth in a UC Health feature",
+          "naturalWidth": 766,
+          "naturalHeight": 431,
+          "renderedWidth": 503.027587890625,
+          "renderedHeight": 314.396240234375
+        },
+        {
+          "source": "/assets/press-geekenders-DKaGO3UO.png",
+          "alt": "The Geekenders podcast",
+          "naturalWidth": 900,
+          "naturalHeight": 900,
+          "renderedWidth": 503.04345703125,
+          "renderedHeight": 314.396240234375
+        },
+        {
+          "source": "/assets/press-dignitas-C0-WSzKC.png",
+          "alt": "Tristana interview",
+          "naturalWidth": 900,
+          "naturalHeight": 506,
+          "renderedWidth": 503.027587890625,
+          "renderedHeight": 314.396240234375
+        },
+        {
+          "source": "/assets/press-tubefilter-BDu1gwev.png",
+          "alt": "Gaming creators featured by Tubefilter",
+          "naturalWidth": 900,
+          "naturalHeight": 530,
+          "renderedWidth": 503.04345703125,
+          "renderedHeight": 314.396240234375
+        }
+      ]
+    },
+    {
+      "name": "mobile",
+      "width": 400,
+      "documentWidth": 400,
+      "height": 3301,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 15,
+          "naturalHeight": 15,
+          "renderedWidth": 15,
+          "renderedHeight": 15
+        },
+        {
+          "source": "/assets/press-podcast-D0Ke7G13.png",
+          "alt": "The Patrick Scott Patterson Project interview",
+          "naturalWidth": 750,
+          "naturalHeight": 750,
+          "renderedWidth": 363.3699951171875,
+          "renderedHeight": 304.5
+        },
+        {
+          "source": "/assets/press-health-De4AWubE.png",
+          "alt": "Elspeth in a UC Health feature",
+          "naturalWidth": 766,
+          "naturalHeight": 431,
+          "renderedWidth": 363.3699951171875,
+          "renderedHeight": 223.300048828125
+        },
+        {
+          "source": "/assets/press-geekenders-DKaGO3UO.png",
+          "alt": "The Geekenders podcast",
+          "naturalWidth": 900,
+          "naturalHeight": 900,
+          "renderedWidth": 363.3699951171875,
+          "renderedHeight": 223.300048828125
+        },
+        {
+          "source": "/assets/press-dignitas-C0-WSzKC.png",
+          "alt": "Tristana interview",
+          "naturalWidth": 900,
+          "naturalHeight": 506,
+          "renderedWidth": 363.3699951171875,
+          "renderedHeight": 223.2999267578125
+        },
+        {
+          "source": "/assets/press-tubefilter-BDu1gwev.png",
+          "alt": "Gaming creators featured by Tubefilter",
+          "naturalWidth": 900,
+          "naturalHeight": 530,
+          "renderedWidth": 363.3699951171875,
+          "renderedHeight": 223.2998046875
+        }
+      ]
+    },
+    {
+      "name": "selected-desktop",
+      "width": 1728,
+      "documentWidth": 1728,
+      "height": 1059,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 15,
+          "naturalHeight": 15,
+          "renderedWidth": 15,
+          "renderedHeight": 15
+        },
+        {
+          "source": "/assets/press-podcast-D0Ke7G13.png",
+          "alt": "The Patrick Scott Patterson Project interview",
+          "naturalWidth": 750,
+          "naturalHeight": 750,
+          "renderedWidth": 1123.203125,
+          "renderedHeight": 758.90625
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 15,
+          "naturalHeight": 15,
+          "renderedWidth": 15,
+          "renderedHeight": 15
+        }
+      ]
+    },
+    {
+      "name": "selected-mobile",
+      "width": 400,
+      "documentWidth": 400,
+      "height": 1061,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 15,
+          "naturalHeight": 15,
+          "renderedWidth": 0,
+          "renderedHeight": 0
+        },
+        {
+          "source": "/assets/press-podcast-D0Ke7G13.png",
+          "alt": "The Patrick Scott Patterson Project interview",
+          "naturalWidth": 750,
+          "naturalHeight": 750,
+          "renderedWidth": 400,
+          "renderedHeight": 560
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 15,
+          "naturalHeight": 15,
+          "renderedWidth": 15,
+          "renderedHeight": 15
+        }
+      ]
+    }
+  ],
+  "pageErrors": []
+}

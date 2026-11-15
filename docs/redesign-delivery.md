@@ -65,9 +65,11 @@ Each feature keeps its presentational component, wired component, state hook, st
 
 **[#41 Music public/CMS page](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/41).** Review the independent practice singleton, editable release heading, ordered releases, and record-owned watch/listen actions. [Visual evidence](redesign-evidence/music/README.md) covers desktop, mobile, and CMS.
 
-**Streaming public/CMS page.** Review canonical stream promotion, complete CMS membership, independent clips, and responsive image/text cards. [Visual evidence](redesign-evidence/streaming/README.md) covers public desktop/mobile and mobile CMS.
+**[#42 Streaming public/CMS page](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/42).** Review canonical stream promotion, complete CMS membership, independent clips, and responsive image/text cards. [Visual evidence](redesign-evidence/streaming/README.md) covers public desktop/mobile and mobile CMS.
 
-The remaining reviews complete Press and Bio. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
+**Press public/CMS page.** Review canonical coverage cards/hero/detail, shared DOM focus restoration, publication metadata, and independent appearance rows. [Visual evidence](redesign-evidence/press/README.md) includes collection and selected states.
+
+The next page review completes Bio. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
 
 Page presentation reviews link their backend contracts and include state hooks, stories, and interaction evidence. These are review boundaries; a complex page can split further. DTO and write-mapping parents were extracted using additive ancestry merges, preserving published history. Merge reviewed parents with merge commits so children can retarget with focused diffs.
 
