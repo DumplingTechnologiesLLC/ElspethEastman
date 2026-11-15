@@ -11,6 +11,7 @@ import streamIcon from '../../assets/design/stream-icon.svg';
 import externalIcon from '../../assets/design/external.svg';
 
 const css = stylex.create({
+  fill: { height: { default: '100%', '@media (max-width: 760px)': 'auto' } },
   intro: {
     boxSizing: 'border-box',
     minHeight: {
@@ -170,12 +171,16 @@ export function PageIntro({
   trivia,
   action,
   controls,
-}: PageIntroView) {
+  fill = false,
+}: PageIntroView & { readonly fill?: boolean }) {
   const firstHeadline = blocks.findIndex(
     (block) => block.kind === CopyKind.Headline,
   );
   return (
-    <aside {...stylex.props(css.intro)} aria-label="Page introduction">
+    <aside
+      {...stylex.props(css.intro, fill && css.fill)}
+      aria-label="Page introduction"
+    >
       <div>
         <div {...stylex.props(css.identities)}>
           {identities.map((item, index) => (
