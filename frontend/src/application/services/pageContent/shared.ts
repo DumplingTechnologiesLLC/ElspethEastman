@@ -27,9 +27,16 @@ export function withCopy<T extends PageContent>(
   content: T,
   block: PageCopy,
 ): T {
-  return block.pageId === content.page.id
-    ? { ...content, copy: upsertRecord(content.copy, block) }
-    : content;
+  if (block.pageId !== content.page.id) return content;
+  const byId = content.copy.find((row) => row.id === block.id);
+  const byKey = content.copy.find((row) => row.key === block.key);
+  if (
+    byId !== undefined &&
+    (byId.key !== block.key || byId.section !== block.section)
+  )
+    return content;
+  if (byKey !== undefined && byKey.id !== block.id) return content;
+  return { ...content, copy: upsertRecord(content.copy, block) };
 }
 export function withoutCopy<T extends PageContent>(content: T, key: string): T {
   return content.copy.some((row) => row.key === key)
