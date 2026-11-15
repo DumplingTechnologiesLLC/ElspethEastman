@@ -37,7 +37,9 @@ Each feature keeps its presentational component, wired component, state hook, st
 
 19. **[#27 Page-scoped mutations](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/27).** Review canonical response reconciliation, ownership checks, duplicate prevention, failed draft support, and authentication expiry in [PageService](../frontend/src/application/services/PageService.ts).
 
-20. **Promotion, ordering, and media.** Review complete membership validation, separate practice state, and independent asset uploads before the editor forms consume these commands.
+20. **[#28 Promotion, ordering, and media](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/28).** Review complete membership validation, separate practice state, and independent asset uploads before the editor forms consume these commands.
+
+21. **Editor drafts and lifecycle.** Review form validation, stable metadata keys, explicit deletion, failed drafts, and cancellation-safe upload/save completion in [ContentEditorService](../frontend/src/application/services/ContentEditorService.ts).
 
 The remaining reviews connect mutation lifecycles, shared editor state, Figma primitives and the responsive shell, then each public/CMS page pair. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
 
