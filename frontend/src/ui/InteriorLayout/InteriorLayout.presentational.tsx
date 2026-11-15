@@ -9,7 +9,10 @@ const css = stylex.create({
       '@media (max-width: 760px)': 'minmax(0,1fr)',
     },
     alignItems: 'start',
-    minHeight: 'calc(100dvh - 113px)',
+    minHeight: {
+      default: 'calc(100dvh - 113px)',
+      '@media (max-width: 760px)': 'calc(100dvh - 137px)',
+    },
     flexGrow: 1,
     backgroundColor: tokens.canvas,
     color: tokens.foreground,

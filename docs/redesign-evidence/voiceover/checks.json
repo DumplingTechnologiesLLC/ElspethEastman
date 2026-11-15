@@ -1,0 +1,182 @@
+{
+  "environment": "macOS, pinned Playwright Chromium",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1728,
+      "documentWidth": 1728,
+      "height": 1067,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "/assets/tristana-DswO4cJZ.png",
+          "alt": "Tristana from League of Legends",
+          "naturalWidth": 1215,
+          "naturalHeight": 717,
+          "renderedWidth": 511.94830322265625,
+          "renderedHeight": 430.03466796875
+        },
+        {
+          "source": "/assets/cadence-CK_NsMvX.png",
+          "alt": "Cadence from Crypt of the NecroDancer",
+          "naturalWidth": 460,
+          "naturalHeight": 215,
+          "renderedWidth": 511.96435546875,
+          "renderedHeight": 430.03466796875
+        },
+        {
+          "source": "/assets/nori-Dx-5TiOi.png",
+          "alt": "Nori Kaga from Cook Serve Forever",
+          "naturalWidth": 460,
+          "naturalHeight": 215,
+          "renderedWidth": 511.94830322265625,
+          "renderedHeight": 430.03466796875
+        },
+        {
+          "source": "/assets/enatsu-BJfyufij.png",
+          "alt": "Major Enatsu from Gamera Rebirth",
+          "naturalWidth": 382,
+          "naturalHeight": 314,
+          "renderedWidth": 511.96435546875,
+          "renderedHeight": 430.03466796875
+        }
+      ]
+    },
+    {
+      "name": "mobile",
+      "width": 400,
+      "documentWidth": 400,
+      "height": 2439,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "/assets/tristana-DswO4cJZ.png",
+          "alt": "Tristana from League of Legends",
+          "naturalWidth": 1215,
+          "naturalHeight": 717,
+          "renderedWidth": 511.9483642578125,
+          "renderedHeight": 430.03466796875
+        },
+        {
+          "source": "/assets/cadence-CK_NsMvX.png",
+          "alt": "Cadence from Crypt of the NecroDancer",
+          "naturalWidth": 460,
+          "naturalHeight": 215,
+          "renderedWidth": 511.9483642578125,
+          "renderedHeight": 430.03466796875
+        },
+        {
+          "source": "/assets/nori-Dx-5TiOi.png",
+          "alt": "Nori Kaga from Cook Serve Forever",
+          "naturalWidth": 460,
+          "naturalHeight": 215,
+          "renderedWidth": 511.9483642578125,
+          "renderedHeight": 430.03466796875
+        },
+        {
+          "source": "/assets/enatsu-BJfyufij.png",
+          "alt": "Major Enatsu from Gamera Rebirth",
+          "naturalWidth": 382,
+          "naturalHeight": 314,
+          "renderedWidth": 511.9483642578125,
+          "renderedHeight": 430.03466796875
+        }
+      ]
+    },
+    {
+      "name": "selected-desktop",
+      "width": 1728,
+      "documentWidth": 1728,
+      "height": 998,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "/assets/tristana-DswO4cJZ.png",
+          "alt": "Tristana from League of Legends",
+          "naturalWidth": 1215,
+          "naturalHeight": 717,
+          "renderedWidth": 1123.203125,
+          "renderedHeight": 758.90625
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 15,
+          "naturalHeight": 15,
+          "renderedWidth": 15,
+          "renderedHeight": 15
+        }
+      ]
+    },
+    {
+      "name": "selected-mobile",
+      "width": 400,
+      "documentWidth": 400,
+      "height": 1061,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 0,
+          "renderedHeight": 0
+        },
+        {
+          "source": "/assets/tristana-DswO4cJZ.png",
+          "alt": "Tristana from League of Legends",
+          "naturalWidth": 1215,
+          "naturalHeight": 717,
+          "renderedWidth": 400,
+          "renderedHeight": 560
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 15,
+          "naturalHeight": 15,
+          "renderedWidth": 15,
+          "renderedHeight": 15
+        }
+      ]
+    }
+  ],
+  "pageErrors": []
+}
