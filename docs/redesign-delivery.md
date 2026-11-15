@@ -31,9 +31,11 @@ Each feature keeps its presentational component, wired component, state hook, st
 15. **[#21 HTTP content adapter](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/21).** Review endpoint/verb binding, canonical results, and multipart requests.
 16. **[#24 Site registry service](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/24).** Review shared loading, route state, cached metadata, and query-preserving rename behavior in [SiteService](../frontend/src/application/services/SiteService.ts).
 
-17. **Page-scoped loading.** Review independent aggregate caches, in-flight deduplication, and subscriber lifecycles in [PageService](../frontend/src/application/services/PageService.ts).
+17. **[#25 Page-scoped loading](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/25).** Review independent aggregate caches, in-flight deduplication, and subscriber lifecycles in [PageService](../frontend/src/application/services/PageService.ts).
 
-The remaining reviews connect canonical reconciliation, shared editor state, Figma primitives and the responsive shell, then each public/CMS page pair. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
+18. **Canonical content reconciliation.** Review immutable record updates, fixed image slots, hero identity, and scoped ordering in [page content policies](../frontend/src/application/services/pageContent/).
+
+The remaining reviews connect mutation lifecycles, shared editor state, Figma primitives and the responsive shell, then each public/CMS page pair. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
 
 Page presentation reviews link their backend contracts and include state hooks, stories, and interaction evidence. These are review boundaries; a complex page can split further. DTO and write-mapping parents were extracted using additive ancestry merges, preserving published history. Merge reviewed parents with merge commits so children can retarget with focused diffs.
 
