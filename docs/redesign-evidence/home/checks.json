@@ -1,0 +1,22 @@
+{
+  "environment": "macOS, pinned Playwright Chromium",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1728,
+      "documentWidth": 1728,
+      "height": 996,
+      "footerTop": 953
+    },
+    {
+      "name": "mobile",
+      "width": 400,
+      "documentWidth": 400,
+      "height": 1262,
+      "footerTop": 1189
+    }
+  ],
+  "pageErrors": [],
+  "mobileNavigation": "passed",
+  "dialogKeyboardWrap": "passed"
+}

@@ -104,6 +104,8 @@ const css = stylex.create({
     outline: 'none',
   },
   footer: {
+    boxSizing: 'border-box',
+    minHeight: { default: 43, '@media (max-width: 760px)': 73 },
     display: 'flex',
     flexDirection: { default: 'row', '@media (max-width: 760px)': 'column' },
     justifyContent: 'space-between',

@@ -78,6 +78,21 @@ export function Dialog({ title, context, onClose, children }: DialogProps) {
       ref={ref}
       aria-labelledby={id}
       {...stylex.props(css.dialog)}
+      onKeyDown={(event) => {
+        if (event.key !== 'Tab') return;
+        const nodes = event.currentTarget.querySelectorAll<HTMLElement>(
+          'button:enabled, a[href], input:enabled:not([type="hidden"]), select:enabled, textarea:enabled, [tabindex]:not([tabindex="-1"])',
+        );
+        const first = nodes[0]!,
+          last = nodes[nodes.length - 1]!;
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }}
       onCancel={(event) => {
         event.preventDefault();
         onClose();
