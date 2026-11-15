@@ -10,6 +10,7 @@ import { tokens } from '../tokens.stylex';
 
 const css = stylex.create({
   button: {
+    boxSizing: 'border-box',
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',

@@ -34,6 +34,7 @@ const css = stylex.create({
     whiteSpace: 'pre-line',
   },
   label: {
+    fontWeight: 400,
     fontFamily: tokens.sans,
     fontSize: 10.24,
     lineHeight: 1.3,

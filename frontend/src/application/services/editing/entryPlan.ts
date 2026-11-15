@@ -97,7 +97,7 @@ export function entryPlan(
       category: voice ? null : value(draft, Key.Category) || null,
       publishedAt:
         press && value(draft, Key.PublishedAt) !== ''
-          ? new Date(value(draft, Key.PublishedAt) + 'Z').toISOString()
+          ? value(draft, Key.PublishedAt) + 'Z'
           : null,
       metadata: draft.rows!.items.map(({ key, label, value: text }) => ({
         key,

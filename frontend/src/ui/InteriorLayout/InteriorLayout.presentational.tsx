@@ -26,11 +26,17 @@ const css = stylex.create({
   },
   body: {
     minWidth: 0,
-    paddingBlock: { default: 39.84, '@media (max-width: 760px)': 24 },
+    paddingBlockStart: { default: 39.84, '@media (max-width: 760px)': 24 },
+    paddingBlockEnd: { default: 39.84, '@media (max-width: 760px)': 36 },
     paddingInline: {
       default: 'clamp(24px,3.36vw,58px)',
       '@media (max-width: 760px)': 20,
     },
+  },
+  detailBody: {
+    paddingBlockStart: { default: 0, '@media (max-width: 760px)': 0 },
+    paddingBlockEnd: { default: 0, '@media (max-width: 760px)': 0 },
+    paddingInline: { default: 0, '@media (max-width: 760px)': 0 },
   },
 });
 export function InteriorLayout({
@@ -45,7 +51,9 @@ export function InteriorLayout({
   return (
     <div {...stylex.props(css.layout)}>
       <div {...stylex.props(css.intro, selected && css.selected)}>{intro}</div>
-      <div {...stylex.props(css.body)}>{children}</div>
+      <div {...stylex.props(css.body, selected && css.detailBody)}>
+        {children}
+      </div>
     </div>
   );
 }

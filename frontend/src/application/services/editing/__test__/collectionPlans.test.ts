@@ -51,7 +51,7 @@ const cases = [
     id: 40,
     expected: {
       ...entry,
-      publishedAt: '2026-10-01T14:30:00.000Z',
+      publishedAt: '2026-10-01T14:30:00Z',
       metadata: [{ key: 'outlet', label: 'Publication', value: 'Outlet' }],
     },
   },
@@ -188,6 +188,13 @@ it('requires the Press outlet row but hides publication fields on other entry ki
   expect(page.entries.update).toHaveBeenCalledWith(
     40,
     expect.objectContaining({ publishedAt: null, category: 'Interview' }),
+  );
+  await edit.save(
+    change(edit.draft, Key.PublishedAt, '2026-10-01T14:30:00.123456'),
+  );
+  expect(page.entries.update).toHaveBeenCalledWith(
+    40,
+    expect.objectContaining({ publishedAt: '2026-10-01T14:30:00.123456Z' }),
   );
   const noDate = fixture(
     toPageContent(
