@@ -16,25 +16,33 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: yarn
-          cache-dependency-path: public/yarn.lock
-      - run: corepack enable
-      - run: yarn install --frozen-lockfile --non-interactive
-        working-directory: public
-      - run: yarn test --watchAll=false --runInBand
-        working-directory: public
-        env:
-          CI: 'true'
-      - run: yarn build
-        env:
-          CI: 'true'
+          node-version: '22.22.3'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm test:coverage
+      - run: pnpm build
+      - run: pnpm storybook:build
       - uses: actions/upload-artifact@v4
         with:
           name: frontend-build
           path: public/build
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: storybook-build
+          path: storybook-static
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: frontend-coverage-${{ github.event_name }}
+          path: coverage/
           retention-days: 7
   backend:
     name: Backend
@@ -63,24 +71,34 @@ jobs:
       EMAIL_BACKEND: django.core.mail.backends.locmem.EmailBackend
       DATABASE_URL: postgres://postgres:ci-only-password@localhost:5432/elspeth_ci
       PYTHONDONTWRITEBYTECODE: '1'
+      POETRY_VIRTUALENVS_IN_PROJECT: 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: pip
-      - run: python -m pip install -r requirements.txt
-      - run: python -m pip check
+      - run: pipx install poetry==2.5.1
+      - run: poetry check --lock
+      - run: poetry sync
+      - run: poetry run python -m pip check
       - uses: actions/download-artifact@v4
         with:
           name: frontend-build
           path: public/build
-      - run: python manage.py collectstatic --noinput
-      - run: python manage.py check
-      - run: python manage.py makemigrations --check --dry-run
-      - run: python manage.py migrate --noinput
-      - run: python manage.py migrate --noinput
-      - run: python manage.py test --noinput
+      - run: poetry run python manage.py collectstatic --noinput
+      - run: poetry run python manage.py check
+      - run: poetry run python manage.py makemigrations --check --dry-run
+      - run: poetry run python manage.py migrate --noinput
+      - run: poetry run python manage.py migrate --noinput
+      - run: poetry run coverage run manage.py test --noinput
+      - run: poetry run coverage report
+      - run: poetry run coverage xml
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: backend-coverage-${{ github.event_name }}
+          path: coverage.xml
+          retention-days: 7
   playwright:
     name: Playwright
     needs: frontend
@@ -101,18 +119,21 @@ jobs:
       E2E_DATABASE_URL: postgres://postgres:e2e-only-password@127.0.0.1:5432/elspeth_e2e
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: yarn
-          cache-dependency-path: yarn.lock
-      - run: corepack enable
-      - run: yarn install --frozen-lockfile --non-interactive
+          node-version: '22.22.3'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@v4
         with:
           name: frontend-build
           path: public/build
-      - run: yarn test:e2e:docker
+      - uses: actions/download-artifact@v4
+        with:
+          name: storybook-build
+          path: storybook-static
+      - run: pnpm test:e2e:docker
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

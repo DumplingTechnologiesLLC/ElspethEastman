@@ -33,3 +33,9 @@ staticfiles/
 .e2e/
 playwright-report/
 test-results/
+
+storybook-static/
+htmlcov/
+.coverage
+coverage.xml
+db.sqlite3

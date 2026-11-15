@@ -2,7 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 if [[ ! -f public/build/index.html || ! -f node_modules/@playwright/test/cli.js ]]; then
-  echo 'Run yarn install --frozen-lockfile and yarn build before the Docker suite.' >&2
+  echo 'Run pnpm install --frozen-lockfile and pnpm build before the Docker suite.' >&2
   exit 1
 fi
 docker build --platform linux/amd64 -f e2e/Dockerfile -t elspeth-playwright .

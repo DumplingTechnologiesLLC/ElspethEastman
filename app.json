@@ -62,9 +62,7 @@
   "environments": {
     "review": {
       "stack": "heroku-24",
-      "addons": [
-        "heroku-postgresql:essential-0"
-      ]
+      "addons": ["heroku-postgresql:essential-0"]
     }
   }
 }

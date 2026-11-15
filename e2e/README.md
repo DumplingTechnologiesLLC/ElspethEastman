@@ -12,16 +12,19 @@ The browser scenarios cover:
 - CMS skills, project preview/reset and individual/batch saves, project CRUD, all four experience categories, TBA formatting, affiliations, validation, and delete cancellation.
 - Anonymous write rejection, private contact listing, CSRF enforcement, invalid pagination parameters, and expired write tokens.
 
+Every built Storybook story also renders in Chromium with supplied props and callback spies. These checks reject browser exceptions and application API requests.
+
 Unexpected browser exceptions fail tests. CI rejects focused tests, stops on the first failure, and uses zero retries so failures remain visible.
 
 ## Run the suite
 
-Install Node 22, Yarn 1.22.22, and Docker, then run from the repository root:
+Install Node 22, pnpm 12.18.0, and Docker, then run from the repository root:
 
 ```sh
-yarn install --frozen-lockfile
-yarn build
-yarn test:e2e:docker
+pnpm install --frozen-lockfile
+pnpm build
+pnpm storybook:build
+pnpm test:e2e:docker
 ```
 
 The Docker runner uses a pinned Playwright image and the same x86 Linux environment as CI. Its Python dependencies come from the runtime lockfile. Docker's first build downloads the browsers and installs the Python environment; subsequent runs reuse those layers.
@@ -29,26 +32,27 @@ The Docker runner uses a pinned Playwright image and the same x86 Linux environm
 Select a workflow while iterating:
 
 ```sh
-yarn test:e2e:docker --project=chromium e2e/cms.spec.cjs
-yarn test:e2e:docker --project=api
-yarn test:e2e:docker --project=visual
+pnpm test:e2e:docker --project=chromium e2e/cms.spec.ts
+pnpm test:e2e:docker --project=api
+pnpm test:e2e:docker --project=visual
 ```
 
-Native runs are also available with `E2E_PYTHON=/path/to/venv/bin/python yarn test:e2e --project=chromium` after installing the Python requirements and running `yarn playwright install chromium`. Visual comparisons run in Linux; use Docker to review or update their baselines. Run one suite at a time per checkout because the database reset and loopback server are shared.
+Native runs are also available with `E2E_PYTHON=/path/to/venv/bin/python pnpm test:e2e --project=chromium` after running `poetry sync` and running `pnpm exec playwright install chromium`. Visual comparisons run in Linux; use Docker to review or update their baselines. Run one suite at a time per checkout because the database reset and loopback server are shared.
 
 ## Review an intentional baseline change
 
 Run the relevant update command, inspect the changed screenshots or JSON, and commit the approved baseline changes with the behavior change:
 
 ```sh
-yarn test:e2e:docker --project=visual --update-snapshots
-yarn test:e2e:docker --project=api --update-snapshots
+pnpm test:e2e:docker --project=visual --update-snapshots
 git diff -- e2e/snapshots
 ```
 
+For an intentional API contract change, edit the corresponding endpoint entry in `e2e/snapshots/api.spec.ts/public-api.json`, review the JSON diff, and run `pnpm test:e2e:docker --project=api`. Each endpoint has its own `it.each` case against that shared baseline. Playwright tables register through native `it` callbacks so fixture discovery, source locations, and snapshot paths remain intact.
+
 Ordinary runs compare committed baselines and fail if a baseline is missing. CI never regenerates them. Screenshot comparison permits at most 100 differing pixels to accommodate minor rendering noise.
 
-The HTML report includes test steps and attachments. Failed browser tests retain screenshots, video, and traces. Open a local report with `yarn test:e2e:report`. In GitHub Actions, download the `playwright-results-<event>` artifact; reports and attachments are retained for 14 days.
+The HTML report includes test steps and attachments. Failed browser tests retain screenshots, video, and traces. Open a local report with `pnpm test:e2e:report`. In GitHub Actions, download the `playwright-results-<event>` artifact; reports and attachments are retained for 14 days.
 
 ## Database and external-service boundaries
 
@@ -62,6 +66,6 @@ YouTube thumbnails and YouTube/SoundCloud embeds use deterministic local respons
 
 The baseline records existing behavior, including the current narrow layouts. Existing form labels lack matching input IDs; tests use stable input names where label selectors cannot work. Invalid affiliation creation currently closes its modal after server validation, and a characterization test records that behavior while checking that no record was created.
 
-An aborted session-validation request currently clears browser credentials and returns to login even though the server token remains valid. A separate failure scenario records that behavior. Normal navigation scenarios wait for completed session validation before starting another navigation so they exercise the settled login flow.
+An aborted session-validation request currently clears browser credentials and returns to login even though the server token remains valid. An aborted logout also clears browser credentials while retaining the server token. Separate failure scenarios record both behaviors, and login transport failures are checked for notification and retry. Normal navigation scenarios wait for completed session validation before starting another navigation so they exercise the settled login flow.
 
 Review these characterizations when deliberately changing those flows. Keep unrelated behavior changes out of baseline maintenance.
