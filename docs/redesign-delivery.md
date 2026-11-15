@@ -59,7 +59,9 @@ Each feature keeps its presentational component, wired component, state hook, st
 
 30. **[#38 Shared interior introduction](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/38).** Review the desktop/mobile frame, ordered headings and body blocks, identity/fact editing, and external versus code-defined actions. CMS toolbars overlay content without adding layout height.
 
-31. **Shared entry presentation.** Review separate entry view models, canonical promotion callbacks, grayscale/color hover/focus motion, and loaded detail metadata/actions. Voiceover's route selection and focus restoration follow in the dependent page review.
+31. **[#39 Shared entry presentation](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/39).** Review separate entry view models, canonical promotion callbacks, grayscale/color hover/focus motion, and loaded detail metadata/actions. Voiceover's route selection and focus restoration follow in the dependent page review.
+
+32. **Voiceover public/CMS page.** Review cached role selection, separate hero promotion, complete CMS membership, and focus restoration after closing or deleting detail. [Visual evidence](redesign-evidence/voiceover/README.md) includes desktop/mobile collection and selected states.
 
 The remaining reviews connect mutation lifecycles, shared editor state, Figma primitives and the responsive shell, then each public/CMS page pair. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
 

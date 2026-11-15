@@ -77,6 +77,10 @@ import {
 import { collectionIds, withCollectionOrder } from './pageContent/order';
 import { PageKind } from '../../domain/models/Page';
 
+interface MutationOptions<T> {
+  readonly after?: (value: T) => void;
+  readonly validation?: 'inline' | 'toast';
+}
 export class PageService
   extends Store<PageContentState>
   implements PageController
@@ -214,7 +218,7 @@ export class PageService
     request: () => Promise<ContentResult<T>>,
     reconcile: (content: PageContent, value: T) => PageContent,
     allow: (content: PageContent) => boolean = () => true,
-    after?: (value: T) => void,
+    options: MutationOptions<T> = {},
   ): Promise<ContentResult<T>> {
     const content = this.content;
     if (content === null)
@@ -239,7 +243,7 @@ export class PageService
         else {
           this.content = next;
           this.patch({ content: next, error: null });
-          after?.(result.value);
+          options.after?.(result.value);
         }
       }
     } catch {
@@ -248,7 +252,13 @@ export class PageService
       this.patch({ mutating: false });
     }
     if (!result.ok)
-      reportContentFailure(result.error, this.alerts, this.session, returnTo);
+      reportContentFailure(
+        result.error,
+        this.alerts,
+        this.session,
+        returnTo,
+        options.validation === 'toast',
+      );
     return result;
   }
 
@@ -293,7 +303,7 @@ export class PageService
           () => source.remove(id),
           (content) => remove(content, id),
           (content) => member(content, id),
-          () => afterRemove?.(id),
+          { after: () => afterRemove?.(id) },
         ),
     };
   }
@@ -303,7 +313,7 @@ export class PageService
       () => this.repository.metadata(this.pageId, input),
       withMetadata,
       undefined,
-      (page) => this.site.updatePage(page),
+      { after: (page) => this.site.updatePage(page) },
     );
   readonly copy: PageController['copy'] = {
     create: (input) =>
@@ -346,6 +356,7 @@ export class PageService
       () => this.repository.feature(input),
       withFeaturedItem,
       (content) => withFeaturedItem(content, input) !== content,
+      { validation: 'toast' },
     );
   };
   reorder: PageController['reorder'] = (input) => {
@@ -357,6 +368,7 @@ export class PageService
           ? withCollectionOrder(content, value)
           : content,
       (content) => withCollectionOrder(content, scoped) !== content,
+      { validation: 'toast' },
     );
   };
   move: PageController['move'] = (input) => {

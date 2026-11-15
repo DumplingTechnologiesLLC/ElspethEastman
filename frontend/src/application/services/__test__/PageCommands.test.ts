@@ -94,8 +94,35 @@ async function fixture(content: PageContent = voice) {
     session,
   );
   await service.load();
-  return { service, repository };
+  return { service, repository, notifications };
 }
+it('reports rejected inline promotion and ordering instead of silently dropping validation errors', async () => {
+  const { service, repository, notifications } = await fixture();
+  const failure = {
+    ok: false,
+    error: {
+      status: 400,
+      detail: 'Changed',
+      fields: { itemId: ['This item changed. Please refresh and try again.'] },
+    },
+  } as const;
+  repository.feature.mockResolvedValueOnce(failure);
+  await service.feature(40);
+  expect(notifications.show).toHaveBeenCalledWith(
+    expect.objectContaining({
+      content: 'This item changed. Please refresh and try again.',
+    }),
+  );
+  notifications.show.mockClear();
+  repository.reorder.mockResolvedValueOnce(failure);
+  await service.reorder({
+    collection: PageCollection.ContentEntries,
+    section: null,
+    orderedIds: [40],
+  });
+  expect(notifications.show).toHaveBeenCalledOnce();
+  expect(service.getSnapshot().content).toBe(voice);
+});
 
 it('promotes an eligible existing entry and clears promotion without changing identity or order', async () => {
   const { service, repository } = await fixture();
