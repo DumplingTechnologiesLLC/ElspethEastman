@@ -1,12 +1,13 @@
 from rest_framework.exceptions import ValidationError
 
-from portfolio.models import ContentEntry, Eyebrow, PageCopy, TriviaItem
+from portfolio.models import ContentEntry, Eyebrow, MusicRelease, PageCopy, PageKind, TriviaItem
 from portfolio.services.content_entries import ENTRY_PAGE_KINDS
 from portfolio.serializers.copy_input import COPY_SECTIONS
 from portfolio.services.ownership import locked_page
 
 
-COLLECTION_MODELS = {"copy": PageCopy, "eyebrows": Eyebrow, "trivia": TriviaItem, "content_entries": ContentEntry}
+COLLECTION_MODELS = {"copy": PageCopy, "eyebrows": Eyebrow, "trivia": TriviaItem, "content_entries": ContentEntry, "releases": MusicRelease}
+COLLECTION_PAGE_KINDS = {"content_entries": ENTRY_PAGE_KINDS, "releases": {PageKind.MUSIC}}
 
 
 def reorder_collection(data):
@@ -15,8 +16,9 @@ def reorder_collection(data):
         model = COLLECTION_MODELS.get(collection)
         if model is None:
             raise ValidationError({"collection": "This collection cannot be reordered."})
-        if collection == "content_entries" and page.kind not in ENTRY_PAGE_KINDS:
-            raise ValidationError({"collection": "This page does not own content entries."})
+        kinds = COLLECTION_PAGE_KINDS.get(collection)
+        if kinds is not None and page.kind not in kinds:
+            raise ValidationError({"collection": "This page does not own that collection."})
         queryset = model.objects.filter(page=page)
         if collection == "copy":
             if section not in COPY_SECTIONS[page.kind]:

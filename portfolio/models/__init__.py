@@ -6,5 +6,7 @@ from .page_image import PageImage
 from .eyebrow import Eyebrow
 from .trivia_item import TriviaItem
 from .content_entry import ContentEntry, ContentEntryMetadata
+from .music_feature import MusicFeature, PracticeFact
+from .music_release import MusicRelease
 
-__all__ = ["Page", "PageKind", "PageCopy", "CopyKind", "MediaAsset", "MediaMime", "PageImage", "Eyebrow", "TriviaItem", "ContentEntry", "ContentEntryMetadata"]
+__all__ = ["Page", "PageKind", "PageCopy", "CopyKind", "MediaAsset", "MediaMime", "PageImage", "Eyebrow", "TriviaItem", "ContentEntry", "ContentEntryMetadata", "MusicFeature", "PracticeFact", "MusicRelease"]
