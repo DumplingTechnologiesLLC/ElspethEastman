@@ -3,6 +3,7 @@ import { vi } from 'vitest';
 import type { ServiceContainer } from '../frontend/src/composition/ServiceContainer';
 import type { SiteState } from '../frontend/src/domain/models/Site';
 import type { PageContentState } from '../frontend/src/domain/models/PageContent';
+import type { ContentEditorState } from '../frontend/src/domain/models/ContentEditor';
 
 import {
   contactView,
@@ -137,6 +138,26 @@ export function mockServices() {
     site,
     media: { ...observable({ uploading: false }), upload: vi.fn() },
     page: vi.fn(() => page),
+    editor: vi.fn(() => ({
+      ...observable<ContentEditorState>({
+        draft: null,
+        saving: false,
+        uploading: false,
+        confirmingDelete: false,
+        error: null,
+      }),
+      open: vi.fn(),
+      cancel: vi.fn(),
+      change: vi.fn(),
+      addRow: vi.fn(),
+      changeRow: vi.fn(),
+      removeRow: vi.fn(),
+      upload: vi.fn(),
+      removeImage: vi.fn(),
+      save: vi.fn(),
+      confirmDelete: vi.fn(),
+      remove: vi.fn(),
+    })),
     skills: vi.fn(() => skills),
     projects: vi.fn(() => projects),
     experience: vi.fn(() => experience),

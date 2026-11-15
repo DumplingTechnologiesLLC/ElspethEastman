@@ -11,6 +11,7 @@ import { useFooterService } from '../../hooks/useFooterService';
 import { useSiteService } from '../../hooks/useSiteService';
 import { usePageService } from '../../hooks/usePageService';
 import { useMediaService } from '../../hooks/useMediaService';
+import { useContentEditorService } from '../../hooks/useContentEditorService';
 
 import { fixturePorts } from '../../../../test/fakes';
 it('creates independent request-scoped domain aggregates with interface-based accessors', () => {
@@ -25,6 +26,15 @@ it('creates independent request-scoped domain aggregates with interface-based ac
   expect(first.media).not.toBe(second.media);
   expect(first.page(1)).not.toBe(second.page(1));
   expect(first.page(1)).not.toBe(first.page(2));
+  expect(first.editor(1)).not.toBe(second.editor(1));
+  expect(first.editor(1)).not.toBe(first.editor(2));
+  first.editor(1).open({ type: 'settings' });
+  expect(first.editor(1).getSnapshot().draft).toBeNull();
+  const editor = renderHook(useContentEditorService, {
+    initialProps: { services: first, pageId: 1 },
+  });
+  expect(editor.result.current).toBe(first.editor(1));
+  editor.rerender({ services: first, pageId: 1 });
   const page = renderHook(usePageService, {
     initialProps: { services: first, pageId: 1 },
   });

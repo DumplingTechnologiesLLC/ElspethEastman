@@ -39,7 +39,9 @@ Each feature keeps its presentational component, wired component, state hook, st
 
 20. **[#28 Promotion, ordering, and media](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/28).** Review complete membership validation, separate practice state, and independent asset uploads before the editor forms consume these commands.
 
-21. **Editor drafts and lifecycle.** Review form validation, stable metadata keys, explicit deletion, failed drafts, and cancellation-safe upload/save completion in [ContentEditorService](../frontend/src/application/services/ContentEditorService.ts).
+21. **[#29 Editor drafts and lifecycle](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/29).** Review form validation, stable metadata keys, explicit deletion, failed drafts, and cancellation-safe upload/save completion in [ContentEditorService](../frontend/src/application/services/ContentEditorService.ts).
+
+22. **Shared resource editors.** Review explicit input construction for page settings, keyed text, fixed image uses, identity labels, and facts. Editors are scoped through the service container and consume page interfaces.
 
 The remaining reviews connect mutation lifecycles, shared editor state, Figma primitives and the responsive shell, then each public/CMS page pair. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
 
