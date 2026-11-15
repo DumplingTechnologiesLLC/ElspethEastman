@@ -17,7 +17,7 @@ import type { BioChapter, BioChapterInput } from '../models/BioChapter';
 import type { CurrentItem, CurrentItemInput } from '../models/CurrentItem';
 import type { MusicFeature, MusicFeatureInput } from '../models/MusicFeature';
 import type { FeaturedItem } from '../models/ContentEntry';
-import type { CollectionOrder } from '../models/PageCollection';
+import type { CollectionMove, CollectionOrder } from '../models/PageCollection';
 import type { PageContentState } from '../models/PageContent';
 import type { Readable } from './Readable';
 import type { Unsubscribe } from './Unsubscribe';
@@ -63,4 +63,5 @@ export interface PageController extends Readable<PageContentState> {
   reorder: (
     input: Omit<CollectionOrder, 'pageId'>,
   ) => Promise<ContentResult<CollectionOrder>>;
+  move: (input: CollectionMove) => Promise<ContentResult<CollectionOrder>>;
 }

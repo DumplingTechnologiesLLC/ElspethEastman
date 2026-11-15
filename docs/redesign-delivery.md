@@ -49,7 +49,9 @@ Each feature keeps its presentational component, wired component, state hook, st
 
 25. **[#33 Content editor presentation](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/33).** Review isolated field/error projection, image preview/upload controls, metadata ordering, validation focus, and explicit deletion in the Figma dialog. The presentation receives callbacks and has no service dependencies.
 
-26. **Responsive site shell.** Review canonical navigation, mobile disclosure behavior, footer credits, public/editor switching, and page/login/editor slots. The registry and session own routing and authentication state.
+26. **[#34 Responsive site shell](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/34).** Review canonical navigation, mobile disclosure behavior, footer credits, public/editor switching, and page/login/editor slots. The registry and session own routing and authentication state.
+
+27. **Page composition and CMS controls.** Review page-scoped subscriptions, loading/error boundaries, typed edit/delete intents, accessible ordering buttons, scoped native drag/drop, and full-membership moves against the canonical cache.
 
 The remaining reviews connect mutation lifecycles, shared editor state, Figma primitives and the responsive shell, then each public/CMS page pair. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
 

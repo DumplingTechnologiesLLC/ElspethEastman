@@ -4,6 +4,7 @@ import {
   aVoiceoverDTO,
   aMusicDTO,
   aBioDTO,
+  anEntryDTO,
 } from '../../../../../test/contentFixtures';
 import { image } from '../../../../../test/contentWriteCases';
 import { mockContentRepository } from '../../../../../test/mockContentRepository';
@@ -15,6 +16,64 @@ import { PageService } from '../PageService';
 
 const voice = toPageContent(aVoiceoverDTO());
 const music = toPageContent(aMusicDTO());
+it('moves a member before another member or to the end using the full current collection', async () => {
+  const content = toPageContent(
+    aVoiceoverDTO({
+      roles: [anEntryDTO(), anEntryDTO({ id: 42 }), anEntryDTO({ id: 43 })],
+    }),
+  );
+  const { service, repository } = await fixture(content);
+  repository.reorder.mockImplementation(async (input) => ({
+    ok: true,
+    value: input,
+  }));
+  const scope = { collection: PageCollection.ContentEntries, section: null };
+  expect((await service.move({ ...scope, itemId: 43, beforeId: 40 })).ok).toBe(
+    true,
+  );
+  expect(repository.reorder).toHaveBeenLastCalledWith({
+    ...scope,
+    pageId: 2,
+    orderedIds: [43, 40, 42],
+  });
+  expect(
+    (await service.move({ ...scope, itemId: 43, beforeId: null })).ok,
+  ).toBe(true);
+  expect(repository.reorder).toHaveBeenLastCalledWith({
+    ...scope,
+    pageId: 2,
+    orderedIds: [40, 42, 43],
+  });
+  const rejected = await Promise.all(
+    [
+      { itemId: 999, beforeId: 40 },
+      { itemId: 40, beforeId: 999 },
+      { itemId: 40, beforeId: 40 },
+    ].map((move) => service.move({ ...scope, ...move })),
+  );
+  expect(rejected.every((result) => !result.ok)).toBe(true);
+  expect(repository.reorder).toHaveBeenCalledTimes(2);
+  const unloaded = new PageService(
+    2,
+    repository,
+    mockServices().notifications,
+    mockServices().site,
+    mockServices().session,
+  );
+  expect(
+    (await unloaded.move({ ...scope, itemId: 40, beforeId: null })).ok,
+  ).toBe(false);
+  expect(
+    (
+      await service.move({
+        collection: PageCollection.Releases,
+        section: null,
+        itemId: 40,
+        beforeId: null,
+      })
+    ).ok,
+  ).toBe(false);
+});
 const practice = {
   eyebrow: 'Practice',
   title: 'Cello',

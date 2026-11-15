@@ -131,6 +131,7 @@ export function mockServices() {
     practice: vi.fn(),
     feature: vi.fn(),
     reorder: vi.fn(),
+    move: vi.fn(),
   };
   const editor = {
     ...observable<ContentEditorState>({
