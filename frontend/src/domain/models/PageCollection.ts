@@ -45,3 +45,9 @@ export interface CollectionOrder extends PageScope {
   readonly section: string | null;
   readonly orderedIds: readonly number[];
 }
+export interface CollectionMove {
+  readonly collection: PageCollection;
+  readonly section: string | null;
+  readonly itemId: number;
+  readonly beforeId: number | null;
+}

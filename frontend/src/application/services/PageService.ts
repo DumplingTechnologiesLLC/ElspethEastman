@@ -74,7 +74,7 @@ import {
   withFeaturedItem,
   withPractice,
 } from './pageContent/featured';
-import { withCollectionOrder } from './pageContent/order';
+import { collectionIds, withCollectionOrder } from './pageContent/order';
 import { PageKind } from '../../domain/models/Page';
 
 export class PageService
@@ -358,5 +358,31 @@ export class PageService
           : content,
       (content) => withCollectionOrder(content, scoped) !== content,
     );
+  };
+  move: PageController['move'] = (input) => {
+    const content = this.content;
+    const ids = content === null ? null : collectionIds(content, input);
+    if (
+      ids === null ||
+      !ids.includes(input.itemId) ||
+      input.itemId === input.beforeId ||
+      (input.beforeId !== null && !ids.includes(input.beforeId))
+    )
+      return Promise.resolve(
+        rejectContent(
+          'This position is not available. Refresh the page and try again.',
+        ),
+      );
+    const orderedIds = ids.filter((id) => id !== input.itemId);
+    const index =
+      input.beforeId === null
+        ? orderedIds.length
+        : orderedIds.indexOf(input.beforeId);
+    orderedIds.splice(index, 0, input.itemId);
+    return this.reorder({
+      collection: input.collection,
+      section: input.section,
+      orderedIds,
+    });
   };
 }
