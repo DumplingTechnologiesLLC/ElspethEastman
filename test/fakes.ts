@@ -53,6 +53,10 @@ export function fixturePorts() {
       path = value;
       navigationListener();
     }),
+    replace: vi.fn((value) => {
+      path = value;
+      navigationListener();
+    }),
     listen: vi.fn((callback) => {
       navigationListener = callback;
       return vi.fn();

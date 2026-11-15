@@ -23,9 +23,16 @@ export function browserServices(browser: Window) {
     for (const listener of listeners) listener();
   };
   const navigation: Navigation = {
-    location: () => browser.location.pathname + browser.location.hash,
+    location: () =>
+      browser.location.pathname +
+      browser.location.search +
+      browser.location.hash,
     go: (path) => {
       browser.history.pushState(null, '', path);
+      publish();
+    },
+    replace: (path) => {
+      browser.history.replaceState(null, '', path);
       publish();
     },
     listen: (callback) => {

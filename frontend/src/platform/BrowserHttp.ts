@@ -34,15 +34,16 @@ export class BrowserHttp implements Http {
     method: Method = 'GET',
     body?: unknown,
     authenticated = false,
-    responseType: 'json' | 'status' = 'json',
-  ): Promise<Reply<T>> {
+    responseType: 'json' | 'status' | 'content' = 'json',
+  ): Promise<Reply<T | null>> {
     try {
       const csrf =
         method === 'GET'
           ? cookie(this.cookies(), 'csrftoken')
           : await this.csrfToken();
+      const multipart = body instanceof FormData;
       const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
+        ...(!multipart ? { 'Content-Type': 'application/json' } : {}),
         'X-CSRFToken': csrf ?? 'null',
       };
       if (authenticated) headers.Authorization = `Token ${this.tokens.read()}`;
@@ -55,16 +56,27 @@ export class BrowserHttp implements Http {
               cache: 'no-cache',
               headers,
               ...(authenticated ? { credentials: 'same-origin' as const } : {}),
-              ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+              ...(body !== undefined
+                ? { body: multipart ? body : JSON.stringify(body) }
+                : {}),
             },
       );
-      if (method === 'GET' && !response.ok)
-        return { status: null, data: null as T };
-      if (responseType === 'status')
-        return { status: response.status, data: null as T };
+      // The redesign opts into preserved HTTP status and bodyless success responses.
+      if (responseType !== 'content' && method === 'GET' && !response.ok)
+        return { status: null, data: null };
+      if (
+        responseType === 'status' ||
+        (responseType === 'content' && response.status === 204)
+      )
+        return { status: response.status, data: null };
+      if (responseType === 'content')
+        return {
+          status: response.status,
+          data: (await response.json().catch(() => null)) as T | null,
+        };
       return { status: response.status, data: (await response.json()) as T };
     } catch {
-      return { status: null, data: null as T };
+      return { status: null, data: null };
     }
   }
 }
