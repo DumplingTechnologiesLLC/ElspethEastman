@@ -61,6 +61,7 @@ THIRD_PARTY_APPS = [
 
 CUSTOM_APPS = [
     'core',
+    'portfolio.apps.PortfolioConfig',
 ]
 
 if not DEBUG:
