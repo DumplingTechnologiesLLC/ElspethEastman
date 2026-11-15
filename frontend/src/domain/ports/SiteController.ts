@@ -4,6 +4,7 @@ import type { Readable } from './Readable';
 import type { Unsubscribe } from './Unsubscribe';
 
 export interface SiteController extends Readable<SiteState> {
+  readonly year: number;
   start: () => Unsubscribe;
   load: () => Promise<void>;
   navigate: (path: string) => void;
