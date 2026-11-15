@@ -78,6 +78,8 @@ export function mockServices() {
     start: vi.fn(() => stopSession),
     logout: vi.fn().mockResolvedValue(undefined),
     navigate: vi.fn(),
+    replace: vi.fn(),
+    expire: vi.fn(),
   };
   const services: ServiceContainer = {
     session,

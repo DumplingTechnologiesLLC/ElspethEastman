@@ -8,6 +8,6 @@ export interface Http {
     method?: Method,
     body?: unknown,
     authenticated?: boolean,
-    responseType?: 'json' | 'status',
-  ) => Promise<Reply<T>>;
+    responseType?: 'json' | 'status' | 'content',
+  ) => Promise<Reply<T | null>>;
 }
