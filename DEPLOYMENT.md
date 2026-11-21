@@ -29,7 +29,7 @@ Staging and Review Apps set `DEPLOYMENT_ENV` and `EMAIL_BACKEND`. Configuration 
 
 Run the [Playwright regression suite](e2e/README.md) before submitting a behavior change. Review intentional screenshot and API snapshot updates in the same PR. CI publishes its HTML report, failure screenshots, videos, and traces as artifacts for 14 days.
 
-Run `python scripts/smoke-deployment.py <preview-or-staging-url> <full-git-sha>` to verify the served revision, public/CMS routes, JavaScript bundles, and seeded APIs. Add `--contact` to submit a sample message to the console backend. The script rejects production's URL.
+Run `python scripts/smoke-deployment.py <preview-or-staging-url> <full-git-sha>` to verify the served revision, all six registry-derived public/CMS routes, page aggregate identities, JavaScript bundles, and retained legacy APIs. Renamed page slugs come from the deployed registry. Add `--contact` to submit a sample message to the console backend after the read checks pass. The script rejects production's URL. Unit tests cover its network boundary without contacting a deployment; the script participates in the 100% backend coverage gate.
 
 For local checks, use Node 22.22.3, pnpm 12.18.0, Python 3.11, and Poetry 2.5.1:
 

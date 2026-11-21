@@ -3,7 +3,7 @@
 import argparse
 import json
 import re
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 from urllib.request import Request, urlopen
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -33,7 +33,19 @@ def request(path, payload=None):
 revision = json.loads(request('/static/revision.json'))
 if revision['commit'] != args.commit:
     raise RuntimeError(f'Wrong deployed commit: {revision["commit"]}')
-for path in ['/', '/projects', '/cms', '/login']:
+pages = json.loads(request('/api/site/'))['pages']
+if len(pages) != 6 or {page['kind'] for page in pages} != {
+    'home', 'voiceover', 'music', 'streaming', 'press', 'bio',
+}:
+    raise RuntimeError('The registry must contain all six page kinds exactly once')
+routes = ['/login']
+for page in pages:
+    path = '' if page['kind'] == 'home' else '/' + quote(page['slug'], safe='')
+    routes.extend([path or '/', '/cms' + path])
+    content = json.loads(request(f'/api/pages/{page["id"]}/'))
+    if content['page'] != page:
+        raise RuntimeError(f'{page["kind"]}: aggregate page identity differs from the registry')
+for path in routes:
     html = request(path).decode()
     if '<div id="root">' not in html:
         raise RuntimeError(f'{path}: missing React root')
