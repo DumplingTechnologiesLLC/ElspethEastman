@@ -73,7 +73,7 @@ Each feature keeps its presentational component, wired component, state hook, st
 
 **[#45 Initial renderer content](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/45).** Review frozen, idempotent migration defaults, bundled immutable image files, preserved CMS/legacy data, and verified existing role/album destinations. [Content handoff](redesign-content.md) distinguishes initialized content from client entry.
 
-**Application activation and browser suite.** Review the six-page composition root, current-slug Django routes, login/notification surfaces, preserved return/query/hash state, and real CMS/contact workflows. [Browser suite](../e2e/README.md) records the isolated harness and visual matrix.
+**[#46 Application activation and browser suite](https://github.com/DumplingTechnologiesLLC/ElspethEastman/pull/46).** Review the six-page composition root, current-slug Django routes, login/notification surfaces, preserved return/query/hash state, and real CMS/contact workflows. [Browser suite](../e2e/README.md) records the isolated harness and visual matrix.
 
 All six page implementations now have independent state-hook/presentation tests and Storybook views. Remaining reviews initialize approved data, activate the application, retire unused rendering, and expand full browser validation. Home establishes the retained contact flow; Voiceover and Press add URL-selected details; Music, Streaming, and Bio retain their separate owners. The final cutover review connects unambiguous existing content, preserves ambiguous legacy data, removes unused rendering, and validates the full redesign.
 

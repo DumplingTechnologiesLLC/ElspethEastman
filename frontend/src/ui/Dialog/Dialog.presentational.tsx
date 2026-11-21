@@ -84,15 +84,19 @@ export function Dialog({ title, context, onClose, children }: DialogProps) {
         const nodes = event.currentTarget.querySelectorAll<HTMLElement>(
           'button:enabled, a[href], input:enabled:not([type="hidden"]), select:enabled, textarea:enabled, [tabindex]:not([tabindex="-1"])',
         );
-        const first = nodes[0]!,
-          last = nodes[nodes.length - 1]!;
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
+        const controls = Array.from(nodes);
+        const index = controls.findIndex(
+          (node) => node === document.activeElement,
+        );
+        const next =
+          index < 0
+            ? event.shiftKey
+              ? controls.length - 1
+              : 0
+            : (index + (event.shiftKey ? -1 : 1) + controls.length) %
+              controls.length;
+        event.preventDefault();
+        controls[next]!.focus();
       }}
       onCancel={(event) => {
         event.preventDefault();

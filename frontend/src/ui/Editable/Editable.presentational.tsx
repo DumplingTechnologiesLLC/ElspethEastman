@@ -161,7 +161,10 @@ export function Editable({
             type="button"
             {...stylex.props(css.button, css.danger)}
             disabled={disabled}
-            onClick={actions.remove}
+            onClick={(event) => {
+              event.currentTarget.focus();
+              actions.remove!();
+            }}
             aria-label={`Delete ${label}`}
           >
             <img src={deleteIcon} alt="" />
@@ -171,7 +174,10 @@ export function Editable({
           type="button"
           {...stylex.props(css.button)}
           disabled={disabled}
-          onClick={actions.edit}
+          onClick={(event) => {
+            event.currentTarget.focus();
+            actions.edit();
+          }}
           aria-label={`Edit ${label}`}
         >
           <img src={editIcon} alt="" />

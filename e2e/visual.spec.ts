@@ -2,11 +2,18 @@
 import { it, expect, login, aggregate, stablePage } from './fixtures.ts';
 it('matches the reviewed redesign across public, selected, CMS, and modal states', async ({
   page,
-}) => {
+}, testInfo) => {
   it.setTimeout(240_000);
   const capture = async (name: string) => {
     await stablePage(page);
     await page.mouse.move(0, 0);
+    // Preserve review evidence even when Playwright rejects a missing baseline.
+    await page.screenshot({
+      path: testInfo.outputPath(name + '-actual.png'),
+      fullPage: true,
+      animations: 'disabled',
+      caret: 'hide',
+    });
     await expect.soft(page).toHaveScreenshot(name + '.png', { fullPage: true });
   };
   for (const viewport of [

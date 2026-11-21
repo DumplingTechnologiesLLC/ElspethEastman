@@ -102,12 +102,17 @@ type ButtonProps = Omit<
 export function Button({
   variant = 'primary',
   type = 'button',
+  onClick,
   ...props
 }: ButtonProps) {
   return (
     <button
       {...props}
       type={type}
+      onClick={(event) => {
+        event.currentTarget.focus();
+        onClick?.(event);
+      }}
       {...stylex.props(
         css.button,
         variant === 'primary' ? css.primary : css.secondary,
@@ -118,12 +123,17 @@ export function Button({
 }
 export function IconButton({
   children,
+  onClick,
   ...props
 }: Omit<ButtonProps, 'variant'> & { 'aria-label': string }) {
   return (
     <button
       {...props}
       type="button"
+      onClick={(event) => {
+        event.currentTarget.focus();
+        onClick?.(event);
+      }}
       {...stylex.props(css.button, css.secondary, css.icon)}
     >
       {children}

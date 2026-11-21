@@ -90,3 +90,23 @@ it('labels inputs and delegates all control kinds without owning form state', ()
   });
   expect(change).toHaveBeenLastCalledWith('headline');
 });
+it('focuses a pointer-activated control before delegating so modal openers work in WebKit', () => {
+  const active = vi.fn(() => document.activeElement);
+  render(
+    <>
+      <Button onClick={active}>Open editor</Button>
+      <IconButton aria-label="Image editor" onClick={active}>
+        E
+      </IconButton>
+      <IconButton aria-label="Information">I</IconButton>
+    </>,
+  );
+  for (const name of ['Open editor', 'Image editor']) {
+    const button = screen.getByRole('button', { name });
+    fireEvent.click(button);
+    expect(active).toHaveLastReturnedWith(button);
+  }
+  const info = screen.getByRole('button', { name: 'Information' });
+  fireEvent.click(info);
+  expect(document.activeElement).toBe(info);
+});
