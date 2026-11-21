@@ -12,14 +12,19 @@ it('delegates credential changes and both submission paths', () => {
   fireEvent.change(view.container.querySelector('[name="password"]')!, {
     target: { value: 'Password' },
   });
-  fireEvent.keyDown(view.container.querySelector('[name="username"]')!, {
-    key: 'Enter',
-  });
-  fireEvent.keyDown(view.container.querySelector('[name="password"]')!, {
-    key: 'Enter',
-  });
+  fireEvent.submit(view.container.querySelector('form')!);
   fireEvent.click(screen.getByRole('button', { name: 'Login' }));
   expect(change).toHaveBeenCalledWith('username', 'Editor');
   expect(change).toHaveBeenCalledWith('password', 'Password');
-  expect(login).toHaveBeenCalledTimes(3);
+  expect(login).toHaveBeenCalledTimes(2);
+  view.rerender(
+    <Login
+      {...loginView}
+      errors={{ username: 'Required', form: 'Check your credentials' }}
+    />,
+  );
+  expect(document.activeElement).toBe(
+    view.container.querySelector('[name="username"]'),
+  );
+  expect(screen.getByRole('alert')).toHaveTextContent('Check your credentials');
 });

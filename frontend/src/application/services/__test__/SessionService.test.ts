@@ -7,6 +7,33 @@ const tick = async () => {
   await Promise.resolve();
 };
 
+it.each([false, true])(
+  'preserves deep CMS return paths during validation (token %s)',
+  async (authenticated) => {
+    const ports = fixturePorts();
+    ports.navigation.go('/cms/press?entry=12#coverage');
+    if (authenticated) ports.tokens.write('expired');
+    vi.mocked(ports.http.request).mockResolvedValue({
+      status: 200,
+      data: { isAuthenticated: false },
+    });
+    const session = new SessionService(
+      ports.http,
+      ports.tokens,
+      ports.navigation,
+      fakeNotifications(),
+      ports.clock,
+    );
+    const stop = session.start();
+    await tick();
+    expect(ports.navigation.replace).toHaveBeenCalledWith(
+      '/login?returnTo=%2Fcms%2Fpress%3Fentry%3D12%23coverage',
+    );
+    expect(ports.tokens.read()).toBeNull();
+    stop();
+  },
+);
+
 it('clears credentials on explicit expiry and retains the CMS return location once', async () => {
   const ports = fixturePorts();
   ports.tokens.write('editor');

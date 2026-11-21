@@ -1,6 +1,7 @@
 import { toProject } from '../frontend/src/application/mappers/toProject';
 import { vi } from 'vitest';
 import type { ServiceContainer } from '../frontend/src/composition/ServiceContainer';
+import type { SessionState } from '../frontend/src/domain/models/SessionState';
 import type { SiteState } from '../frontend/src/domain/models/Site';
 import type { PageContentState } from '../frontend/src/domain/models/PageContent';
 import type { ContentEditorState } from '../frontend/src/domain/models/ContentEditor';
@@ -80,7 +81,7 @@ export function mockServices() {
   const stopSession = vi.fn();
   const session = {
     ...loginView,
-    ...observable(loginView),
+    ...observable<SessionState>(loginView),
     getPage: vi.fn<
       () => import('../frontend/src/domain/models/ApplicationPage').ApplicationPage
     >(() => 'home'),

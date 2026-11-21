@@ -1,3 +1,4 @@
+from portfolio.views.spa import RegisteredPageClient
 from core.views import (
     Client, ContactViewSet, ExperienceViewSet, FooterViewSet,
     PaginatedProjectViewSet, ProjectViewSet, SkillViewSet,
@@ -23,8 +24,6 @@ urlpatterns = [
     path('cms', Client.as_view(), name="client-cms"),
     path('login/', Client.as_view(), name="client-login-slash"),
     path('login', Client.as_view(), name="client-login"),
-    path('projects/', Client.as_view(), name="client-projects-slash"),
-    path('projects', Client.as_view(), name="client-projects"),
     path('api/session/', include([
         path('login/', obtain_auth_token, name="api-token"),
         path('logout/', logout_view, name='api-logout'),
@@ -32,4 +31,8 @@ urlpatterns = [
     ])),
     path("api/", include(router.urls)),
     path('', Client.as_view(), name="client"),
+    path('cms/<slug:slug>/', RegisteredPageClient.as_view(), name='registered-cms-slash'),
+    path('cms/<slug:slug>', RegisteredPageClient.as_view(), name='registered-cms'),
+    path('<slug:slug>/', RegisteredPageClient.as_view(), name='registered-page-slash'),
+    path('<slug:slug>', RegisteredPageClient.as_view(), name='registered-page'),
 ]

@@ -21,10 +21,22 @@ function fixture() {
   const alerts = fakeNotifications();
   return {
     repository,
+    session,
     alerts,
     service: new PageService(1, repository, alerts, site, session),
   };
 }
+
+it('expires authentication on a forbidden aggregate read without retaining an editor', async () => {
+  const { service, session, repository } = fixture();
+  session.publish({ ...session.getSnapshot(), path: '/cms/voiceover?role=40' });
+  repository.page.mockResolvedValue({
+    ok: false,
+    error: { status: 403, detail: 'Expired', fields: {} },
+  });
+  await service.load();
+  expect(session.expire).toHaveBeenCalledWith('/cms/voiceover?role=40');
+});
 
 it('loads one aggregate and reuses it across subscribers without refetching', async () => {
   const { service, repository } = fixture();

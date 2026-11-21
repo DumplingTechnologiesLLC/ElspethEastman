@@ -3,15 +3,14 @@ import { it, expect, database, actionResponse } from './fixtures.ts';
 
 async function contact(page: Page) {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Get in touch', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: /Contact Me/ });
-  await expect(dialog).toHaveCSS('opacity', '1');
+  const dialog = page.getByRole('form', { name: 'Contact Elspeth' });
+  await expect(dialog).toBeVisible();
   return dialog;
 }
 
 async function fillContact(dialog: Locator) {
-  await dialog.locator('input[name="Name"]').fill('E2E visitor');
-  await dialog.locator('input[name="Email"]').fill('visitor@example.invalid');
+  await dialog.locator('input[name="name"]').fill('E2E visitor');
+  await dialog.locator('input[name="email"]').fill('visitor@example.invalid');
   await dialog
     .locator('textarea')
     .fill('An isolated integration test message.');
@@ -21,7 +20,7 @@ it('validates required contact fields without sending a request', async ({
   page,
 }) => {
   const dialog = await contact(page);
-  await dialog.getByRole('button', { name: 'Get in touch' }).click();
+  await dialog.getByRole('button', { name: 'Send message' }).click();
   await Promise.all(
     ['Name', 'Email', 'Message'].map((field) =>
       expect(
@@ -43,7 +42,7 @@ it('persists anonymous contact through Django and clears after success', async (
       request.method() === 'POST',
   );
   const result = await actionResponse(page, 'POST', '/api/contact-me/', () =>
-    dialog.getByRole('button', { name: 'Get in touch' }).click(),
+    dialog.getByRole('button', { name: 'Send message' }).click(),
   );
   expect((await sent).headers()).not.toHaveProperty('authorization');
   expect(result).toEqual({ message: 'Success' });
@@ -52,8 +51,8 @@ it('persists anonymous contact through Django and clears after success', async (
       .getByRole('alert')
       .filter({ hasText: "Submitted form. I'll be in touch soon!" }),
   ).toBeVisible();
-  await expect(dialog.locator('input[name="Name"]')).toHaveValue('');
-  await expect(dialog.locator('input[name="Email"]')).toHaveValue('');
+  await expect(dialog.locator('input[name="name"]')).toHaveValue('');
+  await expect(dialog.locator('input[name="email"]')).toHaveValue('');
   await expect(dialog.locator('textarea')).toHaveValue('');
   expect(database().contacts).toEqual([
     {
@@ -82,10 +81,12 @@ it('disables contact submission while its real request is pending', async ({
     (pendingResponse) =>
       new URL(pendingResponse.url()).pathname === '/api/contact-me/',
   );
-  const submit = dialog.getByRole('button', { name: 'Get in touch' });
+  const submit = dialog.getByRole('button', { name: 'Send message' });
   try {
     await submit.click();
-    await expect(submit).toBeDisabled();
+    await expect(
+      dialog.getByRole('button', { name: 'Sending…' }),
+    ).toBeDisabled();
   } finally {
     release();
   }
@@ -99,29 +100,17 @@ it('retains the draft and returns Django validation for invalid email', async ({
 }) => {
   const dialog = await contact(page);
   await fillContact(dialog);
-  await dialog.locator('input[name="Email"]').fill('invalid');
+  await dialog.locator('input[name="email"]').fill('invalid');
   await actionResponse(
     page,
     'POST',
     '/api/contact-me/',
-    () => dialog.getByRole('button', { name: 'Get in touch' }).click(),
+    () => dialog.getByRole('button', { name: 'Send message' }).click(),
     400,
   );
   await expect(dialog.getByText('Enter a valid email address.')).toBeVisible();
-  await expect(dialog.locator('input[name="Name"]')).toHaveValue('E2E visitor');
+  await expect(dialog.locator('input[name="name"]')).toHaveValue('E2E visitor');
   expect(database().contacts).toEqual([]);
-});
-
-it('discards the draft and validation when reopening contact', async ({
-  page,
-}) => {
-  const dialog = await contact(page);
-  await fillContact(dialog);
-  await dialog.getByRole('button', { name: 'Close Modal' }).click();
-  await expect(dialog.locator('input')).toHaveCount(0);
-  await page.getByRole('button', { name: 'Get in touch', exact: true }).click();
-  await expect(dialog.locator('input[name="Name"]')).toHaveValue('');
-  await expect(dialog.locator('textarea')).toHaveValue('');
 });
 
 it.each(['server', 'network'] as const)((failure) =>
@@ -139,7 +128,7 @@ it.each(['server', 'network'] as const)((failure) =>
         : route.abort('failed');
     await page.route('**/api/contact-me/', fail);
     await fillContact(dialog);
-    await dialog.getByRole('button', { name: 'Get in touch' }).click();
+    await dialog.getByRole('button', { name: 'Send message' }).click();
     await expect(
       page.getByRole('alert').filter({
         hasText:
@@ -152,7 +141,7 @@ it.each(['server', 'network'] as const)((failure) =>
     expect(database().contacts).toEqual([]);
     await page.unroute('**/api/contact-me/', fail);
     await actionResponse(page, 'POST', '/api/contact-me/', () =>
-      dialog.getByRole('button', { name: 'Get in touch' }).click(),
+      dialog.getByRole('button', { name: 'Send message' }).click(),
     );
     expect(database().contacts).toHaveLength(1);
   }),

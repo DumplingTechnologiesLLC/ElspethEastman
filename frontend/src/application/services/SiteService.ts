@@ -21,7 +21,7 @@ export class SiteService extends Store<SiteState> implements SiteController {
     private repository: Pick<ContentRepository, 'site'>,
     private session: Pick<
       Session,
-      'getSnapshot' | 'subscribe' | 'navigate' | 'replace'
+      'getSnapshot' | 'subscribe' | 'navigate' | 'replace' | 'expire'
     >,
     private alerts: UIAlerts,
     readonly year: number,
@@ -82,6 +82,10 @@ export class SiteService extends Store<SiteState> implements SiteController {
     if (version !== this.version) return;
     if (!result.ok) {
       this.patch({ status: 'error', error: result.error });
+      if (result.error.status === 403) {
+        this.session.expire(this.session.getSnapshot().path);
+        return;
+      }
       this.alerts.show({
         title: 'Could not load the site',
         content: result.error.detail,

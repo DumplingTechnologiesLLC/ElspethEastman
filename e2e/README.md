@@ -1,24 +1,23 @@
-# Browser regression baseline
+# Redesign browser regression suite
 
-Playwright exercises the compiled React application through Gunicorn and Django. Every test starts with known content in a disposable database, and successful CMS edits are checked against persisted records and public responses. The suite preserves the site's current behavior so redesign changes can be reviewed against an explicit baseline.
+Playwright exercises the compiled React application through Gunicorn and Django. Each scenario starts with known content in a guarded disposable database. Chromium, Firefox, and WebKit cover public pages, authentication, CMS editing, media, ordering, and promotion. Mobile Chromium and WebKit cover navigation and inline contact with device emulation.
 
-Desktop Chromium, Firefox, and WebKit run the browser workflows. Mobile Chromium and WebKit run the public navigation and contact workflows with iPhone emulation. Linux Chromium compares desktop and mobile screenshots, and a shared JSON snapshot records the public API response shapes and fixture content.
+The scenarios verify:
 
-The browser scenarios cover:
+- Fresh loads of all six pages, current-slug routing, renamed navigation, invalid addresses, and retry after a failed read.
+- Cached Voiceover/Press selection, direct links, history, focus restoration, and query/hash preservation across renames and public/CMS mode switches.
+- Required and incorrect login credentials, selected CMS return locations, reload, logout, and expired mutation credentials.
+- Create/edit/reload/delete for roles, releases, recent streams, clips, coverage, appearances, chapters, and current work.
+- Shared text/identity/fact/image editors, independent music practice, complete ordering, canonical hero identity, and closing deleted selection.
+- Inline contact validation, actual Django persistence and console mail, pending submission, and network/server recovery.
+- Failed CMS drafts, duplicate prevention, modal focus/Escape, corrupt-media rejection, verified uploads, and canonical response reconciliation.
+- Retained legacy public API snapshots, anonymous write rejection, private contact listing, CSRF, invalid pagination, and guarded database resets.
 
-- Public sections, all skill descriptions, project pagination, direct links, reloads, video activation, empty lists, and failed loads.
-- Anonymous contact validation, submission, persistence, draft clearing, cancellation, pending requests, and recovery from network/server errors.
-- Login validation, incorrect credentials, session restoration, logout/token revocation, and invalid saved tokens.
-- CMS skills, project preview/reset and individual/batch saves, project CRUD, all four experience categories, TBA formatting, affiliations, validation, and delete cancellation.
-- Anonymous write rejection, private contact listing, CSRF enforcement, invalid pagination parameters, and expired write tokens.
+Every built Storybook story renders independently in Chromium. A story fails if it requests application APIs or raises a browser exception. Browser workflows also reject unexpected page exceptions. CI forbids focused tests, uses zero retries, and retains failure screenshots, videos, and traces.
 
-Every built Storybook story also renders in Chromium with supplied props and callback spies. These checks reject browser exceptions and application API requests.
+## Run and review
 
-Unexpected browser exceptions fail tests. CI rejects focused tests, stops on the first failure, and uses zero retries so failures remain visible.
-
-## Run the suite
-
-Install Node 22, pnpm 12.18.0, and Docker, then run from the repository root:
+Use the pinned Linux runner for reproducible screenshots:
 
 ```sh
 pnpm install --frozen-lockfile
@@ -27,9 +26,7 @@ pnpm storybook:build
 pnpm test:e2e:docker
 ```
 
-The Docker runner uses a pinned Playwright image and the same x86 Linux environment as CI. Its Python dependencies come from the runtime lockfile. Docker's first build downloads the browsers and installs the Python environment; subsequent runs reuse those layers.
-
-Select a workflow while iterating:
+The Docker image pins Playwright and installs runtime Python dependencies from Poetry's lockfile. Select a project or scenario during iteration:
 
 ```sh
 pnpm test:e2e:docker --project=chromium e2e/cms.spec.ts
@@ -37,35 +34,18 @@ pnpm test:e2e:docker --project=api
 pnpm test:e2e:docker --project=visual
 ```
 
-Native runs are also available with `E2E_PYTHON=/path/to/venv/bin/python pnpm test:e2e --project=chromium` after running `poetry sync` and running `pnpm exec playwright install chromium`. Visual comparisons run in Linux; use Docker to review or update their baselines. Run one suite at a time per checkout because the database reset and loopback server are shared.
+Native interaction checks use `E2E_PYTHON=/path/to/venv/bin/python pnpm test:e2e --project=chromium` after installing locked dependencies and Playwright browsers. Run one suite per checkout: the disposable database and loopback ports are shared. Storybook runs through Vite preview; it performs no backend reads.
 
-## Review an intentional baseline change
+The Linux visual matrix captures 1728px desktop and 400px mobile public pages, selected details, inline validation, every CMS page, and representative editors. Soft assertions collect every comparison in one matrix run. Ordinary runs fail for missing or changed goldens and emit actual images in the report; CI never accepts them automatically. Comparison permits at most 100 differing pixels.
 
-Run the relevant update command, inspect the changed screenshots or JSON, and commit the approved baseline changes with the behavior change:
+For an intentional visual change, generate with `pnpm test:e2e:docker --project=visual --update-snapshots`, inspect every changed image, and commit the reviewed files. Legacy API JSON lives in `snapshots/api.spec.ts/public-api.json`; endpoint cases compare it independently of the redesigned UI. The retired Projects page remains missing while its historical API/data stays available.
 
-```sh
-pnpm test:e2e:docker --project=visual --update-snapshots
-git diff -- e2e/snapshots
-```
+Open reports with `pnpm test:e2e:report`. GitHub Actions retains `playwright-results-<event>` reports and attachments for 14 days.
 
-For an intentional API contract change, edit the corresponding endpoint entry in `e2e/snapshots/api.spec.ts/public-api.json`, review the JSON diff, and run `pnpm test:e2e:docker --project=api`. Each endpoint has its own `it.each` case against that shared baseline. Playwright tables register through native `it` callbacks so fixture discovery, source locations, and snapshot paths remain intact.
+## Isolation
 
-Ordinary runs compare committed baselines and fail if a baseline is missing. CI never regenerates them. Screenshot comparison permits at most 100 differing pixels to accommodate minor rendering noise.
+The default database is `.e2e/db.sqlite3`. CI uses a dedicated PostgreSQL 17 database named `elspeth_e2e`. Fixture commands require the E2E secret/environment and reject other SQLite paths or PostgreSQL hosts/database names. The harness ignores ordinary `DATABASE_URL`, clears the storage bucket override, and forces uploads into `.e2e/media`.
 
-The HTML report includes test steps and attachments. Failed browser tests retain screenshots, video, and traces. Open a local report with `pnpm test:e2e:report`. In GitHub Actions, download the `playwright-results-<event>` artifact; reports and attachments are retained for 14 days.
+All added content and outbound URLs are fixtures. External browser requests are blocked; no media provider or email delivery is involved. The guarded `e2e.wsgi` uses the real Django contact flow and console backend with a fixed Message-ID hostname so workstation reverse DNS cannot stall submission. Production's WSGI module is unchanged.
 
-## Database and external-service boundaries
-
-The default database is the ignored `.e2e/db.sqlite3`. CI supplies `E2E_DATABASE_URL` for a dedicated PostgreSQL 17 database named `elspeth_e2e`. Fixture commands check the dedicated E2E secret and environment, then reject database targets outside that exact SQLite path or the allowed local PostgreSQL hosts/database name. The harness ignores the application's ordinary `DATABASE_URL` and always targets its own loopback web server.
-
-Fixtures reset before every test. The test editor password, contact addresses, and content are synthetic. Email uses Django's console backend. Tests capture persistence and application behavior without delivering email.
-
-YouTube thumbnails and YouTube/SoundCloud embeds use deterministic local responses. The tests verify the application's embed URLs and activation behavior; provider availability and playback remain outside the suite. Browser time and locale are fixed for stable dates and screenshots. Mobile projects use emulation rather than physical devices.
-
-## Current UI quirks
-
-The baseline records existing behavior, including the current narrow layouts. Existing form labels lack matching input IDs; tests use stable input names where label selectors cannot work. Invalid affiliation creation currently closes its modal after server validation, and a characterization test records that behavior while checking that no record was created.
-
-An aborted session-validation request currently clears browser credentials and returns to login even though the server token remains valid. An aborted logout also clears browser credentials while retaining the server token. Separate failure scenarios record both behaviors, and login transport failures are checked for notification and retry. Normal navigation scenarios wait for completed session validation before starting another navigation so they exercise the settled login flow.
-
-Review these characterizations when deliberately changing those flows. Keep unrelated behavior changes out of baseline maintenance.
+Dates, locale, and reduced-motion settings are fixed. Mobile runs are emulation, not physical-device evidence. macOS Figma comparisons are recorded separately in `docs/redesign-evidence/`; Linux goldens reflect the fonts available in the pinned runner.

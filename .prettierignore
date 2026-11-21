@@ -16,3 +16,5 @@ templates/
 
 # Preserve the authored local design reference.
 docs/elspeth-eastman-redesign-tdd.md
+
+/.cache/

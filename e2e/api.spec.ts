@@ -99,3 +99,49 @@ it.each(['sqlite', 'postgres'] as const)((target) =>
     }
   }),
 );
+it('rejects every anonymous redesign mutation and preserves all six aggregates', async ({
+  request,
+}) => {
+  const registry = (await (await request.get('/api/site/')).json()) as {
+    pages: { id: number }[];
+  };
+  const urls = registry.pages.map((page) => '/api/pages/' + page.id + '/');
+  const read = async () =>
+    Promise.all(
+      urls.map(async (url) => {
+        const response = await request.get(url);
+        expect(response.status()).toBe(200);
+        return response.json() as Promise<unknown>;
+      }),
+    );
+  const before = await read();
+  const operations = [
+    ...[
+      'copy',
+      'eyebrows',
+      'trivia',
+      'content-entries',
+      'music-releases',
+      'stream-clips',
+      'appearances',
+      'bio-chapters',
+      'current-items',
+      'media-assets',
+    ].map((name) => ({ method: 'POST', url: '/api/' + name + '/' })),
+    ...[
+      'copy',
+      'page-images',
+      'featured-items',
+      'music-features',
+      'collections/reorder',
+    ].map((name) => ({ method: 'PATCH', url: '/api/' + name + '/' })),
+    { method: 'PATCH', url: urls[0]! },
+  ];
+  const responses = await Promise.all(
+    operations.map((operation) =>
+      request.fetch(operation.url, { method: operation.method, data: {} }),
+    ),
+  );
+  for (const response of responses) expect(response.status()).toBe(403);
+  expect(await read()).toEqual(before);
+});

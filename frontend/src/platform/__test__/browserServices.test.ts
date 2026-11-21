@@ -110,6 +110,9 @@ it('binds navigation, token storage, confirmation and timers to its owning windo
   expect(window.history.length).toBe(historyLength);
   expect(services.session.getSnapshot().path).toBe('/projects?role=5#roles');
   window.dispatchEvent(new PopStateEvent('popstate'));
+  window.history.replaceState(null, '', '/projects?role=5#changed');
+  window.dispatchEvent(new HashChangeEvent('hashchange'));
+  expect(services.session.getSnapshot().path).toBe('/projects?role=5#changed');
   window.dispatchEvent(new StorageEvent('storage'));
   await Promise.resolve();
   const projects = services.projects('editor');

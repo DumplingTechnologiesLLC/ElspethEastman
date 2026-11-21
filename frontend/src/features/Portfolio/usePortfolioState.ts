@@ -1,7 +1,10 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import type { ServiceContainer } from '../../composition/ServiceContainer';
 import { NAVIGATION_KINDS, PageKind } from '../../domain/models/Page';
-import { pageHref } from '../../application/routing/pageRoutes';
+import {
+  pageHref,
+  renamedPagePath,
+} from '../../application/routing/pageRoutes';
 import { useSiteService } from '../../hooks/useSiteService';
 import { useSessionService } from '../../hooks/useSessionService';
 
@@ -19,7 +22,7 @@ export function usePortfolioState({ services }: PortfolioWiring) {
   useEffect(() => session.start(), [session]);
   useEffect(() => site.start(), [site]);
   const route = state.route;
-  const editor = route.type !== 'login' && route.editor && state.authenticated;
+  const editor = route.type === 'page' && route.editor && state.authenticated;
   const home = state.pages.find((page) => page.kind === PageKind.Home);
   const selected = route.type === 'page' ? route.page : null;
   const screen =
@@ -57,7 +60,10 @@ export function usePortfolioState({ services }: PortfolioWiring) {
           ];
     }),
     year: site.year,
-    toggleHref: selected === null ? '/cms' : pageHref(selected, !editor),
+    toggleHref:
+      selected === null
+        ? '/cms'
+        : renamedPagePath(state.path, selected, !editor),
     error: state.error?.detail ?? 'Please try again.',
     navigate: site.navigate,
     retry: site.load,

@@ -313,7 +313,7 @@ describe('sessions', () => {
     );
     const stop = service.start();
     await tick();
-    expect(ports.navigation.location()).toBe('/login');
+    expect(ports.navigation.location()).toBe('/login?returnTo=%2Fcms');
     stop();
   });
   it.each([200, null, 500])(

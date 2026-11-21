@@ -38,9 +38,11 @@ export function browserServices(browser: Window) {
     listen: (callback) => {
       listeners.add(callback);
       browser.addEventListener('popstate', callback);
+      browser.addEventListener('hashchange', callback);
       return () => {
         listeners.delete(callback);
         browser.removeEventListener('popstate', callback);
+        browser.removeEventListener('hashchange', callback);
       };
     },
   };

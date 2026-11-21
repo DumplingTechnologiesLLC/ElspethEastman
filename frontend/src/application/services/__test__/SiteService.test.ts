@@ -37,6 +37,16 @@ function fixture(path = '/', authenticated = false) {
   };
 }
 
+it('expires authentication when the registry read is forbidden', async () => {
+  const { site, session, repository } = fixture('/cms/press?entry=12');
+  repository.site.mockResolvedValue({
+    ok: false,
+    error: { status: 403, detail: 'Expired', fields: {} },
+  });
+  await site.load();
+  expect(session.expire).toHaveBeenCalledWith('/cms/press?entry=12');
+});
+
 it('loads the registry once and resolves subsequent path, selection, and auth changes from memory', async () => {
   const { site, repository, session } = fixture('/voiceover?role=40');
   const stop = site.start();

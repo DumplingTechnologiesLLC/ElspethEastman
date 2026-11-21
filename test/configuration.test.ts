@@ -110,30 +110,6 @@ it('keeps required browser projects, snapshot controls and local server boundari
     vi.unstubAllEnvs();
   }
 });
-it('rewrites image metadata and preload URLs to the emitted asset', () => {
-  const plugin = deploymentArtifacts();
-  const hook = plugin.transformIndexHtml as { handler: Function };
-  const html = '<meta content="/static/media/hero2.84ac3292.webp">';
-  expect(hook.handler(html, {})).toBe(html);
-  expect(() =>
-    hook.handler(html, {
-      bundle: { entry: { type: 'chunk', isEntry: false } },
-    }),
-  ).toThrow('Missing hero image');
-  expect(
-    hook.handler(html, {
-      bundle: {
-        entry: { type: 'chunk' },
-        other: { type: 'asset', names: ['font.woff'] },
-        hero: {
-          type: 'asset',
-          names: ['hero2.webp'],
-          fileName: 'static/media/hero2-hash.webp',
-        },
-      },
-    }),
-  ).toBe('<meta content="/static/media/hero2-hash.webp">');
-});
 it('removes the Django template token only when serving the standalone Vite page', () => {
   const hook = deploymentArtifacts().transformIndexHtml as {
     handler: Function;

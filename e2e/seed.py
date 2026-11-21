@@ -60,6 +60,9 @@ def reset():
         FooterStat(value='30+', label='Fixture broadcasts', percent=90),
     ])
 
+    from seed_redesign import seed_redesign
+    seed_redesign()
+
 
 def inspect():
     from core.models import Affiliations, Contact, Experience, Project, Skills

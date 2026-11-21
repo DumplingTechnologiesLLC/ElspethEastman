@@ -68,17 +68,15 @@ export class SessionService extends Store<SessionState> implements Session {
     if (validation !== this.validation) return;
     const valid = reply.status === 200 && reply.data?.isAuthenticated === true;
     const wasAuthenticated = this.getSnapshot().authenticated;
-    this.patch({ authenticated: valid });
     if (wasAuthenticated && !valid) {
-      this.notifications.show({
-        title: 'Session has expired',
-        content: 'Please re-log in.',
-        flavor: 'error',
-      });
-      this.tokens.write(null);
-      this.navigate('/login');
-    } else if (!valid && this.getSnapshot().path.startsWith('/cms'))
-      this.navigate('/login');
+      this.expire(this.getSnapshot().path);
+      return;
+    }
+    this.patch({ authenticated: valid });
+    if (!valid && this.getSnapshot().path.startsWith('/cms'))
+      this.replace(
+        `/login?returnTo=${encodeURIComponent(cmsReturnTo(this.getSnapshot().path))}`,
+      );
   }
   navigate = (path: string) => this.navigation.go(path);
   replace = (path: string) => this.navigation.replace(path);
