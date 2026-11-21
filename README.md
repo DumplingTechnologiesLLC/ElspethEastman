@@ -34,7 +34,7 @@ pnpm storybook:build
 pnpm test:e2e:docker
 ```
 
-TypeScript unit coverage requires 100% statements, branches, functions, and lines per file. Django requires 100% statements and branches across application code, configuration, migrations, and entrypoints. The browser suite compares the compiled application with the existing API and screenshot baselines.
+TypeScript unit coverage requires 100% statements, branches, functions, and lines per file. Django requires 100% statements and branches across application code, configuration, migrations, and entrypoints. The browser suite exercises the six redesigned public/CMS pages and compares Linux visual baselines while retaining historical API snapshots.
 
 Read [the browser-test guide](e2e/README.md) for regression scenarios and [the deployment workflow](DEPLOYMENT.md) for PR previews and staging.
 

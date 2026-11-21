@@ -4,10 +4,7 @@ import type { Readable } from './Readable';
 
 import type { SessionState } from '../models/SessionState';
 
-import type { ApplicationPage } from '../models/ApplicationPage';
-
 export interface Session extends Readable<SessionState> {
-  getPage: () => ApplicationPage;
   start: () => Unsubscribe;
   change: (key: 'username' | 'password', value: string) => void;
   login: () => Promise<void>;

@@ -11,10 +11,8 @@ export class ContactService extends Store<ContactState> implements Contact {
     private api: Api,
     private notifications: UIAlerts,
   ) {
-    super({ draft: blank(), errors: {}, open: false, submitting: false });
+    super({ draft: blank(), errors: {}, submitting: false });
   }
-  show = (open: boolean) =>
-    this.patch(open ? { open } : { open, draft: blank(), errors: {} });
   change = (key: keyof ContactDraft, value: string) => {
     const { draft, errors } = this.getSnapshot();
     this.patch({

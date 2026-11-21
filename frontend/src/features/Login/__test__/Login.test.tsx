@@ -1,7 +1,7 @@
 import { it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Login } from '../Login.presentational';
-import { loginView } from '../../../stories/viewModels';
+import { loginView } from '../Login.stories';
 it('delegates credential changes and both submission paths', () => {
   const change = vi.fn(),
     login = vi.fn();

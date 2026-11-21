@@ -4,10 +4,6 @@ import { browserServices, tokenKey } from '../browserServices';
 import { useSessionService } from '../../hooks/useSessionService';
 import { useUIAlertService } from '../../hooks/useUIAlertService';
 import { useContactService } from '../../hooks/useContactService';
-import { useSkillsService } from '../../hooks/useSkillsService';
-import { useProjectsService } from '../../hooks/useProjectsService';
-import { useExperienceService } from '../../hooks/useExperienceService';
-import { useFooterService } from '../../hooks/useFooterService';
 import { useSiteService } from '../../hooks/useSiteService';
 import { usePageService } from '../../hooks/usePageService';
 import { useMediaService } from '../../hooks/useMediaService';
@@ -47,31 +43,9 @@ it('creates independent request-scoped domain aggregates with interface-based ac
   expect(useSessionService(first)).toBe(first.session);
   expect(useUIAlertService(first)).toBe(first.notifications);
   expect(useContactService(first)).toBe(first.contact);
-  const skills = renderHook(useSkillsService, {
-    initialProps: { services: first, editor: true },
-  });
-  const original = skills.result.current;
-  skills.rerender({ services: first, editor: true });
-  expect(skills.result.current).toBe(original);
-  expect(original.getSnapshot().loaded).toBe(false);
-  expect(
-    renderHook(useProjectsService, {
-      initialProps: { services: first, mode: 'all' as const },
-    }).result.current.getSnapshot().projects,
-  ).toEqual([]);
-  expect(
-    renderHook(useExperienceService, {
-      initialProps: { services: first },
-    }).result.current.getSnapshot().year,
-  ).toBe(2026);
-  expect(
-    renderHook(useFooterService, {
-      initialProps: { services: first },
-    }).result.current.getSnapshot().loaded,
-  ).toBe(false);
   first.dispose();
 });
-it('binds navigation, token storage, confirmation and timers to its owning window', async () => {
+it('binds navigation, token storage and timers to its owning window', async () => {
   vi.useFakeTimers();
   window.sessionStorage.clear();
   window.history.replaceState(null, '', '/');
@@ -89,11 +63,8 @@ it('binds navigation, token storage, confirmation and timers to its owning windo
         ),
     );
   vi.stubGlobal('fetch', fetcher);
-  const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
   const services = browserServices(window);
-  expect(services.experience().getSnapshot().year).toBe(
-    new Date().getFullYear(),
-  );
+  expect(services.site.year).toBe(new Date().getFullYear());
   const stop = services.session.start();
   services.session.change('username', 'Editor');
   services.session.change('password', 'Password');
@@ -101,25 +72,20 @@ it('binds navigation, token storage, confirmation and timers to its owning windo
   vi.advanceTimersByTime(1000);
   await Promise.resolve();
   expect(window.sessionStorage.getItem(tokenKey)).toBe('abc');
-  services.session.navigate('/projects');
-  expect(services.session.getSnapshot().path).toBe('/projects');
-  services.session.navigate('/projects?role=4#roles');
-  expect(services.session.getSnapshot().path).toBe('/projects?role=4#roles');
+  services.session.navigate('/voiceover');
+  expect(services.session.getSnapshot().path).toBe('/voiceover');
+  services.session.navigate('/voiceover?role=4#roles');
+  expect(services.session.getSnapshot().path).toBe('/voiceover?role=4#roles');
   const historyLength = window.history.length;
-  services.session.replace('/projects?role=5#roles');
+  services.session.replace('/voiceover?role=5#roles');
   expect(window.history.length).toBe(historyLength);
-  expect(services.session.getSnapshot().path).toBe('/projects?role=5#roles');
+  expect(services.session.getSnapshot().path).toBe('/voiceover?role=5#roles');
   window.dispatchEvent(new PopStateEvent('popstate'));
-  window.history.replaceState(null, '', '/projects?role=5#changed');
+  window.history.replaceState(null, '', '/voiceover?role=5#changed');
   window.dispatchEvent(new HashChangeEvent('hashchange'));
-  expect(services.session.getSnapshot().path).toBe('/projects?role=5#changed');
+  expect(services.session.getSnapshot().path).toBe('/voiceover?role=5#changed');
   window.dispatchEvent(new StorageEvent('storage'));
   await Promise.resolve();
-  const projects = services.projects('editor');
-  await projects.remove(1);
-  expect(confirm).toHaveBeenCalledWith(
-    expect.stringContaining('delete this item'),
-  );
   fetcher.mockImplementation(async () => new Response('{}', { status: 200 }));
   await services.session.logout();
   expect(window.sessionStorage.getItem(tokenKey)).toBeNull();

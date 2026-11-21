@@ -1,11 +1,7 @@
 import { ApiService } from '../application/services/ApiService';
 import { ContactService } from '../application/services/ContactService';
-import { ExperienceService } from '../application/services/ExperienceService';
-import { FooterService } from '../application/services/FooterService';
 import { UIAlertService } from '../application/services/UIAlertService';
-import { ProjectsService } from '../application/services/ProjectsService';
 import { SessionService } from '../application/services/SessionService';
-import { SkillsService } from '../application/services/SkillsService';
 import { SiteService } from '../application/services/SiteService';
 import { HttpContentRepository } from '../platform/HttpContentRepository';
 import { PageService } from '../application/services/PageService';
@@ -22,7 +18,6 @@ export function createServiceContainer({
   tokens,
   navigation,
   clock,
-  confirm,
 }: ServiceDependencies): ServiceContainer {
   const notifications = new UIAlertService(clock);
   const api = new ApiService(http, notifications);
@@ -70,16 +65,6 @@ export function createServiceContainer({
       return editor;
     },
     contact: new ContactService(api, notifications),
-    skills: (editor) => new SkillsService(api, notifications, editor),
-    projects: (mode) => new ProjectsService(api, notifications, confirm, mode),
-    experience: () =>
-      new ExperienceService(
-        api,
-        notifications,
-        confirm,
-        new Date(clock.now()).getFullYear(),
-      ),
-    footer: () => new FooterService(api, notifications, confirm),
     dispose: () => notifications.dispose(),
   };
 }
