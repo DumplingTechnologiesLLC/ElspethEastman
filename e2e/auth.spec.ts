@@ -5,7 +5,26 @@ import {
   aggregate,
   actionResponse,
   database,
+  stablePage,
 } from './fixtures.ts';
+it('keeps cleared browser credentials cleared across fresh page loads', async ({
+  page,
+}) => {
+  await login(page);
+  await page.evaluate(() =>
+    sessionStorage.removeItem('ElspethEastmanAuthToken'),
+  );
+  await page.goto('/');
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem('ElspethEastmanAuthToken'),
+    ),
+  ).toBeNull();
+  await stablePage(page);
+  await expect(page.getByText('Editor signed in', { exact: true })).toHaveCount(
+    0,
+  );
+});
 it('validates required credentials and keeps failed logins outside CMS', async ({
   page,
 }) => {

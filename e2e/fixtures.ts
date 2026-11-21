@@ -61,7 +61,8 @@ async function login(page: Page, ui = false, path = '/cms') {
     });
     expect(response.status()).toBe(200);
     const { token } = (await response.json()) as { token: string };
-    await page.addInitScript(
+    await page.goto('/login');
+    await page.evaluate(
       (saved) => sessionStorage.setItem('ElspethEastmanAuthToken', saved),
       token,
     );

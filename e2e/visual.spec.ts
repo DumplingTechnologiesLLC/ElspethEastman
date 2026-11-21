@@ -4,17 +4,17 @@ it('matches the reviewed redesign across public, selected, CMS, and modal states
   page,
 }, testInfo) => {
   it.setTimeout(240_000);
-  const capture = async (name: string) => {
+  const capture = async (name: string, fullPage = true) => {
     await stablePage(page);
     await page.mouse.move(0, 0);
     // Preserve review evidence even when Playwright rejects a missing baseline.
     await page.screenshot({
       path: testInfo.outputPath(name + '-actual.png'),
-      fullPage: true,
+      fullPage,
       animations: 'disabled',
       caret: 'hide',
     });
-    await expect.soft(page).toHaveScreenshot(name + '.png', { fullPage: true });
+    await expect.soft(page).toHaveScreenshot(name + '.png', { fullPage });
   };
   for (const viewport of [
     { name: 'desktop', width: 1728, height: 996 },
@@ -35,6 +35,10 @@ it('matches the reviewed redesign across public, selected, CMS, and modal states
       'login',
     ]) {
       await page.goto(kind === 'home' ? '/' : '/' + kind);
+      await stablePage(page);
+      await expect(
+        page.getByText('Editor signed in', { exact: true }),
+      ).toHaveCount(0);
       await capture('redesign-' + viewport.name + '-' + kind);
     }
     for (const [kind, parameter] of [
@@ -87,7 +91,7 @@ it('matches the reviewed redesign across public, selected, CMS, and modal states
         .first()
         .click();
       await expect(page.getByRole('dialog')).toBeVisible();
-      await capture('redesign-' + viewport.name + '-editor-' + label);
+      await capture('redesign-' + viewport.name + '-editor-' + label, false);
       await page.keyboard.press('Escape');
     }
   }

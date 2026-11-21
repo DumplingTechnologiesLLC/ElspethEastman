@@ -36,7 +36,7 @@ pnpm test:e2e:docker --project=visual
 
 Native interaction checks use `E2E_PYTHON=/path/to/venv/bin/python pnpm test:e2e --project=chromium` after installing locked dependencies and Playwright browsers. Run one suite per checkout: the disposable database and loopback ports are shared. Storybook runs through Vite preview; it performs no backend reads.
 
-The Linux visual matrix captures 1728px desktop and 400px mobile public pages, selected details, inline validation, every CMS page, and representative editors. Soft assertions collect every comparison in one matrix run. Ordinary runs fail for missing or changed goldens and emit actual images in the report; CI never accepts them automatically. Comparison permits at most 100 differing pixels.
+The Linux visual matrix captures 1728px desktop and 400px mobile public pages, selected details, inline validation, every CMS page, and representative editors. Public captures assert anonymous state. Page captures use the full page; editor captures use the visible viewport. Soft assertions collect every comparison in one matrix run. Ordinary runs fail for missing or changed goldens and preserve each `redesign-*-actual.png` under `test-results/`, including when no golden exists; CI never accepts them automatically. Comparison permits at most 100 differing pixels.
 
 For an intentional visual change, generate with `pnpm test:e2e:docker --project=visual --update-snapshots`, inspect every changed image, and commit the reviewed files. Legacy API JSON lives in `snapshots/api.spec.ts/public-api.json`; endpoint cases compare it independently of the redesigned UI. The retired Projects page remains missing while its historical API/data stays available.
 
