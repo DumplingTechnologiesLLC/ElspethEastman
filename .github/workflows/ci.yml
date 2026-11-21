@@ -3,7 +3,7 @@ on:
   push:
     branches-ignore: [master]
   pull_request:
-    branches: [development, master]
+    branches: [development, master, feature/redesign, 'redesign/**']
 permissions:
   contents: read
 concurrency:
