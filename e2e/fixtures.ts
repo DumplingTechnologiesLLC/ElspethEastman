@@ -99,6 +99,10 @@ async function actionResponse<T = unknown>(
 }
 
 async function stablePage(page: Page) {
+  const heading = page.getByRole('main').getByRole('heading').first();
+  await expect(heading).toBeVisible();
+  await expect(heading).not.toHaveText(/^(Loading|Checking your session)/);
+
   await expect(
     page.getByRole('heading', { name: 'Loading…', exact: true }),
   ).toHaveCount(0);
