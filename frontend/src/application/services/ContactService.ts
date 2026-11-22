@@ -23,6 +23,7 @@ export class ContactService extends Store<ContactState> implements Contact {
     });
   };
   submit = async () => {
+    if (this.getSnapshot().submitting) return;
     const { draft } = this.getSnapshot();
     const errors: Errors = {};
     for (const key of ['name', 'email', 'message'] as const) {

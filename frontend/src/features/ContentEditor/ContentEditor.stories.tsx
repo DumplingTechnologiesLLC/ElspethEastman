@@ -72,6 +72,7 @@ export const editorView = {
 } satisfies Parameters<typeof ContentEditor>[0];
 const meta = {
   component: ContentEditor,
+  excludeStories: /.*View$/,
   args: editorView,
   tags: ['autodocs'],
 } satisfies Meta<typeof ContentEditor>;
