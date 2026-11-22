@@ -30,7 +30,7 @@ class PublicIdentityUpgradeTests(SimpleTestCase):
             routing.enable()
             try:
                 executor = MigrationExecutor(connection)
-                before = [('core', '0008_project_uuid'), ('portfolio', '0002_seed_page_identities')]
+                before = [('core', '0008_project_uuid'), ('portfolio', '0003_canonical_content_entries')]
                 executor.migrate(before)
                 apps = executor.loader.project_state(before).apps
                 core = {
@@ -57,12 +57,18 @@ class PublicIdentityUpgradeTests(SimpleTestCase):
                 }
                 for name, values in shared.items():
                     apps.get_model('portfolio', name).objects.using(alias).create(**values)
-                names = [('core', name) for name in core] + [('portfolio', name) for name in ['Page', 'MediaAsset', *shared]]
+                entry = apps.get_model('portfolio', 'ContentEntry').objects.using(alias).create(
+                    page_id=page.pk, title='Preserved entry', eyebrow='Credit', description='Text', sort_order=9,
+                )
+                apps.get_model('portfolio', 'ContentEntryMetadata').objects.using(alias).create(
+                    entry_id=entry.pk, key='outlet', label='Outlet', value='Preserved', sort_order=5,
+                )
+                names = [('core', name) for name in core] + [('portfolio', name) for name in ['Page', 'MediaAsset', *shared, 'ContentEntry', 'ContentEntryMetadata']]
                 snapshots = {
                     (app, name): list(apps.get_model(app, name).objects.using(alias).order_by('pk').values())
                     for app, name in names
                 }
-                after = [('core', '0009_public_identifiers'), ('portfolio', '0007_shared_public_identifiers')]
+                after = [('core', '0009_public_identifiers'), ('portfolio', '0008_entry_public_identifiers')]
                 executor = MigrationExecutor(connection)
                 executor.migrate(after)
                 upgraded = executor.loader.project_state(after).apps
