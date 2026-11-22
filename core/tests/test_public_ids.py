@@ -30,7 +30,7 @@ class PublicIdentityUpgradeTests(SimpleTestCase):
             routing.enable()
             try:
                 executor = MigrationExecutor(connection)
-                before = [('core', '0008_project_uuid'), ('portfolio', '0003_canonical_content_entries')]
+                before = [('core', '0008_project_uuid'), ('portfolio', '0004_music_ownership')]
                 executor.migrate(before)
                 apps = executor.loader.project_state(before).apps
                 core = {
@@ -63,12 +63,21 @@ class PublicIdentityUpgradeTests(SimpleTestCase):
                 apps.get_model('portfolio', 'ContentEntryMetadata').objects.using(alias).create(
                     entry_id=entry.pk, key='outlet', label='Outlet', value='Preserved', sort_order=5,
                 )
-                names = [('core', name) for name in core] + [('portfolio', name) for name in ['Page', 'MediaAsset', *shared, 'ContentEntry', 'ContentEntryMetadata']]
+                music = apps.get_model('portfolio', 'MusicFeature').objects.using(alias).create(
+                    page_id=page.pk, asset_id=asset.pk, alt_text='Music', eyebrow='Practice', title='Preserved practice',
+                    description='Text', action_label='Listen', action_url='https://example.invalid/music',
+                )
+                apps.get_model('portfolio', 'PracticeFact').objects.using(alias).create(feature_id=music.pk, label='Fact', value='Value', sort_order=6)
+                apps.get_model('portfolio', 'MusicRelease').objects.using(alias).create(
+                    page_id=page.pk, asset_id=asset.pk, alt_text='Cover', format='Album', title='Preserved release',
+                    description='Text', action_label='Listen', action_url='https://example.invalid/release', sort_order=8,
+                )
+                names = [('core', name) for name in core] + [('portfolio', name) for name in ['Page', 'MediaAsset', *shared, 'ContentEntry', 'ContentEntryMetadata', 'MusicFeature', 'MusicRelease', 'PracticeFact']]
                 snapshots = {
                     (app, name): list(apps.get_model(app, name).objects.using(alias).order_by('pk').values())
                     for app, name in names
                 }
-                after = [('core', '0009_public_identifiers'), ('portfolio', '0008_entry_public_identifiers')]
+                after = [('core', '0009_public_identifiers'), ('portfolio', '0009_music_public_identifiers')]
                 executor = MigrationExecutor(connection)
                 executor.migrate(after)
                 upgraded = executor.loader.project_state(after).apps
