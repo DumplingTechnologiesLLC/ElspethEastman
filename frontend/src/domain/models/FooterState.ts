@@ -9,7 +9,7 @@ export interface FooterState {
   data: FooterData;
   cached: Affiliation[];
   draft: Affiliation;
-  errors: Record<number, Errors>;
-  busy: number[];
+  errors: Record<string, Errors>;
+  busy: string[];
   open: boolean;
 }

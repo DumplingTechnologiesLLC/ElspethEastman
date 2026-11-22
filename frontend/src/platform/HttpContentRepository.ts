@@ -89,12 +89,12 @@ export class HttpContentRepository implements ContentRepository {
 
   constructor(private http: Http) {
     this.eyebrows = this.collection<EyebrowInput, EyebrowDTO, Eyebrow>(
-      '/api/eyebrows/',
+      '/api/v2/pages/eyebrows/',
       writeEyebrow,
       toEyebrow,
     );
     this.trivia = this.collection<TriviaInput, TriviaDTO, Trivia>(
-      '/api/trivia/',
+      '/api/v2/pages/trivia/',
       writeTrivia,
       toTrivia,
     );
@@ -102,14 +102,14 @@ export class HttpContentRepository implements ContentRepository {
       ContentEntryInput,
       ContentEntryDTO,
       ContentEntry
-    >('/api/content-entries/', writeContentEntry, toContentEntry);
+    >('/api/v2/content/entries/', writeContentEntry, toContentEntry);
     this.releases = this.collection<
       MusicReleaseInput,
       MusicReleaseDTO,
       MusicRelease
-    >('/api/music-releases/', writeRelease, toMusicRelease);
+    >('/api/v2/music/releases/', writeRelease, toMusicRelease);
     this.clips = this.collection<StreamClipInput, StreamClipDTO, StreamClip>(
-      '/api/stream-clips/',
+      '/api/v2/streaming/clips/',
       writeClip,
       toStreamClip,
     );
@@ -117,9 +117,9 @@ export class HttpContentRepository implements ContentRepository {
       AppearanceInput,
       AppearanceDTO,
       Appearance
-    >('/api/appearances/', writeAppearance, toAppearance);
+    >('/api/v2/press/appearances/', writeAppearance, toAppearance);
     this.chapters = this.collection<BioChapterInput, BioChapterDTO, BioChapter>(
-      '/api/bio-chapters/',
+      '/api/v2/bio/chapters/',
       writeChapter,
       toBioChapter,
     );
@@ -127,7 +127,7 @@ export class HttpContentRepository implements ContentRepository {
       CurrentItemInput,
       CurrentItemDTO,
       CurrentItem
-    >('/api/current-items/', writeCurrentItem, toCurrentItem);
+    >('/api/v2/bio/current/', writeCurrentItem, toCurrentItem);
   }
 
   private send<T>(path: string, method: Method, body: unknown) {
@@ -192,47 +192,57 @@ export class HttpContentRepository implements ContentRepository {
   }
 
   site: ContentRepository['site'] = () =>
-    this.read('/api/site/', 'GET', undefined, (dto: SiteDTO) =>
+    this.read('/api/v2/site/', 'GET', undefined, (dto: SiteDTO) =>
       dto.pages.map(toPage),
     );
   page: ContentRepository['page'] = (pageId) =>
-    this.read(`/api/pages/${pageId}/`, 'GET', undefined, toPageContent);
+    this.read(`/api/v2/pages/${pageId}/`, 'GET', undefined, toPageContent);
   metadata: ContentRepository['metadata'] = (pageId, input) =>
     this.read(
-      `/api/pages/${pageId}/`,
+      `/api/v2/pages/${pageId}/`,
       'PATCH',
       writeMetadata(input),
       (dto: PageDTO) => toPage(dto),
     );
   readonly copy: ContentRepository['copy'] = {
     create: (input) =>
-      this.read('/api/copy/', 'POST', writeCopy(input), toPageCopy),
+      this.read('/api/v2/pages/copy/', 'POST', writeCopy(input), toPageCopy),
     update: (input) =>
-      this.read('/api/copy/', 'PATCH', writeCopyChanges(input), toPageCopy),
+      this.read(
+        '/api/v2/pages/copy/',
+        'PATCH',
+        writeCopyChanges(input),
+        toPageCopy,
+      ),
     remove: ({ pageId, key }) =>
       this.remove(
-        `/api/copy/?${new URLSearchParams({ page_id: String(pageId), key })}`,
+        `/api/v2/pages/copy/?${new URLSearchParams({ page_id: String(pageId), key })}`,
       ),
   };
   image: ContentRepository['image'] = (input) =>
-    this.read('/api/page-images/', 'PATCH', writePageImage(input), toPageImage);
+    this.read(
+      '/api/v2/pages/images/',
+      'PATCH',
+      writePageImage(input),
+      toPageImage,
+    );
   practice: ContentRepository['practice'] = (input) =>
     this.read(
-      '/api/music-features/',
+      '/api/v2/music/features/',
       'PATCH',
       writePractice(input),
       toMusicFeature,
     );
   reorder: ContentRepository['reorder'] = (input) =>
     this.read(
-      '/api/collections/reorder/',
+      '/api/v2/collections/reorder/',
       'PATCH',
       writeOrder(input),
       toCollectionOrder,
     );
   feature: ContentRepository['feature'] = (input) =>
     this.read(
-      '/api/featured-items/',
+      '/api/v2/content/features/',
       'PATCH',
       writeFeature(input),
       toFeaturedItem,
@@ -242,6 +252,6 @@ export class HttpContentRepository implements ContentRepository {
     body.append('file', input.file);
     body.append('credit', input.credit);
     body.append('source_url', input.sourceUrl);
-    return this.read('/api/media-assets/', 'POST', body, toMediaAsset);
+    return this.read('/api/v2/media/assets/', 'POST', body, toMediaAsset);
   };
 }

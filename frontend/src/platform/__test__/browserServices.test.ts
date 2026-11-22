@@ -88,7 +88,7 @@ it('binds navigation, token storage, confirmation and timers to its owning windo
   window.dispatchEvent(new StorageEvent('storage'));
   await Promise.resolve();
   const projects = services.projects('editor');
-  await projects.remove(1);
+  await projects.remove('00000000-0000-4000-8000-000000000001');
   expect(confirm).toHaveBeenCalledWith(
     expect.stringContaining('delete this item'),
   );
