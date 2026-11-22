@@ -20,7 +20,7 @@ export class BrowserHttp implements Http {
     const existing = cookie(this.cookies(), 'csrftoken');
     if (existing !== null) return existing;
     try {
-      this.csrfBootstrap ??= this.fetcher('/api/session/', {
+      this.csrfBootstrap ??= this.fetcher('/api/v2/session/', {
         credentials: 'same-origin',
       });
       await this.csrfBootstrap;
@@ -34,18 +34,20 @@ export class BrowserHttp implements Http {
     method: Method = 'GET',
     body?: unknown,
     authenticated = false,
-    responseType: 'json' | 'status' = 'json',
-  ): Promise<Reply<T>> {
+    responseType: 'json' | 'status' | 'content' = 'json',
+  ): Promise<Reply<T | null>> {
     try {
+      const token = authenticated ? this.tokens.read() : null;
       const csrf =
         method === 'GET'
           ? cookie(this.cookies(), 'csrftoken')
           : await this.csrfToken();
+      const multipart = body instanceof FormData;
       const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
+        ...(!multipart ? { 'Content-Type': 'application/json' } : {}),
         'X-CSRFToken': csrf ?? 'null',
       };
-      if (authenticated) headers.Authorization = `Token ${this.tokens.read()}`;
+      if (authenticated) headers.Authorization = `Token ${token}`;
       const response = await this.fetcher(
         path,
         method === 'GET'
@@ -55,16 +57,34 @@ export class BrowserHttp implements Http {
               cache: 'no-cache',
               headers,
               ...(authenticated ? { credentials: 'same-origin' as const } : {}),
-              ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+              ...(body !== undefined
+                ? { body: multipart ? body : JSON.stringify(body) }
+                : {}),
             },
       );
-      if (method === 'GET' && !response.ok)
-        return { status: null, data: null as T };
-      if (responseType === 'status')
-        return { status: response.status, data: null as T };
-      return { status: response.status, data: (await response.json()) as T };
+      switch (responseType) {
+        case 'status':
+          if (method === 'GET' && !response.ok)
+            return { status: null, data: null };
+          return { status: response.status, data: null };
+        case 'content':
+          return {
+            status: response.status,
+            data:
+              response.status === 204
+                ? null
+                : ((await response.json().catch(() => null)) as T | null),
+          };
+        case 'json':
+          if (method === 'GET' && !response.ok)
+            return { status: null, data: null };
+          return {
+            status: response.status,
+            data: (await response.json()) as T,
+          };
+      }
     } catch {
-      return { status: null, data: null as T };
+      return { status: null, data: null };
     }
   }
 }

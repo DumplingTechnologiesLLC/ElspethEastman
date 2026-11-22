@@ -35,9 +35,9 @@ it('sends csrf, credentials and token only when requested', async () => {
     () => 'csrftoken=csrf',
     ports.tokens,
   );
-  await service.request('/api/contact-me/', 'POST', { name: 'Visitor' });
+  await service.request('/api/v2/contact/', 'POST', { name: 'Visitor' });
   expect(fetcher).toHaveBeenLastCalledWith(
-    '/api/contact-me/',
+    '/api/v2/contact/',
     expect.objectContaining({
       method: 'POST',
       body: '{"name":"Visitor"}',
@@ -62,9 +62,9 @@ it('sends csrf, credentials and token only when requested', async () => {
     }),
   );
   const missingCookie = new BrowserHttp(fetcher, () => '', ports.tokens);
-  await missingCookie.request('/api/session/', 'POST', undefined, true);
+  await missingCookie.request('/api/v2/session/', 'POST', undefined, true);
   expect(fetcher).toHaveBeenLastCalledWith(
-    '/api/session/',
+    '/api/v2/session/',
     expect.objectContaining({
       headers: {
         'X-CSRFToken': 'null',
@@ -86,7 +86,7 @@ it('bootstraps a fresh Vite CSRF cookie once for concurrent writes and reuses it
   const fetcher = vi
     .fn<typeof fetch>()
     .mockImplementation(async (path) =>
-      path === '/api/session/' ? bootstrap : new Response('{}'),
+      path === '/api/v2/session/' ? bootstrap : new Response('{}'),
     );
   const service = new BrowserHttp(
     fetcher,
@@ -132,11 +132,110 @@ it('uses status-only logout responses without requiring JSON bodies', async () =
   );
   expect(
     await service.request(
-      '/api/session/logout/',
+      '/api/v2/session/logout/',
       'POST',
       undefined,
       true,
       'status',
     ),
   ).toEqual({ status: 500, data: null });
+});
+
+it('preserves content API statuses including created, empty success and malformed error bodies', async () => {
+  const fetcher = vi
+    .fn<typeof fetch>()
+    .mockResolvedValueOnce(new Response('{"id":42}', { status: 201 }))
+    .mockResolvedValueOnce(new Response(null, { status: 204 }))
+    .mockResolvedValueOnce(
+      new Response('{"detail":"Missing"}', { status: 404 }),
+    )
+    .mockResolvedValueOnce(new Response('upstream failed', { status: 502 }))
+    .mockRejectedValueOnce(new TypeError('Offline'));
+  const http = new BrowserHttp(
+    fetcher,
+    () => 'csrftoken=csrf',
+    fixturePorts().tokens,
+  );
+  expect(await http.request('/api/copy/', 'POST', {}, true, 'content')).toEqual(
+    { status: 201, data: { id: 42 } },
+  );
+  expect(
+    await http.request('/api/copy/', 'DELETE', undefined, true, 'content'),
+  ).toEqual({ status: 204, data: null });
+  expect(
+    await http.request('/api/pages/42/', 'GET', undefined, false, 'content'),
+  ).toEqual({ status: 404, data: { detail: 'Missing' } });
+  expect(
+    await http.request('/api/pages/42/', 'GET', undefined, false, 'content'),
+  ).toEqual({ status: 502, data: null });
+  expect(
+    await http.request('/api/pages/42/', 'GET', undefined, false, 'content'),
+  ).toEqual({ status: null, data: null });
+});
+
+it('lets the browser set the multipart boundary while retaining auth and CSRF headers', async () => {
+  const ports = fixturePorts();
+  ports.tokens.write('editor');
+  const fetcher = vi
+    .fn<typeof fetch>()
+    .mockResolvedValue(new Response('{"id":42}', { status: 201 }));
+  const http = new BrowserHttp(fetcher, () => 'csrftoken=csrf', ports.tokens);
+  const body = new FormData();
+  body.append(
+    'file',
+    new File(['image'], 'portrait.png', { type: 'image/png' }),
+  );
+  await http.request('/api/media-assets/', 'POST', body, true, 'content');
+  expect(fetcher).toHaveBeenCalledWith('/api/media-assets/', {
+    method: 'POST',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    body,
+    headers: { 'X-CSRFToken': 'csrf', Authorization: 'Token editor' },
+  });
+});
+
+it('binds a write to its original credential before CSRF bootstrap completes', async () => {
+  const { tokens } = fixturePorts();
+  tokens.write('old-token');
+  let release!: () => void;
+  const bootstrap = new Promise<Response>((resolve) => {
+    release = () => resolve(new Response('{}'));
+  });
+  const fetcher = vi
+    .fn<typeof fetch>()
+    .mockImplementation(async (path) =>
+      path === '/api/v2/session/' ? bootstrap : new Response('{}'),
+    );
+  const http = new BrowserHttp(fetcher, () => '', tokens);
+  const pending = http.request(
+    '/api/v2/pages/copy/',
+    'PATCH',
+    {},
+    true,
+    'content',
+  );
+  tokens.write('new-token');
+  release();
+  await pending;
+  expect(fetcher).toHaveBeenLastCalledWith(
+    '/api/v2/pages/copy/',
+    expect.objectContaining({
+      headers: expect.objectContaining({ Authorization: 'Token old-token' }),
+    }),
+  );
+});
+
+it('preserves status-mode GET success and legacy transport failure behavior', async () => {
+  const fetcher = vi
+    .fn<typeof fetch>()
+    .mockResolvedValueOnce(new Response('{}'))
+    .mockResolvedValueOnce(new Response('Forbidden', { status: 403 }));
+  const http = new BrowserHttp(fetcher, () => '', fixturePorts().tokens);
+  expect(
+    await http.request('/status', 'GET', undefined, false, 'status'),
+  ).toEqual({ status: 200, data: null });
+  expect(
+    await http.request('/status', 'GET', undefined, false, 'status'),
+  ).toEqual({ status: null, data: null });
 });

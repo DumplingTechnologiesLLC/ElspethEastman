@@ -70,7 +70,7 @@ async function login(page: Page, ui = false) {
     await page.locator('input[name="password"]').fill('e2e-only-password');
     await page.getByRole('button', { name: 'Login', exact: true }).click();
   } else {
-    const response = await page.request.post('/api/session/login/', {
+    const response = await page.request.post('/api/v2/session/login/', {
       data: { username: 'e2e-editor', password: 'e2e-only-password' },
     });
     expect(response.status()).toBe(200);

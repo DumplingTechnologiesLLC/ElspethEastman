@@ -29,6 +29,7 @@ export function fakeNotifications(): Notifications {
 const noop = () => {};
 export function fixturePorts() {
   let token: string | null = null;
+  let revision = 0;
   let path = '/';
   let navigationListener = noop;
   let storageListener = noop;
@@ -38,9 +39,11 @@ export function fixturePorts() {
     cancel: ReturnType<typeof vi.fn>;
   }[] = [];
   const tokens: TokenStorage = {
+    revision: () => revision,
     read: () => token,
     write: vi.fn((value) => {
       token = value;
+      revision++;
     }),
     listen: vi.fn((callback) => {
       storageListener = callback;
@@ -50,6 +53,10 @@ export function fixturePorts() {
   const navigation: Navigation = {
     location: () => path,
     go: vi.fn((value) => {
+      path = value;
+      navigationListener();
+    }),
+    replace: vi.fn((value) => {
       path = value;
       navigationListener();
     }),

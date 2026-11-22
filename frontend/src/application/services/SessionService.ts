@@ -7,8 +7,10 @@ import type { Session } from '../../domain/ports/Session';
 import type { SessionState } from '../../domain/models/SessionState';
 import type { TokenStorage } from '../../domain/ports/TokenStorage';
 import { Store } from './Store';
+import { cmsReturnTo, loginReturnTo } from '../routing/cmsReturnTo';
 
 export class SessionService extends Store<SessionState> implements Session {
+  private validation = 0;
   constructor(
     private http: Http,
     private tokens: TokenStorage,
@@ -41,7 +43,7 @@ export class SessionService extends Store<SessionState> implements Session {
     const stopNavigation = this.navigation.listen(() => {
       const path = this.navigation.location();
       const changed =
-        path.split('#')[0] !== this.getSnapshot().path.split('#')[0];
+        path.split(/[?#]/)[0] !== this.getSnapshot().path.split(/[?#]/)[0];
       this.patch({ path });
       if (changed) void this.validate();
     });
@@ -50,38 +52,60 @@ export class SessionService extends Store<SessionState> implements Session {
     });
     void this.validate();
     return () => {
+      this.validation++;
       stopNavigation();
       stopStorage();
     };
   };
   private async validate() {
+    const validation = ++this.validation;
+    const revision = this.revision();
     const reply = await this.http.request<{ isAuthenticated: boolean }>(
-      '/api/session/',
+      '/api/v2/session/',
       'POST',
       undefined,
       true,
     );
-    const valid = reply.status === 200 && reply.data.isAuthenticated;
+    if (validation !== this.validation || revision !== this.revision()) return;
+    const valid = reply.status === 200 && reply.data?.isAuthenticated === true;
     const wasAuthenticated = this.getSnapshot().authenticated;
-    this.patch({ authenticated: valid });
     if (wasAuthenticated && !valid) {
-      this.notifications.show({
-        title: 'Session has expired',
-        content: 'Please re-log in.',
-        flavor: 'error',
-      });
-      this.tokens.write(null);
-      this.navigate('/login');
-    } else if (!valid && this.getSnapshot().path.startsWith('/cms'))
-      this.navigate('/login');
+      this.expire(this.getSnapshot().path);
+      return;
+    }
+    this.patch({ authenticated: valid });
+    if (!valid && this.getSnapshot().path.startsWith('/cms'))
+      this.replace(
+        `/login?returnTo=${encodeURIComponent(cmsReturnTo(this.getSnapshot().path))}`,
+      );
   }
+
   navigate = (path: string) => this.navigation.go(path);
+  replace = (path: string) => this.navigation.replace(path);
+  revision = () => this.tokens.revision();
+  expire = (returnTo: string, revision = this.revision()) => {
+    if (revision !== this.revision()) return;
+    const state = this.getSnapshot();
+    if (!state.authenticated && state.path.startsWith('/login')) return;
+    this.validation++;
+    this.tokens.write(null);
+    this.patch({ authenticated: false });
+    this.notifications.show({
+      title: 'Session has expired',
+      content: 'Please re-log in.',
+      flavor: 'error',
+    });
+    this.replace(
+      `/login?returnTo=${encodeURIComponent(cmsReturnTo(returnTo))}`,
+    );
+  };
   change = (key: 'username' | 'password', value: string) =>
     this.patch({
       [key]: value,
       errors: { ...this.getSnapshot().errors, [key]: '' },
     });
   login = async () => {
+    if (this.getSnapshot().submitting) return;
     const { username, password } = this.getSnapshot();
     if (!username || !password) {
       const key = !username ? 'username' : 'password';
@@ -101,7 +125,7 @@ export class SessionService extends Store<SessionState> implements Session {
     }
     this.patch({ submitting: true });
     const reply = await this.http.request<{ token?: string; detail?: string }>(
-      '/api/session/login/',
+      '/api/v2/session/login/',
       'POST',
       { username, password },
       true,
@@ -112,7 +136,7 @@ export class SessionService extends Store<SessionState> implements Session {
       this.notifications.show(alert);
       return;
     }
-    if (reply.status === 200 && reply.data.token) {
+    if (reply.status === 200 && reply.data?.token) {
       const token = reply.data.token;
       this.notifications.show({
         title: 'Good login',
@@ -122,7 +146,7 @@ export class SessionService extends Store<SessionState> implements Session {
       this.clock.later(() => {
         this.tokens.write(token);
         this.patch({ authenticated: true });
-        this.navigate('/cms');
+        this.navigate(loginReturnTo(this.getSnapshot().path));
         void this.validate();
       }, 1000);
     } else if (reply.status === 400) {
@@ -132,18 +156,23 @@ export class SessionService extends Store<SessionState> implements Session {
         flavor: 'error',
       });
       this.patch({
-        errors: { ...this.getSnapshot().errors, form: reply.data.detail ?? '' },
+        errors: {
+          ...this.getSnapshot().errors,
+          form: reply.data?.detail ?? '',
+        },
       });
     }
   };
   logout = async () => {
+    const revision = this.revision();
     const reply = await this.http.request(
-      '/api/session/logout/',
+      '/api/v2/session/logout/',
       'POST',
       undefined,
       true,
       'status',
     );
+    if (revision !== this.revision()) return;
     if (reply.status === null) this.notifications.show(getRequestAlert(null)!);
     // Preserve the legacy browser logout when the request fails in transport.
     if (reply.status === 200 || reply.status === null) {
