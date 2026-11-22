@@ -86,7 +86,9 @@ export class PageService
   implements PageController
 {
   private content: PageContent | null = null;
-  private pending: Promise<ContentResult<PageContent>> | undefined;
+  private pending:
+    | { revision: number; reply: Promise<ContentResult<PageContent>> }
+    | undefined;
   private version = 0;
   private consumers = 0;
   readonly eyebrows: PageController['eyebrows'];
@@ -103,7 +105,7 @@ export class PageService
     private repository: ContentRepository,
     private alerts: UIAlerts,
     private site: Pick<SiteController, 'updatePage' | 'getSnapshot' | 'select'>,
-    private session: Pick<Session, 'getSnapshot' | 'expire'>,
+    private session: Pick<Session, 'getSnapshot' | 'expire' | 'revision'>,
   ) {
     super({
       pageId,
@@ -179,17 +181,21 @@ export class PageService
       return;
     }
     this.patch({ status: 'loading', error: null });
-    this.pending ??= this.repository
-      .page(this.pageId)
-      .catch((): ContentResult<PageContent> => ({
-        ok: false,
-        error: {
-          status: null,
-          detail: 'Could not load this page. Please try again.',
-          fields: {},
-        },
-      }));
-    let result = await this.pending;
+    this.pending ??= {
+      revision: this.session.revision(),
+      reply: this.repository
+        .page(this.pageId)
+        .catch((): ContentResult<PageContent> => ({
+          ok: false,
+          error: {
+            status: null,
+            detail: 'Could not load this page. Please try again.',
+            fields: {},
+          },
+        })),
+    };
+    const { revision, reply } = this.pending;
+    let result = await reply;
     this.pending = undefined;
     if (result.ok && result.value.page.id !== this.pageId)
       result = {
@@ -204,6 +210,10 @@ export class PageService
     if (version !== this.version) return;
     if (!result.ok) {
       this.patch({ status: 'error', error: result.error });
+      if (result.error.status === 403) {
+        this.session.expire(this.session.getSnapshot().path, revision);
+        return;
+      }
       this.alerts.show({
         title: 'Could not load the page',
         content: result.error.detail,
@@ -231,6 +241,7 @@ export class PageService
       );
     const returnTo = this.session.getSnapshot().path;
     this.patch({ mutating: true });
+    const revision = this.session.revision();
     let result: ContentResult<T>;
     try {
       result = await request();
@@ -257,6 +268,7 @@ export class PageService
         this.alerts,
         this.session,
         returnTo,
+        revision,
         options.validation === 'toast',
       );
     return result;
@@ -273,14 +285,14 @@ export class PageService
       value.pageId === this.pageId
         ? policy.replace(content, upsertRecord(policy.rows(content)!, value))
         : content,
-    remove: (content: PageContent, id: number) => PageContent = (content, id) =>
+    remove: (content: PageContent, id: string) => PageContent = (content, id) =>
       policy.replace(content, withoutRecord(policy.rows(content)!, id)),
-    afterRemove?: (id: number) => void,
+    afterRemove?: (id: string) => void,
   ): PageCollectionController<T, Input> {
     const allowed = (content: PageContent) =>
       policy.rows(content) !== null &&
       PAGE_COLLECTIONS[content.kind].includes(policy.kind);
-    const member = (content: PageContent, id: number) => {
+    const member = (content: PageContent, id: string) => {
       const rows = policy.rows(content);
       return (
         rows !== null &&

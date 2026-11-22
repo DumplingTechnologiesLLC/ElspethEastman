@@ -2,7 +2,7 @@ import type { Link } from '../../domain/models/Link';
 import type { ImageView } from './PageElements';
 import type { EditableActions } from './EditableActions';
 export interface WorkEntryView {
-  readonly id: number;
+  readonly id: string;
   readonly title: string;
   readonly eyebrow: string;
   readonly description: string;

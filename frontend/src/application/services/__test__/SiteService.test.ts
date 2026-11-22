@@ -38,24 +38,35 @@ function fixture(path = '/', authenticated = false) {
 }
 
 it('loads the registry once and resolves subsequent path, selection, and auth changes from memory', async () => {
-  const { site, repository, session } = fixture('/voiceover?role=40');
+  const { site, repository, session } = fixture(
+    '/voiceover?role=00000000-0000-4000-8000-000000000028',
+  );
   const stop = site.start();
   expect(site.getSnapshot().status).toBe('loading');
   await tick();
   expect(site.getSnapshot()).toMatchObject({
     status: 'ready',
-    route: { type: 'page', page: { kind: PageKind.Voiceover }, selectedId: 40 },
+    route: {
+      type: 'page',
+      page: { kind: PageKind.Voiceover },
+      selectedId: '00000000-0000-4000-8000-000000000028',
+    },
   });
   session.publish({ ...session.getSnapshot(), username: 'Editor' });
   expect(repository.site).toHaveBeenCalledOnce();
   session.publish({
     ...session.getSnapshot(),
-    path: '/cms/press?entry=12#coverage',
+    path: '/cms/press?entry=00000000-0000-4000-8000-00000000000c#coverage',
     authenticated: true,
   });
   expect(site.getSnapshot()).toMatchObject({
     authenticated: true,
-    route: { type: 'page', editor: true, selectedId: 12, anchor: '#coverage' },
+    route: {
+      type: 'page',
+      editor: true,
+      selectedId: '00000000-0000-4000-8000-00000000000c',
+      anchor: '#coverage',
+    },
   });
   session.publish({ ...session.getSnapshot(), authenticated: false });
   expect(site.getSnapshot().authenticated).toBe(false);
@@ -74,13 +85,20 @@ it('deduplicates overlapping registry loads and resolves the most recent locatio
       }),
   );
   const stop = site.start();
-  session.publish({ ...session.getSnapshot(), path: '/press?entry=12' });
+  session.publish({
+    ...session.getSnapshot(),
+    path: '/press?entry=00000000-0000-4000-8000-00000000000c',
+  });
   expect(repository.site).toHaveBeenCalledOnce();
   release();
   await tick();
   expect(site.getSnapshot()).toMatchObject({
     status: 'ready',
-    route: { type: 'page', page: { kind: PageKind.Press }, selectedId: 12 },
+    route: {
+      type: 'page',
+      page: { kind: PageKind.Press },
+      selectedId: '00000000-0000-4000-8000-00000000000c',
+    },
   });
   stop();
 });
@@ -134,20 +152,26 @@ it('preserves failure details, permits retry, and contains a rejected repository
 
 it('replaces the current URL after a rename without changing identity or refetching', async () => {
   const { site, repository, session } = fixture(
-    '/cms/voiceover?role=40#roles',
+    '/cms/voiceover?role=00000000-0000-4000-8000-000000000028#roles',
     true,
   );
   await site.load();
   const renamed = { ...pages[1]!, title: 'Characters', slug: 'characters' };
   site.updatePage(renamed);
-  expect(session.replace).toHaveBeenCalledWith('/cms/characters?role=40#roles');
+  expect(session.replace).toHaveBeenCalledWith(
+    '/cms/characters?role=00000000-0000-4000-8000-000000000028#roles',
+  );
   expect(site.getSnapshot()).toMatchObject({
-    path: '/cms/characters?role=40#roles',
-    route: { type: 'page', page: renamed, selectedId: 40 },
+    path: '/cms/characters?role=00000000-0000-4000-8000-000000000028#roles',
+    route: {
+      type: 'page',
+      page: renamed,
+      selectedId: '00000000-0000-4000-8000-000000000028',
+    },
   });
   session.publish({
     ...session.getSnapshot(),
-    path: '/cms/characters?role=40#roles',
+    path: '/cms/characters?role=00000000-0000-4000-8000-000000000028#roles',
   });
   await site.load();
   expect(
@@ -162,7 +186,7 @@ it('updates other page labels without moving the current location and rejects id
   site.updatePage({ ...pages[1]!, title: 'Characters' });
   expect(site.getSnapshot().pages[1]!.title).toBe('Characters');
   expect(session.replace).not.toHaveBeenCalled();
-  site.updatePage({ ...pages[0]!, id: 99999 });
+  site.updatePage({ ...pages[0]!, id: '00000000-0000-4000-8000-00000001869f' });
   site.updatePage({ ...pages[1]!, kind: PageKind.Music });
   expect(site.getSnapshot().pages).toHaveLength(4);
   expect(site.getSnapshot().pages[1]!.kind).toBe(PageKind.Voiceover);
@@ -177,13 +201,13 @@ it('updates other page labels without moving the current location and rejects id
 it('selects and closes loaded detail locations while ignoring non-selectable routes', async () => {
   const { site, session } = fixture('/voiceover?other=keep#roles');
   await site.load();
-  site.select(40);
+  site.select('00000000-0000-4000-8000-000000000028');
   expect(session.navigate).toHaveBeenLastCalledWith(
-    '/voiceover?other=keep&role=40#roles',
+    '/voiceover?other=keep&role=00000000-0000-4000-8000-000000000028#roles',
   );
   session.publish({
     ...session.getSnapshot(),
-    path: '/press?entry=12#coverage',
+    path: '/press?entry=00000000-0000-4000-8000-00000000000c#coverage',
   });
   await site.load();
   site.select(null);
@@ -193,9 +217,33 @@ it('selects and closes loaded detail locations while ignoring non-selectable rou
     session.publish({ ...session.getSnapshot(), path });
     // oxlint-disable-next-line no-await-in-loop -- Resolve each route before testing its selection policy.
     await site.load();
-    site.select(40);
+    site.select('00000000-0000-4000-8000-000000000028');
   }
   expect(session.navigate).not.toHaveBeenCalled();
   site.navigate('/bio');
   expect(session.navigate).toHaveBeenCalledWith('/bio');
+});
+
+it('keeps the originating credential revision when a forbidden registry read is shared', async () => {
+  const { site, repository, session, alerts } = fixture('/cms/press', true);
+  session.revision.mockReturnValue(4);
+  let release!: () => void;
+  repository.site.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        release = () =>
+          resolve({
+            ok: false,
+            error: { status: 403, detail: 'Expired', fields: {} },
+          });
+      }),
+  );
+  const first = site.load();
+  session.revision.mockReturnValue(5);
+  const second = site.load();
+  release();
+  await Promise.all([first, second]);
+  expect(repository.site).toHaveBeenCalledOnce();
+  expect(session.expire).toHaveBeenCalledWith('/cms/press', 4);
+  expect(alerts.show).not.toHaveBeenCalled();
 });

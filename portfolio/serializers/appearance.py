@@ -5,6 +5,8 @@ from portfolio.serializers.input import HTTPURLField, PageScopeSerializer, Stric
 
 
 class AppearanceSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="public_id", read_only=True)
+    page_id = serializers.UUIDField(source="page.public_id", read_only=True)
     class Meta:
         model = Appearance
         fields = ("id", "page_id", "year", "title", "format", "url", "sort_order")

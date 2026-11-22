@@ -46,10 +46,10 @@ export const skillsView: ReturnType<typeof useSkillsState> = {
   save: fn().mockResolvedValue(undefined),
 };
 export const sampleProject = {
-  id: 1,
+  id: '00000000-0000-4000-8000-000000000001',
   title: 'Project preview',
   src: 'example',
-  uuid: 1,
+  uuid: '00000000-0000-4000-8000-000000000001',
   thumbnail: 'https://img.youtube.com/vi/example/hqdefault.jpg',
   embed: 'https://www.youtube.com/embed/example?rel=0&showinfo=0&autoplay=1',
 };
@@ -79,7 +79,7 @@ export const experienceView: ReturnType<typeof useExperienceState> = {
   groups: {
     [Category.VoiceCredits]: [
       {
-        id: 1,
+        id: '00000000-0000-4000-8000-000000000001',
         year: '(2026)',
         credit: 'Character voice',
         link: 'https://example.invalid',
@@ -119,12 +119,29 @@ export const footerView: ReturnType<typeof useFooterState> = {
   editor: false,
   loaded: true,
   data: {
-    stats: [{ id: 1, value: '10+', label: 'Projects', percent: 70 }],
+    stats: [
+      {
+        id: '00000000-0000-4000-8000-000000000001',
+        value: '10+',
+        label: 'Projects',
+        percent: 70,
+      },
+    ],
     affiliations: [
-      { id: 1, affiliation: 'Studio', link: 'https://example.invalid' },
+      {
+        id: '00000000-0000-4000-8000-000000000001',
+        affiliation: 'Studio',
+        link: 'https://example.invalid',
+      },
     ],
   },
-  cached: [{ id: 1, affiliation: 'Studio', link: 'https://example.invalid' }],
+  cached: [
+    {
+      id: '00000000-0000-4000-8000-000000000001',
+      affiliation: 'Studio',
+      link: 'https://example.invalid',
+    },
+  ],
   draft: { id: NEW_AFFILIATION_ID, affiliation: '', link: '' },
   errors: {},
   busy: [],

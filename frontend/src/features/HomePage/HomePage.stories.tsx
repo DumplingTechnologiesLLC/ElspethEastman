@@ -28,9 +28,21 @@ export const homePageView = {
     },
   ],
   identities: [
-    { id: 1, label: 'Voice actor', actions: null },
-    { id: 2, label: 'Streamer', actions: null },
-    { id: 3, label: 'Musician', actions: null },
+    {
+      id: '00000000-0000-4000-8000-000000000001',
+      label: 'Voice actor',
+      actions: null,
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000002',
+      label: 'Streamer',
+      actions: null,
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000003',
+      label: 'Musician',
+      actions: null,
+    },
   ],
   image: {
     url: portrait,
