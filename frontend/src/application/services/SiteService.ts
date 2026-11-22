@@ -31,6 +31,7 @@ export class SiteService extends Store<SiteState> implements SiteController {
       | 'revision'
     >,
     private alerts: UIAlerts,
+    readonly year: number,
   ) {
     const { path, authenticated } = session.getSnapshot();
     super({

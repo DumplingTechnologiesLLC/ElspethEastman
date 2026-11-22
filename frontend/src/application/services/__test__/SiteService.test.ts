@@ -33,7 +33,7 @@ function fixture(path = '/', authenticated = false) {
     repository,
     session,
     alerts,
-    site: new SiteService(repository, session, alerts),
+    site: new SiteService(repository, session, alerts, 2026),
   };
 }
 

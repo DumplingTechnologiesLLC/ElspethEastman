@@ -83,6 +83,7 @@ it('projects isolated field errors, image state, and row permissions from the ed
   expect(hook.result.current.save).toBe(editor.save);
   hook.unmount();
   expect(editor.stop).toHaveBeenCalledOnce();
+  expect(editor.cancel).toHaveBeenCalledOnce();
 });
 
 it('cancels the previous page draft and sends saves through the current page and service owner', async () => {

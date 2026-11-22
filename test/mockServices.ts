@@ -92,6 +92,7 @@ export function mockServices() {
     revision: vi.fn(() => 0),
   };
   const site = {
+    year: 2026,
     ...observable<SiteState>({
       pages: [],
       path: '/',
