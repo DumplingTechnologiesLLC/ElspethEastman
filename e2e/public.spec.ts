@@ -180,7 +180,9 @@ it('navigates to public sections from the projects page', async ({
 it.each(['/cms', '/cms/'] as const)((path) =>
   it(`redirects anonymous ${path} deep links to login`, async ({ page }) => {
     await page.goto(path);
-    await expect(page).toHaveURL(/\/login$/);
+    await expect(page).toHaveURL(
+      new URL(`/login?returnTo=${encodeURIComponent(path)}`, page.url()).href,
+    );
     await expect(page.locator('input[name="username"]')).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Save All Changes' }),
