@@ -27,35 +27,35 @@ class PromotionTests(TestCase):
         return getattr(self.client, method)(url, data=data, content_type="application/json", **self.headers)
 
     def promote(self, item_id, page=None):
-        return self.send("patch", "/api/featured-items/", {"page_id": (page or self.voice).pk, "item_id": item_id})
+        return self.send("patch", "/api/v2/content/features/", {"page_id": str((page or self.voice).public_id), "item_id": item_id})
 
     def test_promote_switch_and_demote_reuse_records_without_changing_manual_order(self):
         original = list(self.voice.entries.values_list("id", "sort_order"))
-        for selection in (self.first.pk, self.first.pk, self.second.pk, None):
+        for selection in (str(self.first.public_id), str(self.first.public_id), str(self.second.public_id), None):
             response = self.promote(selection)
             self.assertEqual(response.status_code, 200, response.content)
-            self.assertEqual(response.json(), {"page_id": self.voice.pk, "item_id": selection})
-            self.assertEqual(list(self.voice.entries.filter(is_featured=True).values_list("pk", flat=True)), [] if selection is None else [selection])
+            self.assertEqual(response.json(), {"page_id": str(self.voice.public_id), "item_id": selection})
+            self.assertEqual([str(value) for value in self.voice.entries.filter(is_featured=True).values_list("public_id", flat=True)], [] if selection is None else [selection])
             self.assertEqual(list(self.voice.entries.values_list("id", "sort_order")), original)
         self.assertEqual(self.voice.entries.count(), 2)
 
     def test_missing_foreign_imageless_and_unsupported_selections_leave_previous_hero_unchanged(self):
-        self.assertEqual(self.promote(self.first.pk).status_code, 200)
-        for item_id, page, expected in ((999999, self.voice, 404), (self.imageless.pk, self.voice, 404),
-                                         (self.imageless.pk, self.stream, 400), (None, self.home, 400)):
+        self.assertEqual(self.promote(str(self.first.public_id)).status_code, 200)
+        for item_id, page, expected in (("00000000-0000-4000-8000-0000000f423f", self.voice, 404), (str(self.imageless.public_id), self.voice, 404),
+                                         (str(self.imageless.public_id), self.stream, 400), (None, self.home, 400)):
             with self.subTest(item_id=item_id, page=page.kind):
                 response = self.promote(item_id, page)
                 self.assertEqual(response.status_code, expected)
                 self.assertIn("detail", response.json())
                 self.assertEqual(list(self.voice.entries.filter(is_featured=True).values_list("pk", flat=True)), [self.first.pk])
-        self.assertEqual(self.send("patch", "/api/featured-items/", {"page_id": self.voice.pk}).status_code, 400)
-        self.assertEqual(self.send("patch", "/api/featured-items/", {"page_id": self.voice.pk, "item_id": 0}).status_code, 400)
+        self.assertEqual(self.send("patch", "/api/v2/content/features/", {"page_id": str(self.voice.public_id)}).status_code, 400)
+        self.assertEqual(self.send("patch", "/api/v2/content/features/", {"page_id": str(self.voice.public_id), "item_id": 0}).status_code, 400)
 
     def test_reordering_requires_the_featured_member_and_keeps_its_selection(self):
-        self.promote(self.first.pk)
-        payload = {"page_id": self.voice.pk, "collection": "content_entries", "section": None, "ordered_ids": [self.second.pk]}
-        self.assertEqual(self.send("patch", "/api/collections/reorder/", payload).status_code, 400)
-        self.assertEqual(self.send("patch", "/api/collections/reorder/", {**payload, "ordered_ids": [self.second.pk, self.first.pk]}).status_code, 200)
+        self.promote(str(self.first.public_id))
+        payload = {"page_id": str(self.voice.public_id), "collection": "content_entries", "section": None, "ordered_ids": [str(self.second.public_id)]}
+        self.assertEqual(self.send("patch", "/api/v2/collections/reorder/", payload).status_code, 400)
+        self.assertEqual(self.send("patch", "/api/v2/collections/reorder/", {**payload, "ordered_ids": [str(self.second.public_id), str(self.first.public_id)]}).status_code, 200)
         self.first.refresh_from_db()
         self.assertTrue(self.first.is_featured)
         self.assertEqual(self.first.sort_order, 1)
@@ -63,21 +63,21 @@ class PromotionTests(TestCase):
         self.assertEqual(list(self.voice.entries.values_list("pk", flat=True)), [self.second.pk, self.first.pk])
 
     def test_editing_a_featured_record_changes_its_canonical_content_and_deleting_it_clears_selection(self):
-        self.promote(self.first.pk)
-        endpoint = f"/api/content-entries/{self.first.pk}/"
+        self.promote(str(self.first.public_id))
+        endpoint = f"/api/v2/content/entries/{self.first.public_id}/"
         edited = self.send("patch", endpoint, {"title": "Updated hero"})
         self.assertTrue(edited.json()["is_featured"])
-        aggregate = self.client.get(f"/api/pages/{self.voice.pk}/").json()
+        aggregate = self.client.get(f"/api/v2/pages/{self.voice.public_id}/").json()
         self.assertEqual(next(row for row in aggregate["roles"] if row["id"] == aggregate["feature"]["item_id"])["title"], "Updated hero")
         self.assertEqual(self.send("delete", endpoint).status_code, 204)
-        aggregate = self.client.get(f"/api/pages/{self.voice.pk}/").json()
+        aggregate = self.client.get(f"/api/v2/pages/{self.voice.public_id}/").json()
         self.assertIsNone(aggregate["feature"]["item_id"])
-        self.assertEqual([row["id"] for row in aggregate["roles"]], [self.second.pk])
+        self.assertEqual([row["id"] for row in aggregate["roles"]], [str(self.second.public_id)])
 
     def test_featured_stream_cannot_lose_its_image_until_demoted(self):
         ContentEntry.objects.filter(pk=self.imageless.pk).update(asset=self.asset, alt_text="Stream artwork")
-        self.assertEqual(self.promote(self.imageless.pk, self.stream).status_code, 200)
-        endpoint = f"/api/content-entries/{self.imageless.pk}/"
+        self.assertEqual(self.promote(str(self.imageless.public_id), self.stream).status_code, 200)
+        endpoint = f"/api/v2/content/entries/{self.imageless.public_id}/"
         response = self.send("patch", endpoint, {"image": None})
         self.assertEqual(response.status_code, 400)
         self.assertIn("image", response.json()["fields"])
@@ -85,10 +85,10 @@ class PromotionTests(TestCase):
         self.assertEqual(self.send("patch", endpoint, {"image": None}).status_code, 200)
 
     def test_failed_promotion_rolls_back_its_prior_demotion(self):
-        self.promote(self.first.pk)
+        self.promote(str(self.first.public_id))
         with patch.object(ContentEntry, "save", side_effect=RuntimeError("Promotion interrupted")):
             with self.assertRaisesMessage(RuntimeError, "Promotion interrupted"):
-                self.promote(self.second.pk)
+                self.promote(str(self.second.public_id))
         self.assertEqual(list(self.voice.entries.filter(is_featured=True).values_list("pk", flat=True)), [self.first.pk])
 
     def test_database_constraint_prevents_uncoordinated_imageless_promotion(self):
@@ -96,5 +96,5 @@ class PromotionTests(TestCase):
             ContentEntry.objects.filter(pk=self.imageless.pk).update(is_featured=True)
 
     def test_promotion_requires_authentication(self):
-        response = self.client.patch("/api/featured-items/", {"page_id": self.voice.pk, "item_id": self.first.pk}, content_type="application/json")
+        response = self.client.patch("/api/v2/content/features/", {"page_id": str(self.voice.public_id), "item_id": str(self.first.public_id)}, content_type="application/json")
         self.assertEqual(response.status_code, 403)
