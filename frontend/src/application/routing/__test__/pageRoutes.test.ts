@@ -19,7 +19,7 @@ import {
 } from '../../../domain/models/PageCollection';
 
 const pages: readonly Page[] = Object.values(PageKind).map((kind, index) => ({
-  id: index + 1,
+  id: `00000000-0000-4000-8000-${(index + 1).toString(16).padStart(12, '0')}`,
   kind,
   title: kind,
   slug: kind === PageKind.Home ? '' : kind,
@@ -36,11 +36,16 @@ it('resolves public and CMS locations from the current registry rather than fixe
   expect(pageHref(home, true)).toBe('/cms');
   expect(pageHref(renamed, false)).toBe('/characters');
   expect(pageHref(renamed, true)).toBe('/cms/characters');
-  expect(resolvePageRoute('/cms/characters/?role=4#roles', registry)).toEqual({
+  expect(
+    resolvePageRoute(
+      '/cms/characters/?role=00000000-0000-4000-8000-000000000004#roles',
+      registry,
+    ),
+  ).toEqual({
     type: 'page',
     page: renamed,
     editor: true,
-    selectedId: 4,
+    selectedId: '00000000-0000-4000-8000-000000000004',
     anchor: '#roles',
   });
   expect(resolvePageRoute('/voiceover', registry)).toEqual({
@@ -65,39 +70,64 @@ it('resolves public and CMS locations from the current registry rather than fixe
   });
 });
 
-it.each(['', 'invalid', '-1', '0', '1.5', '9007199254740992'])(
-  'rejects invalid selected identities %s',
-  (id) => {
-    expect(resolvePageRoute(`/press?entry=${id}`, pages)).toMatchObject({
-      type: 'page',
-      selectedId: null,
-    });
-  },
-);
+it.each([
+  '',
+  'invalid',
+  '-1',
+  '0',
+  '1.5',
+  '9007199254740992',
+  '4',
+  '00000000-0000-1000-8000-000000000001',
+])('rejects invalid selected identities %s', (id) => {
+  expect(resolvePageRoute(`/press?entry=${id}`, pages)).toMatchObject({
+    type: 'page',
+    selectedId: null,
+  });
+});
 
 it('keeps role and Press selection independent of the hero and preserves unrelated route state', () => {
-  expect(resolvePageRoute('/press?entry=12', pages)).toMatchObject({
-    selectedId: 12,
+  expect(
+    resolvePageRoute(
+      '/press?entry=00000000-0000-4000-8000-00000000000c',
+      pages,
+    ),
+  ).toMatchObject({
+    selectedId: '00000000-0000-4000-8000-00000000000c',
   });
   expect(resolvePageRoute('/voiceover', pages)).toMatchObject({
     selectedId: null,
   });
   expect(
-    withSelection('/voiceover?other=keep#roles', PageKind.Voiceover, 4),
-  ).toBe('/voiceover?other=keep&role=4#roles');
-  expect(
-    withSelection('/press?entry=12&other=keep#coverage', PageKind.Press, null),
-  ).toBe('/press?other=keep#coverage');
-  expect(withSelection('/music#releases', PageKind.Music, 4)).toBe(
-    '/music#releases',
+    withSelection(
+      '/voiceover?other=keep#roles',
+      PageKind.Voiceover,
+      '00000000-0000-4000-8000-000000000004',
+    ),
+  ).toBe(
+    '/voiceover?other=keep&role=00000000-0000-4000-8000-000000000004#roles',
   );
   expect(
+    withSelection(
+      '/press?entry=00000000-0000-4000-8000-00000000000c&other=keep#coverage',
+      PageKind.Press,
+      null,
+    ),
+  ).toBe('/press?other=keep#coverage');
+  expect(
+    withSelection(
+      '/music#releases',
+      PageKind.Music,
+      '00000000-0000-4000-8000-000000000004',
+    ),
+  ).toBe('/music#releases');
+  expect(
     renamedPagePath(
-      '/cms/press?entry=12#coverage',
+      '/cms/press?entry=00000000-0000-4000-8000-00000000000c#coverage',
       { ...press, slug: 'coverage' },
       true,
     ),
-  ).toBe('/cms/coverage?entry=12#coverage');
+  ).toBe('/cms/coverage?entry=00000000-0000-4000-8000-00000000000c#coverage');
 });
 
 it('exposes only the copy regions and treatments supported by each renderer', () => {
@@ -125,4 +155,13 @@ it('keeps collection capabilities with their page owner and preflights supported
   for (const mime of ['image/jpeg', 'image/png', 'image/webp'])
     expect(isSupportedImageMime(mime)).toBe(true);
   expect(isSupportedImageMime('image/svg+xml')).toBe(false);
+});
+
+it('normalizes UUID selection casing without changing the opaque identity', () => {
+  expect(
+    resolvePageRoute(
+      '/press?entry=AABBCCDD-0000-4000-8000-00000000000C',
+      pages,
+    ),
+  ).toMatchObject({ selectedId: 'aabbccdd-0000-4000-8000-00000000000c' });
 });

@@ -15,7 +15,7 @@ import tubefilter from '../../assets/design/press-tubefilter.png';
 const noop = () => {};
 export const pressHeroView = {
   ...tristanaView,
-  id: 1,
+  id: '00000000-0000-4000-8000-000000000001',
   title: 'The Patrick Scott Patterson Project',
   eyebrow: 'Podcast · Featured interview',
   description:
@@ -63,14 +63,29 @@ export const pressPageView = {
       },
     ],
     identities: ['Interviews', 'Features', 'Appearances'].map((label, id) => ({
-      id,
+      id: `00000000-0000-4000-8000-${id.toString(16).padStart(12, '0')}`,
       label,
       actions: null,
     })),
     trivia: [
-      { id: 1, label: 'Coverage since', value: '2013', actions: null },
-      { id: 2, label: 'Formats', value: 'Interview · Feature', actions: null },
-      { id: 3, label: 'Appearances', value: 'Panels · Events', actions: null },
+      {
+        id: '00000000-0000-4000-8000-000000000001',
+        label: 'Coverage since',
+        value: '2013',
+        actions: null,
+      },
+      {
+        id: '00000000-0000-4000-8000-000000000002',
+        label: 'Formats',
+        value: 'Interview · Feature',
+        actions: null,
+      },
+      {
+        id: '00000000-0000-4000-8000-000000000003',
+        label: 'Appearances',
+        value: 'Panels · Events',
+        actions: null,
+      },
     ],
     action: {
       label: 'Latest interview',
@@ -101,7 +116,7 @@ export const pressPageView = {
   close: noop,
   entries: [
     {
-      id: 2,
+      id: '00000000-0000-4000-8000-000000000002',
       title: 'Finding her voice again',
       eyebrow: 'Feature',
       outlet: 'UC Health',
@@ -118,7 +133,7 @@ export const pressPageView = {
       },
     },
     {
-      id: 3,
+      id: '00000000-0000-4000-8000-000000000003',
       title: 'Chatting with Elspeth',
       eyebrow: 'Podcast',
       outlet: 'The Geekenders',
@@ -135,7 +150,7 @@ export const pressPageView = {
       },
     },
     {
-      id: 4,
+      id: '00000000-0000-4000-8000-000000000004',
       title: 'On becoming Tristana',
       eyebrow: 'Interview',
       outlet: 'Dignitas',
@@ -148,7 +163,7 @@ export const pressPageView = {
       },
     },
     {
-      id: 5,
+      id: '00000000-0000-4000-8000-000000000005',
       title: 'CAA signs gaming creators',
       eyebrow: 'Coverage',
       outlet: 'Tubefilter',
@@ -171,35 +186,35 @@ export const pressPageView = {
   })),
   appearances: [
     {
-      id: 1,
+      id: '00000000-0000-4000-8000-000000000001',
       year: '2026',
       title: 'MAGFest · Voice Actor Round Table',
       format: 'Panel',
       url: null,
     },
     {
-      id: 2,
+      id: '00000000-0000-4000-8000-000000000002',
       year: '2024',
       title: 'The Geekenders',
       format: 'Podcast',
       url: 'https://example.invalid/geekenders',
     },
     {
-      id: 3,
+      id: '00000000-0000-4000-8000-000000000003',
       year: '2023',
       title: 'UC Health patient feature',
       format: 'Feature',
       url: null,
     },
     {
-      id: 4,
+      id: '00000000-0000-4000-8000-000000000004',
       year: '2016',
       title: 'White House Gaming Healthcare Event',
       format: 'Appearance',
       url: null,
     },
     {
-      id: 5,
+      id: '00000000-0000-4000-8000-000000000005',
       year: '2013',
       title: 'WNIT · Experience Michiana',
       format: 'Performance',
@@ -213,7 +228,7 @@ export function PressPreview(props: Parameters<typeof PressPage>[0]) {
     <Portfolio
       {...portfolioView}
       title="Press · Elspeth Eastman"
-      pageId={5}
+      pageId={'00000000-0000-4000-8000-000000000005'}
       pageKind={PageKind.Press}
       editor={props.controls !== null}
       authenticated={props.controls !== null}

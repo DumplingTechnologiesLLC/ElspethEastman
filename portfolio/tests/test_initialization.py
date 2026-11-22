@@ -21,7 +21,7 @@ class StartupContentTests(TestCase):
         self.assertEqual(Page.objects.count(), 6)
         for page in Page.objects.all():
             with self.subTest(kind=page.kind):
-                response = self.client.get(f"/api/pages/{page.pk}/")
+                response = self.client.get(f"/api/v2/pages/{page.public_id}/")
                 self.assertEqual(response.status_code, 200)
                 self.assertTrue(response.json()["copy"])
         feature = MusicFeature.objects.get()
@@ -39,7 +39,7 @@ class SeedPreservationTests(EmptyPortfolioTestCase):
         self.initialize()
         for asset in MediaAsset.objects.all():
             with self.subTest(asset=asset.file.name):
-                static_name = "redesign/" + asset.file.name.removeprefix("seed/")
+                static_name = "portfolio/" + asset.file.name.removeprefix("seed/")
                 file = Path(finders.find(static_name))
                 self.assertGreater(file.stat().st_size, 0)
                 with Image.open(file) as image:

@@ -5,6 +5,7 @@ from importlib import import_module
 from pathlib import Path
 from shutil import copyfile
 from types import SimpleNamespace
+from uuid import UUID
 
 from django.apps import apps
 from django.conf import settings
@@ -14,8 +15,8 @@ from PIL import Image
 
 def seed_redesign():
     from portfolio.models import (
-        Appearance, BioChapter, ContentEntry, ContentEntryMetadata, CurrentItem, MediaAsset,
-        MusicFeature, MusicRelease, Page, PageCopy, PracticeFact, StreamClip, TriviaItem,
+        Appearance, BioChapter, ContentEntry, ContentEntryMetadata, MediaAsset,
+        MusicFeature, MusicRelease, Page, PageCopy, PracticeFact, TriviaItem,
     )
     import_module("portfolio.migrations.0002_seed_page_identities").seed_pages(apps, SimpleNamespace(connection=connection))
     defaults = import_module("portfolio.migrations.0006_seed_renderer_defaults")
@@ -75,7 +76,7 @@ def seed_redesign():
             category=category, action_label="Watch stream" if order == 0 else "Watch VOD", action_url=f"https://example.invalid/stream-{order}",
             is_featured=order == 0, sort_order=order)
     for order, title in enumerate(("Elspeth finds the no-no Square", "Elspeth puts a rude viewer in their place")):
-        StreamClip.objects.create(page=pages["streaming"], title=title, eyebrow="Clip", category="Highlights", action_label="Play clip",
+        ContentEntry.objects.create(page=pages["streaming"], collection="stream_clips", title=title, eyebrow="Clip", category="Highlights", action_label="Play clip",
                                   action_url=f"https://example.invalid/clip-{order}", sort_order=order)
     for order, (image, title, eyebrow, outlet, category) in enumerate((
         ("press-podcast", "The Patrick Scott Patterson Project", "Podcast · Featured interview", "The Patrick Scott Patterson Project", "Podcast"),
@@ -101,6 +102,9 @@ def seed_redesign():
         BioChapter.objects.create(page=pages["bio"], eyebrow=eyebrow, heading=heading, body=body, sort_order=order)
     for order, (eyebrow, title, description) in enumerate((("Voice acting", "Games & animation", "Character-forward performance and recurring roles."),
         ("Streaming", "Variety & live chaos", "Games, roleplay, collaborations, and conversation."), ("Music", "Cello", "Two-plus years of near-daily practice and counting."))):
-        CurrentItem.objects.create(page=pages["bio"], eyebrow=eyebrow, title=title, description=description, sort_order=order)
+        ContentEntry.objects.create(page=pages["bio"], collection="current_items", eyebrow=eyebrow, title=title, description=description, sort_order=order)
     for kind in ("voiceover", "music", "streaming", "press", "bio"):
         TriviaItem.objects.create(page=pages[kind], label="Selected work", value="Games · Music · Live", sort_order=0)
+    for model in apps.get_app_config("portfolio").get_models():
+        for record in model.objects.all():
+            model.objects.filter(pk=record.pk).update(public_id=UUID(f'00000000-0000-4000-8000-{record.pk:012x}'))

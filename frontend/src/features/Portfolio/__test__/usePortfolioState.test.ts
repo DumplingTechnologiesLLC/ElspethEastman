@@ -13,7 +13,7 @@ it('preserves selection and anchors when switching modes and never mounts an edi
   act(() =>
     site.publish({
       ...site.getSnapshot(),
-      path: '/voiceover?role=40#roles',
+      path: '/voiceover?role=00000000-0000-4000-8000-000000000028#roles',
       pages: [home, voice],
       status: 'ready',
       authenticated: true,
@@ -21,12 +21,14 @@ it('preserves selection and anchors when switching modes and never mounts an edi
         type: 'page',
         page: voice,
         editor: false,
-        selectedId: 40,
+        selectedId: '00000000-0000-4000-8000-000000000028',
         anchor: '#roles',
       },
     }),
   );
-  expect(hook.result.current.toggleHref).toBe('/cms/voiceover?role=40#roles');
+  expect(hook.result.current.toggleHref).toBe(
+    '/cms/voiceover?role=00000000-0000-4000-8000-000000000028#roles',
+  );
   act(() =>
     site.publish({
       ...site.getSnapshot(),
@@ -42,7 +44,7 @@ it('owns registry/session lifecycles and projects current routes and canonical n
   expect(session.start).toHaveBeenCalledOnce();
   expect(hook.result.current).toMatchObject({
     screen: 'loading',
-    pageId: 0,
+    pageId: '',
     pageKind: null,
     title: 'Elspeth Eastman',
     homeHref: '/',
@@ -67,10 +69,16 @@ it('owns registry/session lifecycles and projects current routes and canonical n
   expect(hook.result.current).toMatchObject({
     screen: 'page',
     title: 'voiceover · Elspeth Eastman',
-    pageId: 2,
+    pageId: '00000000-0000-4000-8000-000000000002',
     pageKind: 'voiceover',
     toggleHref: '/cms/voiceover',
-    links: [{ id: 2, href: '/voiceover', active: true }],
+    links: [
+      {
+        id: '00000000-0000-4000-8000-000000000002',
+        href: '/voiceover',
+        active: true,
+      },
+    ],
   });
   act(() =>
     site.publish({

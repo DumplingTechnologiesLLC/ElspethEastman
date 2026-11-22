@@ -58,7 +58,7 @@ export function VoiceoverPage({
   controls,
 }: ReturnType<typeof useVoiceoverPageState>) {
   const { list, detail, remember } = useEntryFocus(selected?.id ?? null);
-  const select = (id: number, button: HTMLButtonElement) => {
+  const select = (id: string, button: HTMLButtonElement) => {
     remember(button);
     open(id);
   };

@@ -31,20 +31,25 @@ export const musicPageView = {
       },
     ],
     identities: ['Cello', 'Composition', 'Vocals'].map((label, id) => ({
-      id,
+      id: `00000000-0000-4000-8000-${id.toString(16).padStart(12, '0')}`,
       label,
       actions: null,
     })),
     trivia: [
-      { id: 1, label: 'Current focus', value: 'Cello', actions: null },
       {
-        id: 2,
+        id: '00000000-0000-4000-8000-000000000001',
+        label: 'Current focus',
+        value: 'Cello',
+        actions: null,
+      },
+      {
+        id: '00000000-0000-4000-8000-000000000002',
         label: 'Practice',
         value: '2+ years · near daily',
         actions: null,
       },
       {
-        id: 3,
+        id: '00000000-0000-4000-8000-000000000003',
         label: 'Current study',
         value: 'Popper · Etude No. 7',
         actions: null,
@@ -84,7 +89,7 @@ export const musicPageView = {
   ],
   releases: [
     {
-      id: 1,
+      id: '00000000-0000-4000-8000-000000000001',
       eyebrow: '2012 · Album',
       title: 'Elspeth! The Musical',
       artworkTitle: 'Elspeth!\nThe Musical',
@@ -92,21 +97,21 @@ export const musicPageView = {
         'Fourteen tracks written, recorded, sung, mixed, and produced by Elspeth.',
     },
     {
-      id: 2,
+      id: '00000000-0000-4000-8000-000000000002',
       eyebrow: '2013 · Album',
       title: 'Return of the Elspeth!',
       artworkTitle: 'Return of\nthe Elspeth!',
       description: 'Ten vocal tracks with original lyrics, vocals, and music.',
     },
     {
-      id: 3,
+      id: '00000000-0000-4000-8000-000000000003',
       eyebrow: '2014 · Game soundtrack',
       title: 'i saw her across the world',
       artworkTitle: 'i saw her\nacross the world',
       description: 'Nine-track original soundtrack for the krangGAMES title.',
     },
     {
-      id: 4,
+      id: '00000000-0000-4000-8000-000000000004',
       eyebrow: '2017 · Single',
       title: 'Miss You Again ft. JonSandman',
       artworkTitle: 'Miss You\nAgain',
@@ -130,7 +135,7 @@ export function MusicPreview(props: Parameters<typeof MusicPage>[0]) {
     <Portfolio
       {...portfolioView}
       title="Music · Elspeth Eastman"
-      pageId={3}
+      pageId={'00000000-0000-4000-8000-000000000003'}
       pageKind={PageKind.Music}
       editor={props.controls !== null}
       authenticated={props.controls !== null}
