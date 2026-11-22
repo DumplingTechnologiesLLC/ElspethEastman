@@ -18,5 +18,5 @@ urlpatterns = [
     path("pages/trivia/", TriviaAPIView.as_view(), name="trivia"),
     path("pages/trivia/<uuid:item_id>/", TriviaDetailAPIView.as_view(), name="trivia-detail"),
     path("collections/reorder/", ReorderAPIView.as_view(), name="reorder"),
-    path("media-assets/", MediaAssetAPIView.as_view(), name="media-assets"),
+    path("media/assets/", MediaAssetAPIView.as_view(), name="media-assets"),
 ]
