@@ -14,5 +14,6 @@ export interface Session extends Readable<SessionState> {
   logout: () => Promise<void>;
   navigate: (path: string) => void;
   replace: (path: string) => void;
-  expire: (returnTo: string) => void;
+  revision: () => number;
+  expire: (returnTo: string, revision?: number) => void;
 }

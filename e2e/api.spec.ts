@@ -43,15 +43,15 @@ it.each([
 it('keeps contact listing private and enforces CSRF for session POSTs', async ({
   request,
 }) => {
-  expect((await request.get('/api/contact-me/')).status()).toBe(403);
-  expect((await request.post('/api/session/')).status()).toBe(403);
-  const response = await request.get('/api/session/');
+  expect((await request.get('/api/v2/contact/')).status()).toBe(403);
+  expect((await request.post('/api/v2/session/')).status()).toBe(403);
+  const response = await request.get('/api/v2/session/');
   expect(response.status()).toBe(200);
   expect(await response.json()).toEqual({ isAuthenticated: false });
   const csrf = (await request.storageState()).cookies.find(
     (cookie) => cookie.name === 'csrftoken',
   )!.value;
-  const validPost = await request.post('/api/session/', {
+  const validPost = await request.post('/api/v2/session/', {
     headers: { 'X-CSRFToken': csrf },
   });
   expect(validPost.status()).toBe(200);

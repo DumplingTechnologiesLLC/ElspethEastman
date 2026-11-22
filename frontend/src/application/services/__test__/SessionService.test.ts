@@ -7,6 +7,33 @@ const tick = async () => {
   await Promise.resolve();
 };
 
+it.each([false, true])(
+  'preserves deep CMS return paths during validation (token %s)',
+  async (authenticated) => {
+    const ports = fixturePorts();
+    ports.navigation.go('/cms/press?entry=12#coverage');
+    if (authenticated) ports.tokens.write('expired');
+    vi.mocked(ports.http.request).mockResolvedValue({
+      status: 200,
+      data: { isAuthenticated: false },
+    });
+    const session = new SessionService(
+      ports.http,
+      ports.tokens,
+      ports.navigation,
+      fakeNotifications(),
+      ports.clock,
+    );
+    const stop = session.start();
+    await tick();
+    expect(ports.navigation.replace).toHaveBeenCalledWith(
+      '/login?returnTo=%2Fcms%2Fpress%3Fentry%3D12%23coverage',
+    );
+    expect(ports.tokens.read()).toBeNull();
+    stop();
+  },
+);
+
 it('clears credentials on explicit expiry and retains the CMS return location once', async () => {
   const ports = fixturePorts();
   ports.tokens.write('editor');
@@ -167,4 +194,61 @@ it('ignores query-only changes during validation and prevents duplicate login re
   await pending;
   expect(session.getSnapshot().submitting).toBe(false);
   stop();
+});
+
+it('ignores expiry and validation belonging to a replaced credential', async () => {
+  const ports = fixturePorts();
+  ports.tokens.write('old-token');
+  let release!: () => void;
+  vi.mocked(ports.http.request).mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        release = () => resolve({ status: 403, data: null });
+      }),
+  );
+  const session = new SessionService(
+    ports.http,
+    ports.tokens,
+    ports.navigation,
+    fakeNotifications(),
+    ports.clock,
+  );
+  const oldRevision = session.revision();
+  const stop = session.start();
+  ports.tokens.write('new-token');
+  session.expire('/cms/press', oldRevision);
+  release();
+  await tick();
+  expect(ports.tokens.read()).toBe('new-token');
+  expect(session.getSnapshot().authenticated).toBe(true);
+  expect(ports.navigation.replace).not.toHaveBeenCalled();
+  session.expire('/cms/press', session.revision());
+  expect(ports.tokens.read()).toBeNull();
+  stop();
+});
+
+it('does not clear a newer credential when an older logout completes', async () => {
+  const ports = fixturePorts();
+  ports.tokens.write('old-token');
+  let release!: () => void;
+  vi.mocked(ports.http.request).mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        release = () => resolve({ status: 200, data: null });
+      }),
+  );
+  const session = new SessionService(
+    ports.http,
+    ports.tokens,
+    ports.navigation,
+    fakeNotifications(),
+    ports.clock,
+  );
+  const pending = session.logout();
+  ports.tokens.write('new-token');
+  release();
+  await pending;
+  expect(ports.tokens.read()).toBe('new-token');
+  expect(session.getSnapshot().authenticated).toBe(true);
+  expect(ports.navigation.go).not.toHaveBeenCalled();
 });
