@@ -152,12 +152,7 @@ it.each(cases)(
     expect(create.draft.canDelete).toBe(false);
     expect(create.remove).toBeUndefined();
     await create.save(edit.draft);
-    expect(page[port].create).toHaveBeenCalledExactlyOnceWith({
-      ...expected,
-      ...('publishedAt' in expected && expected.publishedAt !== null
-        ? { publishedAt: '2026-10-01T14:30:00.000Z' }
-        : {}),
-    });
+    expect(page[port].create).toHaveBeenCalledExactlyOnceWith(expected);
     expect(
       plan({ type, id: '00000000-0000-4000-8000-0000000003e7' }),
     ).toBeNull();
@@ -342,3 +337,19 @@ it.each([
     );
   },
 );
+
+it('retains explicit submillisecond values supplied to the domain editor', async () => {
+  const dto = aPressDTO();
+  const { page, plan } = fixture(toPageContent(dto));
+  const edit = plan({
+    type: PageCollection.ContentEntries,
+    id: dto.entries[0]!.id,
+  })!;
+  await edit.save(
+    change(edit.draft, Key.PublishedAt, '2026-11-01T10:15:30.123456'),
+  );
+  expect(page.entries.update).toHaveBeenLastCalledWith(
+    dto.entries[0]!.id,
+    expect.objectContaining({ publishedAt: '2026-11-01T10:15:30.123456Z' }),
+  );
+});
