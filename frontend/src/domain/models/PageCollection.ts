@@ -43,5 +43,5 @@ export const PAGE_COLLECTIONS: Readonly<
 export interface CollectionOrder extends PageScope {
   readonly collection: PageCollection;
   readonly section: string | null;
-  readonly orderedIds: readonly number[];
+  readonly orderedIds: readonly string[];
 }

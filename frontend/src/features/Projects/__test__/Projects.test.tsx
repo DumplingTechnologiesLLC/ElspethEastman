@@ -46,7 +46,9 @@ it('composes independent editor forms and delegates every action', () => {
       save={save}
       saveAll={saveAll}
       remove={remove}
-      errors={{ 1: { title: ['Required'] } }}
+      errors={{
+        '00000000-0000-4000-8000-000000000001': { title: ['Required'] },
+      }}
     />,
   );
   const modal = screen.getByRole('dialog', { name: 'Add new Project' });
@@ -71,10 +73,10 @@ it('composes independent editor forms and delegates every action', () => {
   fireEvent.click(screen.getByRole('button', { name: 'Close Modal' }));
   expect(change).toHaveBeenCalledTimes(4);
   expect(save).toHaveBeenCalledWith(NEW_PROJECT_ID);
-  expect(save).toHaveBeenCalledWith(1);
+  expect(save).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
   expect(reset).toHaveBeenCalledWith(NEW_PROJECT_ID);
-  expect(reset).toHaveBeenCalledWith(1);
-  expect(remove).toHaveBeenCalledWith(1);
+  expect(reset).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
+  expect(remove).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
   expect(show).toHaveBeenCalledWith(true);
   expect(show).toHaveBeenCalledWith(false);
   expect(saveAll).toHaveBeenCalledOnce();

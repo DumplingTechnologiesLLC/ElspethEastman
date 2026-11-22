@@ -4,6 +4,7 @@ from portfolio.models import Page
 
 
 class PageDescriptorSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="public_id", read_only=True)
     primary_action = serializers.SerializerMethodField()
 
     class Meta:
