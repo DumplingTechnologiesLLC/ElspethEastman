@@ -11,6 +11,7 @@ export interface ContentEditorController extends Readable<ContentEditorState> {
   addRow: () => void;
   changeRow: (key: string, field: 'label' | 'value', value: string) => void;
   removeRow: (key: string) => void;
+  moveRow: (key: string, direction: -1 | 1) => void;
   upload: (file: File) => Promise<void>;
   removeImage: () => void;
   save: () => Promise<void>;

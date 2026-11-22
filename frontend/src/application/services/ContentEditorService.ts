@@ -134,6 +134,19 @@ export class ContentEditorService
       error: null,
     });
   };
+  moveRow: ContentEditorController['moveRow'] = (key, direction) => {
+    const { draft, saving } = this.getSnapshot();
+    if (draft?.rows == null || saving) return;
+    const from = draft.rows.items.findIndex((item) => item.key === key);
+    const to = from + direction;
+    if (from < 0 || to < 0 || to >= draft.rows.items.length) return;
+    const items = [...draft.rows.items];
+    [items[from], items[to]] = [items[to]!, items[from]!];
+    this.patch({
+      draft: { ...draft, rows: { ...draft.rows, items } },
+      error: null,
+    });
+  };
   upload: ContentEditorController['upload'] = async (file) => {
     const { draft, saving, uploading } = this.getSnapshot();
     if (draft?.image == null || saving || uploading) return;

@@ -154,6 +154,7 @@ export function mockServices() {
       addRow: vi.fn(),
       changeRow: vi.fn(),
       removeRow: vi.fn(),
+      moveRow: vi.fn(),
       upload: vi.fn(),
       removeImage: vi.fn(),
       save: vi.fn(),
