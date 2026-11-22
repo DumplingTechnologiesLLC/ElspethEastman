@@ -8,6 +8,7 @@ from portfolio.views.reorder import ReorderAPIView
 from portfolio.views.media import MediaAssetAPIView
 from portfolio.views.content_entries import ContentEntryAPIView, ContentEntryDetailAPIView
 from portfolio.views.feature import FeaturedItemAPIView
+from portfolio.views.music import MusicFeatureAPIView, MusicReleaseAPIView, MusicReleaseDetailAPIView
 
 app_name = "portfolio"
 urlpatterns = [
@@ -24,4 +25,7 @@ urlpatterns = [
     path("content/entries/", ContentEntryAPIView.as_view(), name="content-entries"),
     path("content/entries/<uuid:item_id>/", ContentEntryDetailAPIView.as_view(), name="content-entry-detail"),
     path("content/features/", FeaturedItemAPIView.as_view(), name="featured-items"),
+    path("music/features/", MusicFeatureAPIView.as_view(), name="music-features"),
+    path("music/releases/", MusicReleaseAPIView.as_view(), name="music-releases"),
+    path("music/releases/<uuid:item_id>/", MusicReleaseDetailAPIView.as_view(), name="music-release-detail"),
 ]

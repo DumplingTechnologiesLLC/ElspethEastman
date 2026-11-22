@@ -3,17 +3,22 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from portfolio.api import ContentAPIView
-from portfolio.models import ContentEntry, Page, PageImage, PageKind
+from portfolio.models import ContentEntry, MusicFeature, MusicRelease, Page, PageImage, PageKind
 from portfolio.serializers.page_content import PageContentSerializer
 from portfolio.serializers.page import PageDescriptorSerializer
 from portfolio.serializers.page_metadata import PageMetadataSerializer
 from portfolio.serializers.voiceover_page import VoiceoverPageSerializer
+from portfolio.serializers.music_page import MusicPageSerializer
 from portfolio.services.ownership import locked_page_registry
 
 
 # Specialized aggregates are introduced alongside their page implementation.
-PAGE_READERS = {PageKind.HOME: PageContentSerializer, PageKind.VOICEOVER: VoiceoverPageSerializer}
-PAGE_PREFETCHES = {PageKind.VOICEOVER: [Prefetch("entries", queryset=ContentEntry.objects.select_related("asset").prefetch_related("metadata"))]}
+PAGE_READERS = {PageKind.HOME: PageContentSerializer, PageKind.VOICEOVER: VoiceoverPageSerializer, PageKind.MUSIC: MusicPageSerializer}
+PAGE_PREFETCHES = {
+    PageKind.VOICEOVER: [Prefetch("entries", queryset=ContentEntry.objects.select_related("asset").prefetch_related("metadata"))],
+    PageKind.MUSIC: [Prefetch("music_feature", queryset=MusicFeature.objects.select_related("asset").prefetch_related("facts")),
+                     Prefetch("releases", queryset=MusicRelease.objects.select_related("asset"))],
+}
 
 
 def page_content_queryset():
