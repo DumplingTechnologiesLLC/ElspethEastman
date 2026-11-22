@@ -19,15 +19,15 @@ it.each(Object.entries(publicAPI))(([path, expected]) =>
 it.each([
   ['PATCH', '/api/skills/'],
   ['POST', '/api/projects/list/'],
-  ['PATCH', '/api/projects/list/6/'],
-  ['DELETE', '/api/projects/list/6/'],
+  ['PATCH', '/api/projects/list/00000000-0000-4000-8000-000000000006/'],
+  ['DELETE', '/api/projects/list/00000000-0000-4000-8000-000000000006/'],
   ['PATCH', '/api/projects/list/batch_update/'],
   ['POST', '/api/experience/'],
-  ['PATCH', '/api/experience/1/'],
-  ['DELETE', '/api/experience/1/'],
+  ['PATCH', '/api/experience/00000000-0000-4000-8000-000000000001/'],
+  ['DELETE', '/api/experience/00000000-0000-4000-8000-000000000001/'],
   ['POST', '/api/affiliations/'],
-  ['PATCH', '/api/affiliations/1/'],
-  ['DELETE', '/api/affiliations/1/'],
+  ['PATCH', '/api/affiliations/00000000-0000-4000-8000-000000000001/'],
+  ['DELETE', '/api/affiliations/00000000-0000-4000-8000-000000000001/'],
 ] as const)(([method, path]) =>
   it(`rejects anonymous ${method} ${path} without modifying content`, async ({
     request,

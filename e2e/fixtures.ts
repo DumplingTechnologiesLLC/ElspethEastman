@@ -12,7 +12,7 @@ interface DatabaseSnapshot {
   skills: Skills[];
   affiliations: Affiliation[];
   contacts: (ContactDraft & { sent: boolean })[];
-  experience: { id: number; credit: string }[];
+  experience: { id: string; credit: string }[];
 }
 
 function database(

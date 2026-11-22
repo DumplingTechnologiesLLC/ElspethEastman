@@ -28,16 +28,16 @@ class OwnedCollectionDetailAPIView(ContentAPIView):
     def patch(self, request, item_id):
         serializer = self.patch_serializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        page_id = get_object_or_404(self.collection.model, pk=item_id).page_id
+        page_id = get_object_or_404(self.collection.model, public_id=item_id).page_id
         with locked_page(page_id) as page:
-            row = get_object_or_404(self.collection.model, pk=item_id)
+            row = get_object_or_404(self.collection.model, public_id=item_id)
             row = self.collection.update(page, row, serializer.validated_data)
             return Response(self.read_serializer(row).data)
 
     def delete(self, request, item_id):
-        page_id = get_object_or_404(self.collection.model, pk=item_id).page_id
+        page_id = get_object_or_404(self.collection.model, public_id=item_id).page_id
         with locked_page(page_id) as page:
-            self.collection.delete(page, get_object_or_404(self.collection.model, pk=item_id))
+            self.collection.delete(page, get_object_or_404(self.collection.model, public_id=item_id))
         return Response(status=204)
 
 

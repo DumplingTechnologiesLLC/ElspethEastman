@@ -41,7 +41,7 @@ class PageDetailAPIView(ContentAPIView):
             return Response(PageDescriptorSerializer(serializer.save()).data)
 
     def get(self, request, page_id):
-        page = get_object_or_404(page_content_queryset(), pk=page_id)
+        page = get_object_or_404(page_content_queryset(), public_id=page_id)
         reader = PAGE_READERS[page.kind]
         prefetch_related_objects([page], *PAGE_PREFETCHES.get(page.kind, []))
         return Response(reader(page).data)

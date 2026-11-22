@@ -128,7 +128,7 @@ it('creates, edits, and deletes projects through the browser and public API', as
   });
   await dialog.locator('input[name$="-title"]').fill('New integration project');
   await dialog.locator('input[name$="-source"]').fill('new-video');
-  const created = await actionResponse<{ project: { id: number } }>(
+  const created = await actionResponse<{ project: { id: string } }>(
     page,
     'POST',
     '/api/projects/list/',
@@ -247,7 +247,7 @@ it.each([
     await dialog
       .locator('input[name="ExperienceLink"]')
       .fill('https://example.invalid/new-credit');
-    const created = await actionResponse<{ object: { id: number } }>(
+    const created = await actionResponse<{ object: { id: string } }>(
       page,
       'POST',
       '/api/experience/',
@@ -321,14 +321,16 @@ it('preserves saved experience through reset and required-credit validation', as
   await actionResponse(
     page,
     'PATCH',
-    '/api/experience/1/',
+    '/api/experience/00000000-0000-4000-8000-000000000001/',
     () => dialog.getByRole('button', { name: 'Save', exact: true }).click(),
     400,
   );
   await expect(dialog.getByText('This field may not be blank.')).toBeVisible();
-  expect(database().experience.find((item) => item.id === 1)!.credit).toBe(
-    'Fixture Voice Credits',
-  );
+  expect(
+    database().experience.find(
+      (item) => item.id === '00000000-0000-4000-8000-000000000001',
+    )!.credit,
+  ).toBe('Fixture Voice Credits');
 });
 
 it('resets, creates, edits, and deletes affiliations with confirmation', async ({
@@ -353,7 +355,7 @@ it('resets, creates, edits, and deletes affiliations with confirmation', async (
   await dialog
     .locator('input[name="affiliationLink"]')
     .fill('https://example.invalid/new-studio');
-  const created = await actionResponse<{ id: number }>(
+  const created = await actionResponse<{ id: string }>(
     page,
     'POST',
     '/api/affiliations/',

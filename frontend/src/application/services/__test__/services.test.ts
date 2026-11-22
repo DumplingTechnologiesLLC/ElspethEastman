@@ -29,21 +29,33 @@ import type { SkillsData } from '../../../domain/models/SkillsData';
 import type { Experience } from '../../../domain/models/Experience';
 
 import type { FooterData } from '../../../domain/models/FooterData';
-const project: ProjectDTO = { id: 1, src: 'abc', title: 'One', uuid: 1 };
+const project: ProjectDTO = {
+  id: '00000000-0000-4000-8000-000000000001',
+  src: 'abc',
+  title: 'One',
+  uuid: '00000000-0000-4000-8000-000000000001',
+};
 const experience: Experience = {
-  id: 1,
+  id: '00000000-0000-4000-8000-000000000001',
   credit: 'Voice',
   year: '(2021)',
   tba: false,
   link: 'https://example.invalid',
 };
 const affiliation: Affiliation = {
-  id: 1,
+  id: '00000000-0000-4000-8000-000000000001',
   affiliation: 'Studio',
   link: 'https://example.invalid',
 };
 const footer: FooterData = {
-  stats: [{ id: 1, value: '10', label: 'Credits', percent: 70 }],
+  stats: [
+    {
+      id: '00000000-0000-4000-8000-000000000001',
+      value: '10',
+      label: 'Credits',
+      percent: 70,
+    },
+  ],
   affiliations: [affiliation],
 };
 const skills: SkillsData = {
@@ -419,7 +431,12 @@ describe('projects', () => {
       await service.load();
       expect(service.getSnapshot().projects).toEqual([project]);
       if (mode === 'latest') {
-        api.replies.push(reply({ data: [{ ...project, id: 2 }], pages: 2 }));
+        api.replies.push(
+          reply({
+            data: [{ ...project, id: '00000000-0000-4000-8000-000000000002' }],
+            pages: 2,
+          }),
+        );
         await service.nextPage();
         expect(service.getSnapshot().projects).toHaveLength(2);
       }
@@ -459,9 +476,13 @@ describe('projects', () => {
       'https://youtube.com/watch?v=def&x=1',
     );
     expect(service.getSnapshot().draft.src).toBe('def');
-    service.change(1, 'src', 'https://youtube.com/embed/abc');
+    service.change(
+      '00000000-0000-4000-8000-000000000001',
+      'src',
+      'https://youtube.com/embed/abc',
+    );
     expect(service.getSnapshot().projects[0]!.src).toContain('embed/');
-    service.reset(1);
+    service.reset('00000000-0000-4000-8000-000000000001');
     expect(service.getSnapshot().projects[0]).toEqual(project);
     service.reset(NEW_PROJECT_ID);
     expect(service.getSnapshot().draft.title).toBe('');
@@ -483,20 +504,28 @@ describe('projects', () => {
     await service.load();
     service.show(true);
     service.change(NEW_PROJECT_ID, 'title', 'New');
-    api.replies.push(reply({ project: { ...project, id: 2, title: 'New' } }));
+    api.replies.push(
+      reply({
+        project: {
+          ...project,
+          id: '00000000-0000-4000-8000-000000000002',
+          title: 'New',
+        },
+      }),
+    );
     await service.save(NEW_PROJECT_ID);
     expect(service.getSnapshot().projects).toHaveLength(2);
     expect(service.getSnapshot().open).toBe(false);
-    service.change(1, 'title', 'Edited');
+    service.change('00000000-0000-4000-8000-000000000001', 'title', 'Edited');
     api.replies.push(reply({ ...project, title: 'Edited' }));
-    await service.save(1);
-    service.change(1, 'title', 'Unsaved');
-    service.reset(1);
+    await service.save('00000000-0000-4000-8000-000000000001');
+    service.change('00000000-0000-4000-8000-000000000001', 'title', 'Unsaved');
+    service.reset('00000000-0000-4000-8000-000000000001');
     expect(service.getSnapshot().projects[0]!.title).toBe('Edited');
-    await service.save(900);
+    await service.save('00000000-0000-4000-8000-000000000384');
     expect(service.getSnapshot().busy).toEqual([]);
   });
-  it.each([NEW_PROJECT_ID, 1])(
+  it.each([NEW_PROJECT_ID, '00000000-0000-4000-8000-000000000001'])(
     'retains project validation errors for id %s and blocks save-all',
     async (id) => {
       const api = fakeApi();
@@ -538,14 +567,20 @@ describe('projects', () => {
     await service.load();
     api.replies.push(
       reply(
-        { message: 'Saved', id: 1, errors: { title: ['Required'] } },
+        {
+          message: 'Saved',
+          id: '00000000-0000-4000-8000-000000000001',
+          errors: { title: ['Required'] },
+        },
         status,
       ),
     );
     await service.saveAll();
     expect(service.getSnapshot().busy).toEqual([]);
     if (status === 400)
-      expect(service.getSnapshot().errors[1]).toEqual({ title: ['Required'] });
+      expect(
+        service.getSnapshot().errors['00000000-0000-4000-8000-000000000001'],
+      ).toEqual({ title: ['Required'] });
   });
   it('uses the bulk error text and tolerates a missing body', async () => {
     const api = fakeApi();
@@ -557,7 +592,14 @@ describe('projects', () => {
       'editor',
     );
     api.replies.push(
-      reply({ error: 'Broken', id: 1, errors: {} }, 400),
+      reply(
+        {
+          error: 'Broken',
+          id: '00000000-0000-4000-8000-000000000001',
+          errors: {},
+        },
+        400,
+      ),
       reply({}, 200),
       reply(null, 400),
       reply(null, null),
@@ -584,7 +626,7 @@ describe('projects', () => {
     api.replies.push(reply([project]));
     await service.load();
     if (confirmed) api.replies.push(reply({}));
-    await service.remove(1);
+    await service.remove('00000000-0000-4000-8000-000000000001');
     expect(service.getSnapshot().projects).toHaveLength(confirmed ? 0 : 1);
   });
   it('retains a project when deletion fails', async () => {
@@ -597,7 +639,7 @@ describe('projects', () => {
     );
     api.replies.push(reply([project]), reply(null, null));
     await service.load();
-    await service.remove(1);
+    await service.remove('00000000-0000-4000-8000-000000000001');
     expect(service.getSnapshot().projects).toEqual([project]);
   });
 });
@@ -668,8 +710,15 @@ describe('experience', () => {
     expect(service.getSnapshot().groups[Category.VoiceCredits][0]!.year).toBe(
       '(2026)',
     );
-    service.edit(Category.VoiceCredits, { ...experience, id: 2 });
-    api.replies.push(reply({ object: { ...experience, id: 2 } }));
+    service.edit(Category.VoiceCredits, {
+      ...experience,
+      id: '00000000-0000-4000-8000-000000000002',
+    });
+    api.replies.push(
+      reply({
+        object: { ...experience, id: '00000000-0000-4000-8000-000000000002' },
+      }),
+    );
     await service.save();
     expect(service.getSnapshot().groups[Category.VoiceCredits]).toHaveLength(1);
   });
@@ -703,7 +752,10 @@ describe('experience', () => {
       );
       api.replies.push(
         reply({
-          [Category.VoiceCredits]: [experience, { ...experience, id: 2 }],
+          [Category.VoiceCredits]: [
+            experience,
+            { ...experience, id: '00000000-0000-4000-8000-000000000002' },
+          ],
           [Category.MusicGames]: [],
           [Category.MusicMiscellaneous]: [],
           [Category.StreamingCredits]: [],
@@ -711,7 +763,10 @@ describe('experience', () => {
       );
       await service.load();
       if (confirmed) api.replies.push(reply(null, null));
-      await service.remove(Category.VoiceCredits, 1);
+      await service.remove(
+        Category.VoiceCredits,
+        '00000000-0000-4000-8000-000000000001',
+      );
       expect(service.getSnapshot().groups[Category.VoiceCredits]).toHaveLength(
         confirmed ? 1 : 2,
       );
@@ -737,21 +792,28 @@ describe('footer editor', () => {
     api.replies.push(
       reply({
         ...footer,
-        affiliations: [affiliation, { ...affiliation, id: 2 }],
+        affiliations: [
+          affiliation,
+          { ...affiliation, id: '00000000-0000-4000-8000-000000000002' },
+        ],
       }),
     );
     await service.load();
-    service.change(1, 'affiliation', 'Changed');
+    service.change(
+      '00000000-0000-4000-8000-000000000001',
+      'affiliation',
+      'Changed',
+    );
     expect(service.getSnapshot().data.affiliations[0]!.affiliation).toBe(
       'Changed',
     );
-    service.reset(1);
+    service.reset('00000000-0000-4000-8000-000000000001');
     expect(service.getSnapshot().data.affiliations[0]).toEqual(affiliation);
-    service.change(1, 'link', 'New');
+    service.change('00000000-0000-4000-8000-000000000001', 'link', 'New');
     api.replies.push(reply({ ...affiliation, link: 'New' }));
-    await service.save(1);
+    await service.save('00000000-0000-4000-8000-000000000001');
     expect(service.getSnapshot().cached[0]!.link).toBe('New');
-    await service.save(999);
+    await service.save('00000000-0000-4000-8000-0000000003e7');
     expect(service.getSnapshot().busy).toEqual([]);
   });
   it('creates from a reset draft and immediately closes the modal even on validation failure', async () => {
@@ -791,18 +853,23 @@ describe('footer editor', () => {
       flavor: 'error',
     });
     await service.load();
-    await service.save(1);
-    service.change(1, 'link', 'Fixed');
-    expect(service.getSnapshot().errors[1]!.link).toBeUndefined();
-    service.reset(1);
-    expect(service.getSnapshot().errors[1]).toEqual({});
+    await service.save('00000000-0000-4000-8000-000000000001');
+    service.change('00000000-0000-4000-8000-000000000001', 'link', 'Fixed');
+    expect(
+      service.getSnapshot().errors['00000000-0000-4000-8000-000000000001']!
+        .link,
+    ).toBeUndefined();
+    service.reset('00000000-0000-4000-8000-000000000001');
+    expect(
+      service.getSnapshot().errors['00000000-0000-4000-8000-000000000001'],
+    ).toEqual({});
   });
   it.each([200, null])('handles deletion status %s', async (status) => {
     const api = fakeApi();
     const service = new FooterService(api, fakeNotifications(), () => true);
     api.replies.push(reply(footer), reply({}, status));
     await service.load();
-    await service.remove(1);
+    await service.remove('00000000-0000-4000-8000-000000000001');
     expect(service.getSnapshot().data.affiliations).toHaveLength(
       status === 200 ? 0 : 1,
     );
@@ -810,7 +877,7 @@ describe('footer editor', () => {
   it('respects a canceled delete', async () => {
     const api = fakeApi();
     const service = new FooterService(api, fakeNotifications(), () => false);
-    await service.remove(1);
+    await service.remove('00000000-0000-4000-8000-000000000001');
     expect(api.request).not.toHaveBeenCalled();
   });
   it('handles an empty error body', async () => {
@@ -854,7 +921,7 @@ it('bulk-saves edited project fields after clearing their validation errors', as
   );
   api.replies.push(reply([project]), reply({ message: 'Saved' }));
   await service.load();
-  service.change(1, 'title', 'Edited');
+  service.change('00000000-0000-4000-8000-000000000001', 'title', 'Edited');
   await service.saveAll();
   expect(api.request).toHaveBeenLastCalledWith(
     '/api/projects/list/batch_update/',
@@ -925,14 +992,20 @@ it('reports a missing experience and preserves the existing optimistic local rem
   api.replies.push(
     reply({
       ...service.getSnapshot().groups,
-      [Category.VoiceCredits]: [experience, { ...experience, id: 2 }],
+      [Category.VoiceCredits]: [
+        experience,
+        { ...experience, id: '00000000-0000-4000-8000-000000000002' },
+      ],
     }),
   );
   await service.load();
   api.replies.push(reply(null, 404));
-  await service.remove(Category.VoiceCredits, 1);
+  await service.remove(
+    Category.VoiceCredits,
+    '00000000-0000-4000-8000-000000000001',
+  );
   expect(service.getSnapshot().groups[Category.VoiceCredits]).toEqual([
-    { ...experience, id: 2 },
+    { ...experience, id: '00000000-0000-4000-8000-000000000002' },
   ]);
   expect(notifications.show).toHaveBeenCalledWith({
     title: 'Error',
