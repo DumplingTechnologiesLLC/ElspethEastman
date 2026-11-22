@@ -92,7 +92,7 @@ class SkillViewSet(
         queryset = self.get_queryset()
         lookup = {}
         for field in self.model._meta.fields:
-            if field.name == 'id':
+            if field.name in ('id', 'public_id'):
                 continue
             regex = re.compile(r'(?<=_)([a-zA-Z])')
 
@@ -141,7 +141,7 @@ class ProjectViewSet(
         validated_serializers = []
         for item in request.data:
             try:
-                django_item = self.model.objects.get(pk=item['id'])
+                django_item = self.model.objects.get(public_id=item['id'])
             except Project.DoesNotExist:
                 return Response({
                     'error': f'An item with id "{django_item.get("id", None)}" called "{django_item.get("title", "Title not found")}" does not exist'},
@@ -164,7 +164,7 @@ class ProjectViewSet(
     def destroy(self, request, pk):
         # if not request.user.is_authenticated:
         #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
-        project = get_object_or_404(Project, pk=pk)
+        project = get_object_or_404(Project, public_id=pk)
         project.delete()
         return Response({'message': 'Success'})
 
@@ -267,7 +267,7 @@ class AffiliationViewSet(
     def destroy(self, request, pk):
         # if not request.user.is_authenticated:
         #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
-        project = get_object_or_404(Affiliations, pk=pk)
+        project = get_object_or_404(Affiliations, public_id=pk)
         project.delete()
         return Response({'message': 'Success'})
 
@@ -283,7 +283,7 @@ class AffiliationViewSet(
     def patch(self, request, pk,):
         # if not request.user.is_authenticated:
         #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
-        affiliation = get_object_or_404(Affiliations, pk=pk)
+        affiliation = get_object_or_404(Affiliations, public_id=pk)
         serializer = self.get_serializer(affiliation, data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -322,14 +322,14 @@ class ExperienceViewSet(
 
     def retrieve(self, request, pk=None):
         queryset = self.model.objects.all()
-        exp = get_object_or_404(queryset, pk=pk)
+        exp = get_object_or_404(queryset, public_id=pk)
         serializer = self.get_serializer(exp)
         return Response(serializer.data)
 
     def patch(self, request, pk,):
         # if not request.user.is_authenticated:
         #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
-        project = get_object_or_404(self.model, pk=pk)
+        project = get_object_or_404(self.model, public_id=pk)
         serializer = self.creation_serializer(project, data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -342,7 +342,7 @@ class ExperienceViewSet(
     def destroy(self, request, pk):
         # if not request.user.is_authenticated:
         #     return Response({'message': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
-        experience = get_object_or_404(self.model, pk=pk)
+        experience = get_object_or_404(self.model, public_id=pk)
         experience.delete()
         return Response({'message': 'Success'})
 

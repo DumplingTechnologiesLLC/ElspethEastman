@@ -14,10 +14,26 @@ import {
 } from './draft';
 import type { EditorPlan } from './EditorPlan';
 
+function publicationDisplay(timestamp: string | null): string {
+  return (timestamp ?? '')
+    .replace(/Z$/, '')
+    .replace(/(\.\d{3})\d+$/, '$1')
+    .replace(/(\.\d*?)0+$/, '$1')
+    .replace(/\.$/, '')
+    .replace(/:00$/, '');
+}
+function publicationInput(
+  edited: string,
+  original: string | null,
+): string | null {
+  if (edited === publicationDisplay(original)) return original;
+  return edited === '' ? null : new Date(edited + 'Z').toISOString();
+}
+
 export function entryPlan(
   content: PageContent,
   page: PageController,
-  id: number | null,
+  id: string | null,
 ): EditorPlan | null {
   if (
     content.kind !== PageKind.Voiceover &&
@@ -28,6 +44,8 @@ export function entryPlan(
   const voice = content.kind === PageKind.Voiceover,
     press = content.kind === PageKind.Press;
   const rows = voice ? content.roles : content.entries;
+  const originalPublication =
+    rows.find((row) => row.id === id)?.publishedAt ?? null;
   return collectionPlan(
     page.entries,
     rows,
@@ -66,7 +84,7 @@ export function entryPlan(
                 field(
                   Key.PublishedAt,
                   'Published at (UTC)',
-                  row?.publishedAt?.slice(0, -1) ?? '',
+                  publicationDisplay(originalPublication),
                   'datetime-local',
                   false,
                 ),
@@ -95,10 +113,9 @@ export function entryPlan(
       image: imageInput(draft),
       action: actionInput(draft),
       category: voice ? null : value(draft, Key.Category) || null,
-      publishedAt:
-        press && value(draft, Key.PublishedAt) !== ''
-          ? value(draft, Key.PublishedAt) + 'Z'
-          : null,
+      publishedAt: press
+        ? publicationInput(value(draft, Key.PublishedAt), originalPublication)
+        : null,
       metadata: draft.rows!.items.map(({ key, label, value: text }) => ({
         key,
         label,
