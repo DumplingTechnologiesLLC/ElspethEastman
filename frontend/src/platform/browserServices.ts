@@ -54,9 +54,5 @@ export function browserServices(browser: Window) {
     identifiers: new BrowserIdentifiers(browser.crypto),
     navigation,
     clock,
-    confirm: () =>
-      browser.confirm(
-        'Are you sure you want to delete this item? This action cannot be undone.',
-      ),
   });
 }

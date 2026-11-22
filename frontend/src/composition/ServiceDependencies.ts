@@ -9,5 +9,4 @@ export interface ServiceDependencies {
   tokens: TokenStorage;
   navigation: Navigation;
   clock: Clock;
-  confirm: () => boolean;
 }

@@ -86,24 +86,15 @@ export function fixturePorts() {
       async () => ({ status: 200, data: { isAuthenticated: false } }) as never,
     ),
   };
-  const confirm = vi.fn(() => true);
   return {
     http,
     identifiers,
     tokens,
     navigation,
     clock,
-    confirm,
     pending,
     storageChanged: () => storageListener(),
     services: () =>
-      createServiceContainer({
-        http,
-        tokens,
-        identifiers,
-        navigation,
-        clock,
-        confirm,
-      }),
+      createServiceContainer({ http, tokens, identifiers, navigation, clock }),
   };
 }

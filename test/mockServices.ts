@@ -1,4 +1,3 @@
-import { toProject } from '../frontend/src/application/mappers/toProject';
 import { vi } from 'vitest';
 import type { ServiceContainer } from '../frontend/src/composition/ServiceContainer';
 import type { SessionState } from '../frontend/src/domain/models/SessionState';
@@ -6,15 +5,9 @@ import type { SiteState } from '../frontend/src/domain/models/Site';
 import type { PageContentState } from '../frontend/src/domain/models/PageContent';
 import type { ContentEditorState } from '../frontend/src/domain/models/ContentEditor';
 
-import {
-  contactView,
-  skillsView,
-  projectsView,
-  experienceView,
-  footerView,
-  loginView,
-  notificationsView,
-} from '../frontend/src/stories/viewModels';
+import { loginView } from '../frontend/src/features/Login/Login.stories';
+import { notificationsView } from '../frontend/src/features/Notifications/Notifications.stories';
+import type { ContactState } from '../frontend/src/domain/models/ContactState';
 export function observable<T>(initial: T) {
   let snapshot = initial;
   const listeners = new Set<() => void>();
@@ -42,36 +35,15 @@ const collection = () => ({
 });
 
 export function mockServices() {
-  const { editor: _skillsEditor, ...skillsState } = skillsView;
-  const { mode: _projectsMode, ...projectsState } = projectsView;
-  const { editor: _experienceEditor, ...experienceState } = experienceView;
-  const { editor: _footerEditor, ...footerState } = footerView;
-  const skills = {
-    ...skillsView,
-    ...observable(skillsState),
-    load: vi.fn().mockResolvedValue(undefined),
-  };
-  const projects = {
-    ...projectsView,
-    ...observable({
-      ...projectsState,
-      projects: projectsState.projects.map(toProject),
-      draft: toProject(projectsState.draft),
+  const contact = {
+    ...observable<ContactState>({
+      draft: { name: '', email: '', message: '' },
+      errors: {},
+      submitting: false,
     }),
-    load: vi.fn().mockResolvedValue(undefined),
-    page: vi.fn().mockResolvedValue(undefined),
+    change: vi.fn(),
+    submit: vi.fn().mockResolvedValue(undefined),
   };
-  const experience = {
-    ...experienceView,
-    ...observable(experienceState),
-    load: vi.fn().mockResolvedValue(undefined),
-  };
-  const footer = {
-    ...footerView,
-    ...observable(footerState),
-    load: vi.fn().mockResolvedValue(undefined),
-  };
-  const contact = { ...contactView, ...observable(contactView) };
   const notifications = {
     ...observable(notificationsView.toasts),
     show: vi.fn(),
@@ -82,9 +54,6 @@ export function mockServices() {
   const session = {
     ...loginView,
     ...observable<SessionState>(loginView),
-    getPage: vi.fn<
-      () => import('../frontend/src/domain/models/ApplicationPage').ApplicationPage
-    >(() => 'home'),
     start: vi.fn(() => stopSession),
     logout: vi.fn().mockResolvedValue(undefined),
     navigate: vi.fn(),
@@ -165,18 +134,10 @@ export function mockServices() {
     media: { ...observable({ uploading: false }), upload: vi.fn() },
     page: vi.fn(() => page),
     editor: vi.fn(() => editor),
-    skills: vi.fn(() => skills),
-    projects: vi.fn(() => projects),
-    experience: vi.fn(() => experience),
-    footer: vi.fn(() => footer),
     dispose: vi.fn(),
   };
   return {
     services,
-    skills,
-    projects,
-    experience,
-    footer,
     contact,
     notifications,
     session,

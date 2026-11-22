@@ -2,17 +2,14 @@ import { withCases } from '../tooling/withCases.ts';
 import type { PageContentDTO } from '../frontend/src/application/dto/PageContentDTO';
 import type { PageDTO } from '../frontend/src/application/dto/PageDTO';
 import type { Page } from '@playwright/test';
-import type { ProjectDTO } from '../frontend/src/application/dto/ProjectDTO';
-import type { Skills } from '../frontend/src/domain/models/Skills';
-import type { Affiliation } from '../frontend/src/domain/models/Affiliation';
 import type { ContactDraft } from '../frontend/src/domain/models/ContactDraft';
 import { test as base, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { root, python, baseURL, environment } from './environment.ts';
 interface DatabaseSnapshot {
-  projects: ProjectDTO[];
-  skills: Skills[];
-  affiliations: Affiliation[];
+  projects: readonly unknown[];
+  skills: readonly unknown[];
+  affiliations: readonly unknown[];
   contacts: (ContactDraft & { sent: boolean })[];
   experience: { id: string; credit: string }[];
 }

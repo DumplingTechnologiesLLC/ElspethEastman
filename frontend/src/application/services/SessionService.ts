@@ -27,18 +27,6 @@ export class SessionService extends Store<SessionState> implements Session {
       errors: {},
     });
   }
-  getPage = () => {
-    const { path, authenticated } = this.getSnapshot();
-    return path.startsWith('/cms')
-      ? authenticated
-        ? 'cms'
-        : 'login'
-      : path.startsWith('/login')
-        ? 'login'
-        : path.startsWith('/projects')
-          ? 'projects'
-          : 'home';
-  };
   start = () => {
     const stopNavigation = this.navigation.listen(() => {
       const path = this.navigation.location();
