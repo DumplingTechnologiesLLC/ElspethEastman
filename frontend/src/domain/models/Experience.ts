@@ -1,5 +1,5 @@
 export interface Experience {
-  id: number;
+  id: string;
   year: string;
   link: string | null;
   tba: boolean;
