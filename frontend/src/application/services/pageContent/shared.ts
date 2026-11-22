@@ -7,14 +7,16 @@ export function upsertRecord<T extends OrderedPageRecord>(
   rows: readonly T[],
   value: T,
 ): readonly T[] {
+  const position = rows.findIndex((row) => row.id === value.id);
+  const canonical = [...rows];
+  if (position === -1) canonical.push(value);
+  else canonical[position] = value;
   // oxlint-disable-next-line unicorn/no-array-sort -- Sort this newly allocated array under the ES2022 runtime target.
-  return [...rows.filter((row) => row.id !== value.id), value].sort(
-    (a, b) => a.sortOrder - b.sortOrder || a.id - b.id,
-  );
+  return canonical.sort((a, b) => a.sortOrder - b.sortOrder);
 }
 export function withoutRecord<T extends OrderedPageRecord>(
   rows: readonly T[],
-  id: number,
+  id: string,
 ): readonly T[] {
   return rows.filter((row) => row.id !== id);
 }
