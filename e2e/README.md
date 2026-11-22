@@ -6,12 +6,16 @@ The scenarios verify:
 
 - Fresh loads of all six pages, current-slug routing, renamed navigation, invalid addresses, and retry after a failed read.
 - Cached Voiceover/Press selection, direct links, history, focus restoration, and query/hash preservation across renames and public/CMS mode switches.
+- Selected-entry deletion restores collection focus after the native editor modal closes, in both Voiceover and Press.
 - Required and incorrect login credentials, selected CMS return locations, reload, logout, and expired mutation credentials.
 - Create/edit/reload/delete for roles, releases, recent streams, clips, coverage, appearances, chapters, and current work.
 - Shared text/identity/fact/image editors, independent music practice, complete ordering, canonical hero identity, and closing deleted selection.
 - Inline contact validation, actual Django persistence and console mail, pending submission, and network/server recovery.
+- Typing corrections after required-field validation retains focus; unrelated Press edits preserve the full stored publication timestamp despite the date control's millisecond display.
 - Failed CMS drafts, duplicate prevention, modal focus/Escape, corrupt-media rejection, verified uploads, and canonical response reconciliation.
 - Retained legacy public API snapshots, anonymous write rejection, private contact listing, CSRF, invalid pagination, and guarded database resets.
+
+The redesigned API uses grouped `/api/v2/` routes and UUIDv4 public identifiers. Fixtures and retained legacy API snapshots use public UUIDs while database integer keys remain internal. Packaged images resolve under `/static/portfolio/v1/`; uploaded images use the configured media backend.
 
 Every built Storybook story renders independently in Chromium. A story fails if it requests application APIs or raises a browser exception. Browser workflows also reject unexpected page exceptions. CI forbids focused tests, uses zero retries, and retains failure screenshots, videos, and traces.
 
