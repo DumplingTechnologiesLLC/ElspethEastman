@@ -5,6 +5,9 @@ from rest_framework.response import Response
 from portfolio.api import ContentAPIView
 from portfolio.models import Page, PageImage, PageKind
 from portfolio.serializers.page_content import PageContentSerializer
+from portfolio.serializers.page import PageDescriptorSerializer
+from portfolio.serializers.page_metadata import PageMetadataSerializer
+from portfolio.services.ownership import locked_page_registry
 
 
 # Specialized aggregates are introduced alongside their page implementation.
@@ -19,6 +22,12 @@ def page_content_queryset():
 
 
 class PageDetailAPIView(ContentAPIView):
+    def patch(self, request, page_id):
+        with locked_page_registry(page_id) as page:
+            serializer = PageMetadataSerializer(page, data=request.data, context={"page": page})
+            serializer.is_valid(raise_exception=True)
+            return Response(PageDescriptorSerializer(serializer.save()).data)
+
     def get(self, request, page_id):
         page = get_object_or_404(page_content_queryset(), public_id=page_id)
         reader = PAGE_READERS.get(page.kind)
