@@ -13,5 +13,5 @@ export type PageCollectionDTO =
 export interface CollectionOrderDTO extends PageScopeDTO {
   collection: PageCollectionDTO;
   section: string | null;
-  ordered_ids: number[];
+  ordered_ids: string[];
 }

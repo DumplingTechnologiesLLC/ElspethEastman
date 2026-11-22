@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.utils import timezone
 
@@ -5,6 +6,7 @@ from django.utils import timezone
 
 
 class Contact(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField('Name', max_length=2000)
     email = models.EmailField('Email')
     message = models.TextField('Message')
@@ -23,6 +25,7 @@ class Contact(models.Model):
 
 
 class Experience(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     VOICE_CREDITS = 'Voice Credits'
     MUSIC_GAMES = 'Music - Games'
     MUSIC_MISCELLANEOUS = 'Music - Miscellaneous'
@@ -44,6 +47,7 @@ class Experience(models.Model):
 
 
 class FooterStat(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     value = models.CharField("Value", max_length=200)
     label = models.CharField("Label", max_length=200)
     percent = models.IntegerField("Percent")
@@ -53,6 +57,7 @@ class FooterStat(models.Model):
 
 
 class Affiliations(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     affiliation = models.CharField("Affiliation", max_length=2000)
     link = models.CharField(blank=True, max_length=400, null=True)
 
@@ -65,6 +70,7 @@ class Affiliations(models.Model):
 
 
 class Project(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     src = models.CharField("Source", max_length=200)
     title = models.CharField("Title", max_length=1000)
     uuid = models.IntegerField('UUID', blank=True, null=True)
@@ -83,6 +89,7 @@ class Project(models.Model):
 
 
 class Skills(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     game_development = models.TextField()
     streaming = models.TextField()
     voice_acting = models.TextField()

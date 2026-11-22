@@ -13,7 +13,7 @@ export class MediaService extends Store<MediaState> implements MediaController {
   constructor(
     private repository: Pick<ContentRepository, 'upload'>,
     private alerts: UIAlerts,
-    private session: Pick<Session, 'getSnapshot' | 'expire'>,
+    private session: Pick<Session, 'getSnapshot' | 'expire' | 'revision'>,
   ) {
     super({ uploading: false });
   }
@@ -29,11 +29,13 @@ export class MediaService extends Store<MediaState> implements MediaController {
         this.alerts,
         this.session,
         this.session.getSnapshot().path,
+        this.session.revision(),
       );
       return result;
     }
     const returnTo = this.session.getSnapshot().path;
     this.patch({ uploading: true });
+    const revision = this.session.revision();
     try {
       const result = await this.repository.upload(input);
       if (!result.ok)
@@ -42,6 +44,7 @@ export class MediaService extends Store<MediaState> implements MediaController {
           this.alerts,
           this.session,
           returnTo,
+          revision,
           true,
         );
       return result;
@@ -49,7 +52,13 @@ export class MediaService extends Store<MediaState> implements MediaController {
       const result = rejectContent(
         'Could not upload this image. Please try again.',
       );
-      reportContentFailure(result.error, this.alerts, this.session, returnTo);
+      reportContentFailure(
+        result.error,
+        this.alerts,
+        this.session,
+        returnTo,
+        revision,
+      );
       return result;
     } finally {
       this.patch({ uploading: false });

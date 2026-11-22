@@ -4,7 +4,7 @@ import type { WorkEntryView } from '../../application/viewModels/WorkEntryView';
 import tristana from '../../assets/design/tristana.png';
 import { withSurface } from '../../stories/withSurface';
 export const tristanaView: WorkEntryView = {
-  id: 40,
+  id: '00000000-0000-4000-8000-000000000028',
   title: 'Tristana',
   eyebrow: 'League of Legends',
   description:
