@@ -78,7 +78,7 @@ it('reports validation/network failures and expires authentication without losin
     error: { status: 403, detail: 'Expired', fields: {} },
   });
   await service.upload(input);
-  expect(session.expire).toHaveBeenCalledWith(session.getSnapshot().path);
+  expect(session.expire).toHaveBeenCalledWith(session.getSnapshot().path, 0);
   repository.upload.mockRejectedValueOnce(new Error('Offline'));
   expect((await service.upload(input)).ok).toBe(false);
   expect(service.getSnapshot().uploading).toBe(false);

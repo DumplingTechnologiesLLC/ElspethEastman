@@ -89,6 +89,7 @@ export function mockServices() {
     navigate: vi.fn(),
     replace: vi.fn(),
     expire: vi.fn(),
+    revision: vi.fn(() => 0),
   };
   const site = {
     year: 2026,
@@ -108,13 +109,13 @@ export function mockServices() {
   };
   const page = {
     ...observable<PageContentState>({
-      pageId: 1,
+      pageId: '00000000-0000-4000-8000-000000000001',
       content: null,
       status: 'idle',
       error: null,
       mutating: false,
     }),
-    pageId: 1,
+    pageId: '00000000-0000-4000-8000-000000000001',
     start: vi.fn(() => vi.fn()),
     load: vi.fn().mockResolvedValue(undefined),
     metadata: vi.fn(),
@@ -138,6 +139,7 @@ export function mockServices() {
       draft: null,
       saving: false,
       uploading: false,
+      attributionLocked: false,
       confirmingDelete: false,
       error: null,
     }),

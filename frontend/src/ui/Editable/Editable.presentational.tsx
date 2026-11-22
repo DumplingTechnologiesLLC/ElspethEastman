@@ -92,8 +92,8 @@ export function Editable({
         )
           return;
         event.preventDefault();
-        const id = Number(event.dataTransfer.getData('text/x-elspeth-id'));
-        if (Number.isSafeInteger(id) && id > 0) order.before(id);
+        const id = event.dataTransfer.getData('text/x-elspeth-id');
+        if (id !== '') order.before(id);
       }}
     >
       {children}

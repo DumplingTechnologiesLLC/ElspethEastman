@@ -5,7 +5,10 @@ import { collectionActions, editActions } from '../editableActions';
 
 it('binds edit/delete intents and canonical collection placements without exposing implementations', () => {
   const { page, editor } = mockServices();
-  const target = { type: PageCollection.Eyebrows, id: 10 } as const;
+  const target = {
+    type: PageCollection.Eyebrows,
+    id: '00000000-0000-4000-8000-00000000000a',
+  } as const;
   const basic = editActions(editor, target, false, false);
   basic.edit();
   expect(editor.open).toHaveBeenCalledWith(target);
@@ -16,7 +19,11 @@ it('binds edit/delete intents and canonical collection placements without exposi
     target,
     PageCollection.Eyebrows,
     null,
-    [10, 11, 12],
+    [
+      '00000000-0000-4000-8000-00000000000a',
+      '00000000-0000-4000-8000-00000000000b',
+      '00000000-0000-4000-8000-00000000000c',
+    ],
     0,
   );
   expect(first.order!.up).toBeNull();
@@ -24,8 +31,8 @@ it('binds edit/delete intents and canonical collection placements without exposi
   expect(page.move).toHaveBeenLastCalledWith({
     collection: 'eyebrows',
     section: null,
-    itemId: 10,
-    beforeId: 12,
+    itemId: '00000000-0000-4000-8000-00000000000a',
+    beforeId: '00000000-0000-4000-8000-00000000000c',
   });
   first.remove!();
   expect(editor.confirmDelete).toHaveBeenCalledWith(true);
@@ -35,29 +42,33 @@ it('binds edit/delete intents and canonical collection placements without exposi
     target,
     PageCollection.Eyebrows,
     null,
-    [10, 11, 12],
+    [
+      '00000000-0000-4000-8000-00000000000a',
+      '00000000-0000-4000-8000-00000000000b',
+      '00000000-0000-4000-8000-00000000000c',
+    ],
     1,
   );
   middle.order!.up!();
   expect(page.move).toHaveBeenLastCalledWith({
     collection: 'eyebrows',
     section: null,
-    itemId: 11,
-    beforeId: 10,
+    itemId: '00000000-0000-4000-8000-00000000000b',
+    beforeId: '00000000-0000-4000-8000-00000000000a',
   });
   middle.order!.down!();
   expect(page.move).toHaveBeenLastCalledWith({
     collection: 'eyebrows',
     section: null,
-    itemId: 11,
+    itemId: '00000000-0000-4000-8000-00000000000b',
     beforeId: null,
   });
-  middle.order!.before(12);
+  middle.order!.before('00000000-0000-4000-8000-00000000000c');
   expect(page.move).toHaveBeenLastCalledWith({
     collection: 'eyebrows',
     section: null,
-    itemId: 12,
-    beforeId: 11,
+    itemId: '00000000-0000-4000-8000-00000000000c',
+    beforeId: '00000000-0000-4000-8000-00000000000b',
   });
   const last = collectionActions(
     page,
@@ -65,7 +76,11 @@ it('binds edit/delete intents and canonical collection placements without exposi
     target,
     PageCollection.Eyebrows,
     null,
-    [10, 11, 12],
+    [
+      '00000000-0000-4000-8000-00000000000a',
+      '00000000-0000-4000-8000-00000000000b',
+      '00000000-0000-4000-8000-00000000000c',
+    ],
     2,
   );
   expect(last.order!.down).toBeNull();

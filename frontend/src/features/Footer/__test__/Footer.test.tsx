@@ -15,7 +15,13 @@ it('renders public facts, affiliation links, loading and failed states independe
       {...footerView}
       data={{
         ...footerView.data,
-        affiliations: [{ id: 1, affiliation: 'Studio', link: null }],
+        affiliations: [
+          {
+            id: '00000000-0000-4000-8000-000000000001',
+            affiliation: 'Studio',
+            link: null,
+          },
+        ],
       }}
     />,
   );
@@ -61,10 +67,10 @@ it('delegates changes, reset, save, delete and modal visibility in editor mode',
   fireEvent.click(within(modal).getByRole('button', { name: 'Close Modal' }));
   expect(change).toHaveBeenCalledTimes(4);
   expect(save).toHaveBeenCalledWith(NEW_AFFILIATION_ID);
-  expect(save).toHaveBeenCalledWith(1);
+  expect(save).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
   expect(reset).toHaveBeenCalledWith(NEW_AFFILIATION_ID);
-  expect(reset).toHaveBeenCalledWith(1);
-  expect(remove).toHaveBeenCalledWith(1);
+  expect(reset).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
+  expect(remove).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
   expect(show).toHaveBeenCalledWith(true);
   expect(show).toHaveBeenCalledWith(false);
   view.rerender(
@@ -73,10 +79,18 @@ it('delegates changes, reset, save, delete and modal visibility in editor mode',
       editor
       data={{
         ...footerView.data,
-        affiliations: [{ id: 1, affiliation: 'Studio', link: null }],
+        affiliations: [
+          {
+            id: '00000000-0000-4000-8000-000000000001',
+            affiliation: 'Studio',
+            link: null,
+          },
+        ],
       }}
-      errors={{ 1: { affiliation: ['Required'] } }}
-      busy={[1]}
+      errors={{
+        '00000000-0000-4000-8000-000000000001': { affiliation: ['Required'] },
+      }}
+      busy={['00000000-0000-4000-8000-000000000001']}
     />,
   );
   expect(screen.getByRole('button', { name: 'Delete' })).toBeDisabled();

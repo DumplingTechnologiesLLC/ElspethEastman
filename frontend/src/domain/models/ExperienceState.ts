@@ -11,7 +11,7 @@ export interface ExperienceState {
   groups: Record<Category, Experience[]>;
   draft: ExperienceDraft;
   cached: ExperienceDraft;
-  id: number | null;
+  id: string | null;
   open: boolean;
   errors: Errors;
   year: number;
