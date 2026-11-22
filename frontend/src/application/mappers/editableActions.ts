@@ -29,7 +29,7 @@ export function collectionActions(
   target: EditorTarget,
   collection: PageCollection,
   section: string | null,
-  ids: readonly number[],
+  ids: readonly string[],
   index: number,
 ): EditableActions {
   const id = ids[index]!;

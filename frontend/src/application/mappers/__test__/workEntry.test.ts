@@ -6,7 +6,14 @@ import { workEntry } from '../workEntry';
 it('projects public data and canonical feature intents without copying server metadata IDs', () => {
   const { page, editor } = mockServices();
   const entry = toContentEntry(anEntryDTO());
-  const publicView = workEntry(entry, page, editor, false, [40], 0);
+  const publicView = workEntry(
+    entry,
+    page,
+    editor,
+    false,
+    ['00000000-0000-4000-8000-000000000028'],
+    0,
+  );
   expect(publicView).toMatchObject({
     actions: null,
     badge: null,
@@ -14,15 +21,22 @@ it('projects public data and canonical feature intents without copying server me
     metadata: [{ key: 'details', label: 'Details', value: 'Character detail' }],
   });
   expect(publicView.metadata[0]).not.toHaveProperty('id');
-  const cms = workEntry(entry, page, editor, true, [40], 0);
+  const cms = workEntry(
+    entry,
+    page,
+    editor,
+    true,
+    ['00000000-0000-4000-8000-000000000028'],
+    0,
+  );
   cms.actions!.feature!.apply();
-  expect(page.feature).toHaveBeenLastCalledWith(40);
+  expect(page.feature).toHaveBeenLastCalledWith(entry.id);
   const featured = workEntry(
     { ...entry, isFeatured: true },
     page,
     editor,
     true,
-    [40],
+    ['00000000-0000-4000-8000-000000000028'],
     0,
   );
   expect(featured.badge).toBe('Featured');
@@ -34,7 +48,7 @@ it('projects public data and canonical feature intents without copying server me
     page,
     editor,
     true,
-    [40],
+    ['00000000-0000-4000-8000-000000000028'],
     0,
   );
   expect(imageless).toMatchObject({
@@ -48,7 +62,7 @@ it('projects public data and canonical feature intents without copying server me
       page,
       editor,
       true,
-      [40],
+      ['00000000-0000-4000-8000-000000000028'],
       0,
     ).actions!.feature,
   ).not.toBeNull();

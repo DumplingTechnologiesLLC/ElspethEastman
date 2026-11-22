@@ -11,7 +11,11 @@ import { usePressPageState } from '../usePressPageState';
 it('selects loaded coverage independently of promotion and keeps appearances separate', () => {
   const { services, page, site, editor } = mockServices();
   const hook = renderHook(usePressPageState, {
-    initialProps: { services, pageId: 5, editor: false },
+    initialProps: {
+      services,
+      pageId: '00000000-0000-4000-8000-000000000005',
+      editor: false,
+    },
   });
   expect(hook.result.current).toMatchObject({
     ready: false,
@@ -28,7 +32,11 @@ it('selects loaded coverage independently of promotion and keeps appearances sep
     aPressDTO({
       entries: [
         ...dto.entries,
-        anEntryDTO({ id: 42, page_id: 5, metadata: [] }),
+        anEntryDTO({
+          id: '00000000-0000-4000-8000-00000000002a',
+          page_id: '00000000-0000-4000-8000-000000000005',
+          metadata: [],
+        }),
       ],
     }),
   );
@@ -40,44 +48,53 @@ it('selects loaded coverage independently of promotion and keeps appearances sep
         type: 'page',
         page: content.page,
         editor: false,
-        selectedId: 42,
+        selectedId: '00000000-0000-4000-8000-00000000002a',
         anchor: '',
       },
     });
   });
   expect(hook.result.current).toMatchObject({
-    featured: { id: 40 },
-    selected: { id: 42, outlet: '' },
-    entries: [{ id: 42 }],
-    appearances: [{ id: 70, actions: null }],
+    featured: { id: '00000000-0000-4000-8000-000000000028' },
+    selected: { id: '00000000-0000-4000-8000-00000000002a', outlet: '' },
+    entries: [{ id: '00000000-0000-4000-8000-00000000002a' }],
+    appearances: [
+      { id: '00000000-0000-4000-8000-000000000046', actions: null },
+    ],
   });
   expect(page.load).not.toHaveBeenCalled();
-  hook.rerender({ services, pageId: 5, editor: true });
+  hook.rerender({
+    services,
+    pageId: '00000000-0000-4000-8000-000000000005',
+    editor: true,
+  });
   expect(hook.result.current.entries[0]!.outlet).toBe('Outlet');
   hook.result.current.appearances[0]!.actions!.edit();
   hook.result.current.controls!.addCoverage();
   hook.result.current.controls!.addAppearance();
   hook.result.current.controls!.addCoverageHeading();
   hook.result.current.controls!.addAppearanceHeading();
-  hook.result.current.open(40);
+  hook.result.current.open('00000000-0000-4000-8000-000000000028');
   hook.result.current.close();
   expect(editor.open.mock.calls.map(([target]) => target)).toEqual([
-    { type: 'appearances', id: 70 },
+    { type: 'appearances', id: '00000000-0000-4000-8000-000000000046' },
     { type: 'content_entries', id: null },
     { type: 'appearances', id: null },
     { type: 'copy', section: 'coverage', key: null },
     { type: 'copy', section: 'appearances', key: null },
   ]);
-  expect(site.select.mock.calls).toEqual([[40], [null]]);
+  expect(site.select.mock.calls).toEqual([
+    ['00000000-0000-4000-8000-000000000028'],
+    [null],
+  ]);
   expect(hook.result.current.appearances[0]!.actions!.feature).toBeNull();
   act(() =>
     site.publish({
       ...site.getSnapshot(),
       route: {
         type: 'page',
-        page: { ...content.page, id: 99 },
+        page: { ...content.page, id: '00000000-0000-4000-8000-000000000063' },
         editor: false,
-        selectedId: 42,
+        selectedId: '00000000-0000-4000-8000-00000000002a',
         anchor: '',
       },
     }),
@@ -87,7 +104,13 @@ it('selects loaded coverage independently of promotion and keeps appearances sep
     page.publish({
       ...page.getSnapshot(),
       content: toPageContent(
-        aPressDTO({ entries: [], feature: { page_id: 5, item_id: null } }),
+        aPressDTO({
+          entries: [],
+          feature: {
+            page_id: '00000000-0000-4000-8000-000000000005',
+            item_id: null,
+          },
+        }),
       ),
       mutating: true,
     }),

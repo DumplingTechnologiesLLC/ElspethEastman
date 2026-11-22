@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-/** Restores a recreated collection trigger after a loaded detail closes. */
-export function useEntryFocus(selectedId: number | null) {
+/** Preserves keyboard focus across detail transitions and modal closure. */
+export function useEntryFocus(selectedId: string | null) {
   const list = useRef<HTMLDivElement>(null),
     detail = useRef<HTMLDivElement>(null),
     opener = useRef<HTMLButtonElement | null>(null),
@@ -23,8 +23,22 @@ export function useEntryFocus(selectedId: number | null) {
               (button) =>
                 button.dataset.entryFocus === previous.dataset.entryFocus,
             );
-      (replacement ?? list.current)?.focus();
+      const restoreFocus = () => (replacement ?? list.current)?.focus();
       opener.current = null;
+      const dialog = document.querySelector<HTMLDialogElement>('dialog[open]');
+      if (dialog !== null) {
+        let active = true;
+        const afterClose = () =>
+          queueMicrotask(() => {
+            if (active) restoreFocus();
+          });
+        dialog.addEventListener('close', afterClose, { once: true });
+        return () => {
+          active = false;
+          dialog.removeEventListener('close', afterClose);
+        };
+      }
+      restoreFocus();
     }
   }, [selectedId]);
   return {

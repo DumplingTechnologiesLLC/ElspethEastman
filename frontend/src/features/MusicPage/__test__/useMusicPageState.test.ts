@@ -7,7 +7,11 @@ import { useMusicPageState } from '../useMusicPageState';
 it('keeps the practice singleton independent of editable ordered releases', () => {
   const { services, page, editor } = mockServices();
   const hook = renderHook(useMusicPageState, {
-    initialProps: { services, pageId: 3, editor: false },
+    initialProps: {
+      services,
+      pageId: '00000000-0000-4000-8000-000000000003',
+      editor: false,
+    },
   });
   expect(hook.result.current).toMatchObject({
     ready: false,
@@ -29,18 +33,22 @@ it('keeps the practice singleton independent of editable ordered releases', () =
     actions: null,
   });
   expect(hook.result.current.releases[0]).toMatchObject({
-    id: 50,
+    id: '00000000-0000-4000-8000-000000000032',
     eyebrow: '2014 · Album',
     actions: null,
   });
-  hook.rerender({ services, pageId: 3, editor: true });
+  hook.rerender({
+    services,
+    pageId: '00000000-0000-4000-8000-000000000003',
+    editor: true,
+  });
   hook.result.current.practice!.actions!.edit();
   hook.result.current.releases[0]!.actions!.edit();
   hook.result.current.controls!.add();
   hook.result.current.controls!.addReleaseHeading();
   expect(editor.open.mock.calls.map(([target]) => target)).toEqual([
     { type: 'practice' },
-    { type: 'releases', id: 50 },
+    { type: 'releases', id: '00000000-0000-4000-8000-000000000032' },
     { type: 'releases', id: null },
     { type: 'copy', section: 'releases', key: null },
   ]);
