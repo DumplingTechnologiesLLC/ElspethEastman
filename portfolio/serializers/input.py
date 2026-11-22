@@ -2,6 +2,8 @@ from collections.abc import Mapping
 
 from django.core.validators import URLValidator
 from rest_framework import serializers
+from portfolio.models import Page
+from portfolio.serializers.identity import PublicReferenceField
 
 
 class StrictInputSerializer(serializers.Serializer):
@@ -37,7 +39,7 @@ class LinkInputSerializer(CompleteInputSerializer):
 
 
 class PageScopeSerializer(StrictInputSerializer):
-    page_id = serializers.IntegerField(min_value=1)
+    page_id = PublicReferenceField(Page)
 
 
 class KeyedScopeSerializer(PageScopeSerializer):

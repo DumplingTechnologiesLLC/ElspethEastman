@@ -39,15 +39,15 @@ class ContentConcurrencyTests(TransactionTestCase):
     def test_competing_creates_cannot_exceed_three_facts(self):
         for label in ("One", "Two"):
             TriviaItem.objects.create(page=self.voice, label=label, value="Fact")
-        body = {"page_id": self.voice.pk, "label": "New", "value": "Fact"}
-        statuses = self.run_concurrently([("post", "/api/trivia/", body), ("post", "/api/trivia/", body)])
+        body = {"page_id": str(self.voice.public_id), "label": "New", "value": "Fact"}
+        statuses = self.run_concurrently([("post", "/api/v2/pages/trivia/", body), ("post", "/api/v2/pages/trivia/", body)])
         self.assertEqual(statuses, [201, 400])
         self.assertEqual(TriviaItem.objects.filter(page=self.voice).count(), 3)
 
     def test_competing_page_renames_return_a_field_error_for_the_losing_claim(self):
         statuses = self.run_concurrently([
-            ("patch", f"/api/pages/{self.voice.pk}/", {"slug": "shared-route"}),
-            ("patch", f"/api/pages/{self.press.pk}/", {"slug": "shared-route"}),
+            ("patch", f"/api/v2/pages/{self.voice.public_id}/", {"slug": "shared-route"}),
+            ("patch", f"/api/v2/pages/{self.press.public_id}/", {"slug": "shared-route"}),
         ])
         self.assertEqual(statuses, [200, 400])
         self.assertEqual(Page.objects.filter(slug="shared-route").count(), 1)
