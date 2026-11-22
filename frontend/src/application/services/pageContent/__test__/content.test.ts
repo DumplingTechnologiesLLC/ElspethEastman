@@ -58,14 +58,33 @@ const press = toPageContent(aPressDTO());
 const bio = toPageContent(aBioDTO());
 it('reads complete reorder membership only for supported collections and copy sections', () => {
   for (const [content, collection, expected] of [
-    [voice, PageCollection.Eyebrows, [100]],
-    [voice, PageCollection.Trivia, [101]],
-    [voice, PageCollection.ContentEntries, [40, 42]],
-    [music, PageCollection.Releases, [50]],
-    [stream, PageCollection.StreamClips, [60]],
-    [press, PageCollection.Appearances, [70]],
-    [bio, PageCollection.BioChapters, [80]],
-    [bio, PageCollection.CurrentItems, [90]],
+    [voice, PageCollection.Eyebrows, ['00000000-0000-4000-8000-000000000064']],
+    [voice, PageCollection.Trivia, ['00000000-0000-4000-8000-000000000065']],
+    [
+      voice,
+      PageCollection.ContentEntries,
+      [
+        '00000000-0000-4000-8000-000000000028',
+        '00000000-0000-4000-8000-00000000002a',
+      ],
+    ],
+    [music, PageCollection.Releases, ['00000000-0000-4000-8000-000000000032']],
+    [
+      stream,
+      PageCollection.StreamClips,
+      ['00000000-0000-4000-8000-00000000003c'],
+    ],
+    [
+      press,
+      PageCollection.Appearances,
+      ['00000000-0000-4000-8000-000000000046'],
+    ],
+    [bio, PageCollection.BioChapters, ['00000000-0000-4000-8000-000000000050']],
+    [
+      bio,
+      PageCollection.CurrentItems,
+      ['00000000-0000-4000-8000-00000000005a'],
+    ],
   ] as const)
     expect(collectionIds(content, { collection, section: null })).toEqual(
       expected,
@@ -84,7 +103,7 @@ it('reads complete reorder membership only for supported collections and copy se
   ).toBeNull();
   expect(
     collectionIds(home, { collection: PageCollection.Copy, section: 'intro' }),
-  ).toEqual([30]);
+  ).toEqual(['00000000-0000-4000-8000-00000000001e']);
   expect(
     collectionIds(home, { collection: PageCollection.Copy, section: 'intro' }),
   ).toEqual(
@@ -98,14 +117,21 @@ it('reads complete reorder membership only for supported collections and copy se
   ).toBeNull();
   const otherCopy = {
     ...home,
-    copy: [...home.copy, { ...home.copy[0]!, id: 32, section: 'other' }],
+    copy: [
+      ...home.copy,
+      {
+        ...home.copy[0]!,
+        id: '00000000-0000-4000-8000-000000000020',
+        section: 'other',
+      },
+    ],
   };
   expect(
     collectionIds(otherCopy, {
       collection: PageCollection.Copy,
       section: 'intro',
     }),
-  ).toEqual([30]);
+  ).toEqual(['00000000-0000-4000-8000-00000000001e']);
 });
 
 it('reconciles an edited entry with its canonical hero flag and rejects invalid ownership', () => {

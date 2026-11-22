@@ -31,7 +31,7 @@ const readers = {
 export function collectionIds(
   content: PageContent,
   scope: Pick<CollectionOrder, 'collection' | 'section'>,
-): readonly number[] | null {
+): readonly string[] | null {
   if (!PAGE_COLLECTIONS[content.kind].includes(scope.collection)) return null;
   if (scope.collection === PageCollection.Copy) {
     if (

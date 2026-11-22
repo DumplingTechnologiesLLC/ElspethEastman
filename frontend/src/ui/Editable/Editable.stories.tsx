@@ -8,7 +8,7 @@ export const editableView: EditableActions = {
   remove: noop,
   order: {
     scope: '1/eyebrows/null',
-    id: 1,
+    id: '00000000-0000-4000-8000-000000000001',
     up: noop,
     down: noop,
     before: noop,
