@@ -49,7 +49,7 @@ export function collectionIds(
 
 function ordered<T extends OrderedPageRecord>(
   rows: readonly T[],
-  ids: readonly number[],
+  ids: readonly string[],
 ): readonly T[] | null {
   const members = new Map(rows.map((row) => [row.id, row]));
   if (

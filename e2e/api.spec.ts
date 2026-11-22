@@ -19,15 +19,15 @@ it.each(Object.entries(publicAPI))(([path, expected]) =>
 it.each([
   ['PATCH', '/api/skills/'],
   ['POST', '/api/projects/list/'],
-  ['PATCH', '/api/projects/list/6/'],
-  ['DELETE', '/api/projects/list/6/'],
+  ['PATCH', '/api/projects/list/00000000-0000-4000-8000-000000000006/'],
+  ['DELETE', '/api/projects/list/00000000-0000-4000-8000-000000000006/'],
   ['PATCH', '/api/projects/list/batch_update/'],
   ['POST', '/api/experience/'],
-  ['PATCH', '/api/experience/1/'],
-  ['DELETE', '/api/experience/1/'],
+  ['PATCH', '/api/experience/00000000-0000-4000-8000-000000000001/'],
+  ['DELETE', '/api/experience/00000000-0000-4000-8000-000000000001/'],
   ['POST', '/api/affiliations/'],
-  ['PATCH', '/api/affiliations/1/'],
-  ['DELETE', '/api/affiliations/1/'],
+  ['PATCH', '/api/affiliations/00000000-0000-4000-8000-000000000001/'],
+  ['DELETE', '/api/affiliations/00000000-0000-4000-8000-000000000001/'],
 ] as const)(([method, path]) =>
   it(`rejects anonymous ${method} ${path} without modifying content`, async ({
     request,
@@ -44,14 +44,15 @@ it('keeps contact listing private and enforces CSRF for session POSTs', async ({
   request,
 }) => {
   expect((await request.get('/api/contact-me/')).status()).toBe(403);
-  expect((await request.post('/api/session/')).status()).toBe(403);
-  const response = await request.get('/api/session/');
+  expect((await request.get('/api/v2/contact/')).status()).toBe(405);
+  expect((await request.post('/api/v2/session/')).status()).toBe(403);
+  const response = await request.get('/api/v2/session/');
   expect(response.status()).toBe(200);
   expect(await response.json()).toEqual({ isAuthenticated: false });
   const csrf = (await request.storageState()).cookies.find(
     (cookie) => cookie.name === 'csrftoken',
   )!.value;
-  const validPost = await request.post('/api/session/', {
+  const validPost = await request.post('/api/v2/session/', {
     headers: { 'X-CSRFToken': csrf },
   });
   expect(validPost.status()).toBe(200);

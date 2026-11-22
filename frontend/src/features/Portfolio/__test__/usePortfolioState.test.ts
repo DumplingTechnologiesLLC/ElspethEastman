@@ -14,7 +14,7 @@ it('owns registry/session lifecycles and projects current routes and canonical n
   expect(session.start).toHaveBeenCalledOnce();
   expect(hook.result.current).toMatchObject({
     screen: 'loading',
-    pageId: 0,
+    pageId: '',
     pageKind: null,
     title: 'Elspeth Eastman',
     homeHref: '/',
@@ -39,10 +39,16 @@ it('owns registry/session lifecycles and projects current routes and canonical n
   expect(hook.result.current).toMatchObject({
     screen: 'page',
     title: 'voiceover · Elspeth Eastman',
-    pageId: 2,
+    pageId: '00000000-0000-4000-8000-000000000002',
     pageKind: 'voiceover',
     toggleHref: '/cms/voiceover',
-    links: [{ id: 2, href: '/voiceover', active: true }],
+    links: [
+      {
+        id: '00000000-0000-4000-8000-000000000002',
+        href: '/voiceover',
+        active: true,
+      },
+    ],
   });
   act(() =>
     site.publish({

@@ -8,6 +8,6 @@ export interface SiteController extends Readable<SiteState> {
   start: () => Unsubscribe;
   load: () => Promise<void>;
   navigate: (path: string) => void;
-  select: (id: number | null) => void;
+  select: (id: string | null) => void;
   updatePage: (page: Page) => void;
 }

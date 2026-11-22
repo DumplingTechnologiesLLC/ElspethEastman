@@ -17,6 +17,7 @@ class PracticeFactSerializer(serializers.ModelSerializer):
 
 
 class MusicFeatureSerializer(serializers.ModelSerializer):
+    page_id = serializers.UUIDField(source="page.public_id", read_only=True)
     image = ImageUseSerializer(source="*")
     action = MusicActionSerializer(source="*")
     facts = PracticeFactSerializer(many=True)
@@ -27,6 +28,8 @@ class MusicFeatureSerializer(serializers.ModelSerializer):
 
 
 class MusicReleaseSerializer(serializers.ModelSerializer):
+    page_id = serializers.UUIDField(source="page.public_id", read_only=True)
+    id = serializers.UUIDField(source="public_id", read_only=True)
     artwork = ImageUseSerializer(source="*")
     action = MusicActionSerializer(source="*")
 

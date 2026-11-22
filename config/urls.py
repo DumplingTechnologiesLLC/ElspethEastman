@@ -19,7 +19,8 @@ from portfolio.views.local_media import local_media
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('portfolio.urls')),
+    path('api/v2/', include('core.api_v2_urls')),
+    path('api/v2/', include('portfolio.urls')),
     path('media/<path:path>', local_media, name='local-media'),
     path('', include('core.urls'))
 ]
