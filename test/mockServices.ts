@@ -80,6 +80,7 @@ export function mockServices() {
     navigate: vi.fn(),
     replace: vi.fn(),
     expire: vi.fn(),
+    revision: vi.fn(() => 0),
   };
   const services: ServiceContainer = {
     session,
