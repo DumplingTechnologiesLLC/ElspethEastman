@@ -9,7 +9,7 @@ export enum PageKind {
   Bio = 'bio',
 }
 
-export type PageId = number;
+export type PageId = string;
 
 export interface Page<Kind extends PageKind = PageKind> {
   readonly id: PageId;
@@ -26,7 +26,7 @@ export interface KeyedPageScope extends PageScope {
   readonly key: string;
 }
 export interface OrderedPageRecord extends PageScope {
-  readonly id: number;
+  readonly id: string;
   readonly sortOrder: number;
 }
 

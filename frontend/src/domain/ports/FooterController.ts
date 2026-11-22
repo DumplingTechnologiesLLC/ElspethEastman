@@ -4,9 +4,9 @@ import type { FooterState } from '../models/FooterState';
 
 export interface FooterController extends Readable<FooterState> {
   load: () => Promise<void>;
-  change: (id: number, key: 'affiliation' | 'link', value: string) => void;
-  reset: (id: number) => void;
+  change: (id: string, key: 'affiliation' | 'link', value: string) => void;
+  reset: (id: string) => void;
   show: (open: boolean) => void;
-  save: (id: number) => Promise<void>;
-  remove: (id: number) => Promise<void>;
+  save: (id: string) => Promise<void>;
+  remove: (id: string) => Promise<void>;
 }

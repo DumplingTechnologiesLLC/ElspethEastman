@@ -57,7 +57,7 @@ export function practicePlan(
 export function releasePlan(
   content: PageContent,
   page: PageController,
-  id: number | null,
+  id: string | null,
 ): EditorPlan | null {
   if (content.kind !== PageKind.Music) return null;
   return collectionPlan(

@@ -3,8 +3,8 @@ import type { ImageUseDTO, ImageUseInputDTO } from './MediaAssetDTO';
 import type { OrderedPageRecordDTO, PageScopeDTO } from './PageDTO';
 
 export interface EntryMetadataDTO {
-  id: number;
-  entry_id: number;
+  id: string;
+  entry_id: string;
   key: string;
   label: string;
   value: string;
@@ -22,7 +22,7 @@ export interface ContentEntryDTO extends OrderedPageRecordDTO {
   is_featured: boolean;
 }
 export interface FeaturedItemDTO extends PageScopeDTO {
-  item_id: number | null;
+  item_id: string | null;
 }
 export interface EntryMetadataInputDTO {
   key: string;

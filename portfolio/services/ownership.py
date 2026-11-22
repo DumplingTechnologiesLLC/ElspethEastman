@@ -19,7 +19,7 @@ def locked_page(page_id):
 def locked_page_registry(page_id):
     """Lock the six route owners in ID order so concurrent slug claims cannot race."""
     with transaction.atomic():
-        pages = {page.pk: page for page in Page.objects.select_for_update().order_by("pk")}
+        pages = {page.public_id: page for page in Page.objects.select_for_update().order_by("pk")}
         if page_id not in pages:
             raise NotFound("Page content was not found.")
         yield pages[page_id]

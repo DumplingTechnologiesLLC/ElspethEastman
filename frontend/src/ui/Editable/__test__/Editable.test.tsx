@@ -43,12 +43,12 @@ it('delegates editor controls, keyboard ordering, and scoped native drag/drop', 
   expect(transfer.effectAllowed).toBe('move');
   fireEvent.dragOver(wrapper);
   fireEvent.drop(wrapper, { dataTransfer: transfer });
-  expect(before).toHaveBeenCalledWith(1);
+  expect(before).toHaveBeenCalledWith(editableView.order!.id);
   data.set('text/x-elspeth-scope', 'another-page');
   fireEvent.drop(wrapper, { dataTransfer: transfer });
   expect(before).toHaveBeenCalledOnce();
   data.set('text/x-elspeth-scope', actions.order.scope);
-  for (const id of ['invalid', '0', '-1', '9007199254740992']) {
+  for (const id of ['']) {
     data.set('text/x-elspeth-id', id);
     fireEvent.drop(wrapper, { dataTransfer: transfer });
   }
@@ -101,6 +101,6 @@ it('delegates editor controls, keyboard ordering, and scoped native drag/drop', 
   editableView.remove!();
   editableView.order!.up!();
   editableView.order!.down!();
-  editableView.order!.before(1);
+  editableView.order!.before('00000000-0000-4000-8000-000000000001');
   editableView.feature!.apply();
 });
