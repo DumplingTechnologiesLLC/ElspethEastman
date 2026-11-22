@@ -7,7 +7,7 @@ export interface CopyBlockView {
   readonly actions: EditableActions | null;
 }
 export interface IdentityView {
-  readonly id: number;
+  readonly id: string;
   readonly label: string;
   readonly actions: EditableActions | null;
 }

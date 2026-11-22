@@ -33,7 +33,7 @@ class MediaUploadTests(TestCase):
         self.headers = {"HTTP_AUTHORIZATION": f"Token {token.key}"}
 
     def upload(self, file, **fields):
-        return self.client.post("/api/media-assets/", {"file": file, **fields}, **self.headers)
+        return self.client.post("/api/v2/media/assets/", {"file": file, **fields}, **self.headers)
 
     def assert_file_error(self, response):
         self.assertEqual(response.status_code, 400, response.content)
@@ -51,7 +51,7 @@ class MediaUploadTests(TestCase):
                 self.assertEqual(record["credit"], "Photographer")
                 self.assertEqual(record["source_url"], "https://example.invalid/source")
                 self.assertRegex(record["url"], rf"^/media/uploads/[a-f0-9]{{32}}\.{suffix}$")
-                asset = MediaAsset.objects.get(pk=record["id"])
+                asset = MediaAsset.objects.get(public_id=record["id"])
                 self.assertTrue(self.root.joinpath(asset.file.name).is_file())
                 retrieved = self.client.get(record["url"])
                 self.assertEqual(retrieved.status_code, 200)
@@ -67,7 +67,7 @@ class MediaUploadTests(TestCase):
         self.assertEqual(len(list(self.root.joinpath("uploads").iterdir())), 2)
 
     def test_uploads_reject_missing_empty_oversized_and_unsupported_files(self):
-        self.assert_file_error(self.client.post("/api/media-assets/", {}, **self.headers))
+        self.assert_file_error(self.client.post("/api/v2/media/assets/", {}, **self.headers))
         self.assert_file_error(self.upload(SimpleUploadedFile("empty.png", b"", content_type="image/png")))
         with override_settings(MEDIA_UPLOAD_MAX_BYTES=10):
             self.assert_file_error(self.upload(image_file()))
@@ -100,12 +100,12 @@ class MediaUploadTests(TestCase):
         self.assertEqual(MediaAsset.objects.count(), 0)
 
     def test_upload_requires_authentication_and_enabled_environment(self):
-        self.assertEqual(self.client.post("/api/media-assets/", {"file": image_file()}).status_code, 403)
+        self.assertEqual(self.client.post("/api/v2/media/assets/", {"file": image_file()}).status_code, 403)
         with override_settings(MEDIA_UPLOADS_ENABLED=False):
             response = self.upload(image_file())
             self.assertEqual(response.status_code, 503)
             self.assertIn("detail", response.json())
-        self.assertEqual(self.client.get("/api/media-assets/").status_code, 405)
+        self.assertEqual(self.client.get("/api/v2/media/assets/").status_code, 405)
 
     def test_persistent_deployments_never_serve_local_files(self):
         response = self.upload(image_file())

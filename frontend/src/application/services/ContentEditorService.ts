@@ -14,6 +14,7 @@ const closed: ContentEditorState = {
   draft: null,
   saving: false,
   uploading: false,
+  attributionLocked: false,
   confirmingDelete: false,
   error: null,
 };
@@ -54,8 +55,10 @@ export class ContentEditorService
     this.patch(closed);
   };
   change: ContentEditorController['change'] = (key, next) => {
-    const { draft, saving } = this.getSnapshot();
+    const { draft, saving, uploading, attributionLocked } = this.getSnapshot();
     if (draft === null || saving) return;
+    const attribution = key === Key.Credit || key === Key.SourceUrl;
+    if (attribution && (uploading || attributionLocked)) return;
     this.patch({
       draft: {
         ...draft,
@@ -127,6 +130,7 @@ export class ContentEditorService
     if (draft?.image == null || saving || uploading) return;
     this.patch({
       draft: { ...draft, image: { ...draft.image, asset: null } },
+      attributionLocked: false,
       error: null,
     });
   };
@@ -164,8 +168,16 @@ export class ContentEditorService
       result.ok
         ? {
             uploading: false,
+            attributionLocked: true,
             draft: {
               ...current,
+              fields: current.fields.map((item) => {
+                if (item.key === Key.Credit)
+                  return { ...item, value: result.value.credit };
+                if (item.key === Key.SourceUrl)
+                  return { ...item, value: result.value.sourceUrl };
+                return item;
+              }),
               image: { ...current.image!, asset: result.value },
             },
           }

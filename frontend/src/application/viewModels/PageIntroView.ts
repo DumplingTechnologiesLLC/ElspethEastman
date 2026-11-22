@@ -6,7 +6,7 @@ export interface PageIntroView {
   readonly blocks: readonly CopyBlockView[];
   readonly identities: readonly IdentityView[];
   readonly trivia: readonly {
-    readonly id: number;
+    readonly id: string;
     readonly label: string;
     readonly value: string;
     readonly actions: EditableActions | null;

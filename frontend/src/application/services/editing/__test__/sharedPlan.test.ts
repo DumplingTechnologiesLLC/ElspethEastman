@@ -14,6 +14,11 @@ import { field, value } from '../draft';
 import { sharedPlan } from '../sharedPlan';
 import { planForPage } from '../planForPage';
 
+let allocation = 0;
+const identifiers = {
+  next: () =>
+    `00000000-0000-4000-8000-${(++allocation).toString(16).padStart(12, '0')}`,
+};
 const home = toPageContent(aHomeDTO());
 const voice = toPageContent(aVoiceoverDTO());
 const music = toPageContent(aMusicDTO());
@@ -28,7 +33,7 @@ function fixture(content: PageContent = home) {
   return {
     page,
     plan: (target: Parameters<typeof planForPage>[1]) =>
-      planForPage(page, target),
+      planForPage(page, target, identifiers),
   };
 }
 function fill(draft: ContentDraft, key: Key, next: string): ContentDraft {
@@ -42,8 +47,8 @@ function fill(draft: ContentDraft, key: Key, next: string): ContentDraft {
 
 it('only opens supported resources after their aggregate has loaded', () => {
   const { page } = mockServices();
-  expect(planForPage(page, { type: 'settings' })).toBeNull();
-  expect(sharedPlan(home, page, { type: 'practice' })).toBeNull();
+  expect(planForPage(page, { type: 'settings' }, identifiers)).toBeNull();
+  expect(sharedPlan(home, page, { type: 'practice' }, identifiers)).toBeNull();
   const { plan } = fixture();
   expect(plan({ type: 'image', key: 'missing' })).toBeNull();
   expect(
@@ -89,7 +94,7 @@ it('saves contextual image uses without exposing server asset objects or slot ke
   expect(page.image).toHaveBeenCalledExactlyOnceWith({
     key: 'portrait',
     image: {
-      assetId: 20,
+      assetId: '00000000-0000-4000-8000-000000000014',
       altText: 'New description',
       caption: 'In the studio',
     },
@@ -99,7 +104,14 @@ it('saves contextual image uses without exposing server asset objects or slot ke
 it('creates text with a unique hidden key and updates/deletes by immutable key and section', async () => {
   const occupied = {
     ...home,
-    copy: [...home.copy, { ...home.copy[0]!, id: 31, key: 'copy-1' }],
+    copy: [
+      ...home.copy,
+      {
+        ...home.copy[0]!,
+        id: '00000000-0000-4000-8000-00000000001f',
+        key: 'copy-1',
+      },
+    ],
   };
   const { page, plan } = fixture(occupied);
   const create = plan({
@@ -111,7 +123,9 @@ it('creates text with a unique hidden key and updates/deletes by immutable key a
   expect(create.remove).toBeUndefined();
   await create.save(fill(create.draft, Key.Value, 'New paragraph'));
   expect(page.copy.create).toHaveBeenCalledExactlyOnceWith({
-    key: 'copy-2',
+    key: expect.stringMatching(
+      /^copy-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    ),
     section: 'intro',
     kind: 'headline',
     value: 'New paragraph',
@@ -162,7 +176,9 @@ it.each([PageCollection.Eyebrows, PageCollection.Trivia] as const)(
       expect.objectContaining({ label: voice[type][0]!.label }),
     );
     expect(page[type].remove).toHaveBeenCalledWith(id);
-    expect(plan({ type, id: 999 })).toBeNull();
+    expect(
+      plan({ type, id: '00000000-0000-4000-8000-0000000003e7' }),
+    ).toBeNull();
   },
 );
 
@@ -172,11 +188,34 @@ it('limits facts to three on supported pages, while permitting edits to existing
     ...voice,
     trivia: [
       voice.trivia[0]!,
-      { ...voice.trivia[0]!, id: 102 },
-      { ...voice.trivia[0]!, id: 103 },
+      { ...voice.trivia[0]!, id: '00000000-0000-4000-8000-000000000066' },
+      { ...voice.trivia[0]!, id: '00000000-0000-4000-8000-000000000067' },
     ],
   };
   const { plan } = fixture(full);
   expect(plan({ type: PageCollection.Trivia, id: null })).toBeNull();
-  expect(plan({ type: PageCollection.Trivia, id: 101 })).not.toBeNull();
+  expect(
+    plan({
+      type: PageCollection.Trivia,
+      id: '00000000-0000-4000-8000-000000000065',
+    }),
+  ).not.toBeNull();
+});
+
+it('allocates independent copy keys for cached editor plans and keeps the key stable across retry', async () => {
+  const first = fixture();
+  const second = fixture();
+  const target = {
+    type: PageCollection.Copy,
+    section: 'intro',
+    key: null,
+  } as const;
+  const a = first.plan(target)!;
+  const b = second.plan(target)!;
+  await a.save(fill(a.draft, Key.Value, 'First editor'));
+  await b.save(fill(b.draft, Key.Value, 'Second editor'));
+  const key = first.page.copy.create.mock.calls[0]![0].key;
+  expect(second.page.copy.create.mock.calls[0]![0].key).not.toBe(key);
+  await a.save(fill(a.draft, Key.Value, 'Retry preserved draft'));
+  expect(first.page.copy.create.mock.calls[1]![0].key).toBe(key);
 });

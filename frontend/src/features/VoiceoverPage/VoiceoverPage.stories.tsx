@@ -28,7 +28,7 @@ export const voiceoverPageView = {
     tristanaView,
     {
       ...tristanaView,
-      id: 42,
+      id: '00000000-0000-4000-8000-00000000002a',
       title: 'Cadence',
       eyebrow: 'NecroDancer franchise',
       description:
@@ -41,7 +41,7 @@ export const voiceoverPageView = {
     },
     {
       ...tristanaView,
-      id: 43,
+      id: '00000000-0000-4000-8000-00000000002b',
       title: 'Nori Kaga',
       eyebrow: 'Cook Serve Forever',
       description:
@@ -54,7 +54,7 @@ export const voiceoverPageView = {
     },
     {
       ...tristanaView,
-      id: 44,
+      id: '00000000-0000-4000-8000-00000000002c',
       title: 'Major Enatsu',
       eyebrow: 'Gamera -Rebirth-',
       description:
@@ -77,7 +77,7 @@ export function VoiceoverPreview(props: Parameters<typeof VoiceoverPage>[0]) {
     <Portfolio
       {...portfolioView}
       title="Voiceover · Elspeth Eastman"
-      pageId={2}
+      pageId="00000000-0000-4000-8000-000000000002"
       pageKind={PageKind.Voiceover}
       editor={props.controls !== null}
       authenticated={props.controls !== null}

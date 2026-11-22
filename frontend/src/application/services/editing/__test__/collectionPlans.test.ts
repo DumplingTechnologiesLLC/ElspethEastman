@@ -18,7 +18,11 @@ import { PageCollection } from '../../../../domain/models/PageCollection';
 import { planForPage } from '../planForPage';
 import { validateDraft } from '../draft';
 
-const image = { assetId: 20, altText: 'Portrait', caption: 'In the studio' };
+const image = {
+  assetId: '00000000-0000-4000-8000-000000000014',
+  altText: 'Portrait',
+  caption: 'In the studio',
+};
 const entry = {
   title: 'Tristana',
   eyebrow: 'League of Legends',
@@ -34,21 +38,21 @@ const cases = [
     type: PageCollection.ContentEntries,
     port: 'entries',
     dto: aVoiceoverDTO(),
-    id: 40,
+    id: '00000000-0000-4000-8000-000000000028',
     expected: entry,
   },
   {
     type: PageCollection.ContentEntries,
     port: 'entries',
     dto: aStreamingDTO(),
-    id: 40,
+    id: '00000000-0000-4000-8000-000000000028',
     expected: entry,
   },
   {
     type: PageCollection.ContentEntries,
     port: 'entries',
     dto: aPressDTO(),
-    id: 40,
+    id: '00000000-0000-4000-8000-000000000028',
     expected: {
       ...entry,
       publishedAt: '2026-10-01T14:30:00Z',
@@ -59,7 +63,7 @@ const cases = [
     type: PageCollection.Releases,
     port: 'releases',
     dto: aMusicDTO(),
-    id: 50,
+    id: '00000000-0000-4000-8000-000000000032',
     expected: {
       year: '2014',
       format: 'Album',
@@ -74,7 +78,7 @@ const cases = [
     type: PageCollection.StreamClips,
     port: 'clips',
     dto: aStreamingDTO(),
-    id: 60,
+    id: '00000000-0000-4000-8000-00000000003c',
     expected: {
       eyebrow: 'Game',
       title: 'Highlights',
@@ -86,14 +90,14 @@ const cases = [
     type: PageCollection.Appearances,
     port: 'appearances',
     dto: aPressDTO(),
-    id: 70,
+    id: '00000000-0000-4000-8000-000000000046',
     expected: { year: '2026', title: 'Convention', format: 'Panel', url: null },
   },
   {
     type: PageCollection.BioChapters,
     port: 'chapters',
     dto: aBioDTO(),
-    id: 80,
+    id: '00000000-0000-4000-8000-000000000050',
     expected: {
       eyebrow: 'Early years',
       heading: 'The beginning',
@@ -104,7 +108,7 @@ const cases = [
     type: PageCollection.CurrentItems,
     port: 'currentItems',
     dto: aBioDTO(),
-    id: 90,
+    id: '00000000-0000-4000-8000-00000000005a',
     expected: {
       eyebrow: 'Music',
       title: 'Practice',
@@ -119,7 +123,9 @@ function fixture(content: PageContent) {
   return {
     page,
     plan: (target: Parameters<typeof planForPage>[1]) =>
-      planForPage(page, target),
+      planForPage(page, target, {
+        next: () => '00000000-0000-4000-8000-000000000001',
+      }),
   };
 }
 function change(draft: ContentDraft, key: Key, next: string): ContentDraft {
@@ -147,7 +153,9 @@ it.each(cases)(
     expect(create.remove).toBeUndefined();
     await create.save(edit.draft);
     expect(page[port].create).toHaveBeenCalledExactlyOnceWith(expected);
-    expect(plan({ type, id: 999 })).toBeNull();
+    expect(
+      plan({ type, id: '00000000-0000-4000-8000-0000000003e7' }),
+    ).toBeNull();
   },
 );
 
@@ -181,28 +189,41 @@ it('requires the Press outlet row but hides publication fields on other entry ki
     requiredKeys: ['outlet'],
     items: [{ key: 'outlet', label: 'Outlet', value: '' }],
   });
-  const edit = plan({ type: PageCollection.ContentEntries, id: 40 })!;
+  const edit = plan({
+    type: PageCollection.ContentEntries,
+    id: '00000000-0000-4000-8000-000000000028',
+  })!;
   await edit.save(
     change(change(edit.draft, Key.PublishedAt, ''), Key.Category, 'Interview'),
   );
   expect(page.entries.update).toHaveBeenCalledWith(
-    40,
+    '00000000-0000-4000-8000-000000000028',
     expect.objectContaining({ publishedAt: null, category: 'Interview' }),
   );
   await edit.save(
     change(edit.draft, Key.PublishedAt, '2026-10-01T14:30:00.123456'),
   );
   expect(page.entries.update).toHaveBeenCalledWith(
-    40,
+    '00000000-0000-4000-8000-000000000028',
     expect.objectContaining({ publishedAt: '2026-10-01T14:30:00.123456Z' }),
   );
   const noDate = fixture(
     toPageContent(
-      aPressDTO({ entries: [anEntryDTO({ page_id: 5, published_at: null })] }),
+      aPressDTO({
+        entries: [
+          anEntryDTO({
+            page_id: '00000000-0000-4000-8000-000000000005',
+            published_at: null,
+          }),
+        ],
+      }),
     ),
   );
   expect(
-    noDate.plan({ type: PageCollection.ContentEntries, id: 40 })!.draft.fields,
+    noDate.plan({
+      type: PageCollection.ContentEntries,
+      id: '00000000-0000-4000-8000-000000000028',
+    })!.draft.fields,
   ).toContainEqual(
     expect.objectContaining({ key: Key.PublishedAt, value: '' }),
   );
@@ -213,30 +234,36 @@ it('permits imageless nonfeatured streams and requires the image of an existing 
     aStreamingDTO({
       entries: [
         anEntryDTO({
-          page_id: 4,
+          page_id: '00000000-0000-4000-8000-000000000004',
           image: null,
           action: null,
           category: 'Gaming',
           is_featured: false,
         }),
       ],
-      feature: { page_id: 4, item_id: null },
+      feature: {
+        page_id: '00000000-0000-4000-8000-000000000004',
+        item_id: null,
+      },
     }),
   );
   const { page, plan } = fixture(content);
-  const stream = plan({ type: PageCollection.ContentEntries, id: 40 })!;
+  const stream = plan({
+    type: PageCollection.ContentEntries,
+    id: '00000000-0000-4000-8000-000000000028',
+  })!;
   expect(stream.draft.image).toEqual({ asset: null, required: false });
   expect(stream.draft.fields).toContainEqual(
     expect.objectContaining({ key: Key.Category, value: 'Gaming' }),
   );
   await stream.save(stream.draft);
   expect(page.entries.update).toHaveBeenCalledWith(
-    40,
+    '00000000-0000-4000-8000-000000000028',
     expect.objectContaining({ image: null, category: 'Gaming', action: null }),
   );
   const hero = fixture(toPageContent(aStreamingDTO())).plan({
     type: PageCollection.ContentEntries,
-    id: 40,
+    id: '00000000-0000-4000-8000-000000000028',
   })!;
   expect(hero.draft.image!.required).toBe(true);
 });
@@ -251,14 +278,20 @@ it('preserves optional appearance destinations and current-work links', async ()
       }),
     ),
   );
-  const appearance = plan({ type: PageCollection.Appearances, id: 70 })!;
+  const appearance = plan({
+    type: PageCollection.Appearances,
+    id: '00000000-0000-4000-8000-000000000046',
+  })!;
   await appearance.save(appearance.draft);
   expect(page.appearances.update).toHaveBeenCalledWith(
-    70,
+    '00000000-0000-4000-8000-000000000046',
     expect.objectContaining({ url: 'https://example.invalid/event' }),
   );
   const current = fixture(toPageContent(aBioDTO()));
-  const draft = current.plan({ type: PageCollection.CurrentItems, id: 90 })!;
+  const draft = current.plan({
+    type: PageCollection.CurrentItems,
+    id: '00000000-0000-4000-8000-00000000005a',
+  })!;
   await draft.save(
     change(
       change(draft.draft, Key.ActionLabel, 'Visit'),
@@ -267,9 +300,63 @@ it('preserves optional appearance destinations and current-work links', async ()
     ),
   );
   expect(current.page.currentItems.update).toHaveBeenCalledWith(
-    90,
+    '00000000-0000-4000-8000-00000000005a',
     expect.objectContaining({
       link: { label: 'Visit', url: 'https://example.invalid/current' },
     }),
+  );
+});
+
+it.each([
+  ['2026-10-01T14:30:00.123456Z', '2026-10-01T14:30:00.123'],
+  ['2026-10-01T14:30:00.123000Z', '2026-10-01T14:30:00.123'],
+  ['2026-10-01T14:30:00.120001Z', '2026-10-01T14:30:00.12'],
+  ['2026-10-01T14:30:00.000000Z', '2026-10-01T14:30'],
+  ['2026-10-01T14:30:05Z', '2026-10-01T14:30:05'],
+  [null, ''],
+])(
+  'displays %s in a native datetime control while preserving the unchanged timestamp',
+  async (timestamp, display) => {
+    const dto = aPressDTO();
+    dto.entries[0]!.published_at = timestamp;
+    const { page, plan } = fixture(toPageContent(dto));
+    const edit = plan({
+      type: PageCollection.ContentEntries,
+      id: dto.entries[0]!.id,
+    })!;
+    const input = document.createElement('input');
+    input.type = 'datetime-local';
+    input.value = edit.draft.fields.find(
+      (item) => item.key === Key.PublishedAt,
+    )!.value;
+    expect(input.value).toBe(display);
+    await edit.save(edit.draft);
+    expect(page.entries.update).toHaveBeenLastCalledWith(
+      dto.entries[0]!.id,
+      expect.objectContaining({ publishedAt: timestamp }),
+    );
+    await edit.save(
+      change(edit.draft, Key.PublishedAt, '2026-11-01T10:15:30.456'),
+    );
+    expect(page.entries.update).toHaveBeenLastCalledWith(
+      dto.entries[0]!.id,
+      expect.objectContaining({ publishedAt: '2026-11-01T10:15:30.456Z' }),
+    );
+  },
+);
+
+it('retains explicit submillisecond values supplied to the domain editor', async () => {
+  const dto = aPressDTO();
+  const { page, plan } = fixture(toPageContent(dto));
+  const edit = plan({
+    type: PageCollection.ContentEntries,
+    id: dto.entries[0]!.id,
+  })!;
+  await edit.save(
+    change(edit.draft, Key.PublishedAt, '2026-11-01T10:15:30.123456'),
+  );
+  expect(page.entries.update).toHaveBeenLastCalledWith(
+    dto.entries[0]!.id,
+    expect.objectContaining({ publishedAt: '2026-11-01T10:15:30.123456Z' }),
   );
 });

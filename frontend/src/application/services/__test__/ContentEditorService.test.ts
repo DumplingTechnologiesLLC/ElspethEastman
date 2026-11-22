@@ -253,3 +253,51 @@ it('ignores a late save or upload after cancellation and reopening', async () =>
   expect(service.getSnapshot().draft!.image!.asset).toBeNull();
   expect(service.getSnapshot().uploading).toBe(false);
 });
+
+it('keeps committed attribution immutable until the image is removed for replacement', async () => {
+  const { service, upload } = fixture(rich);
+  service.open({ type: 'image', key: 'portrait' });
+  service.change(Key.Credit, 'Chosen credit');
+  service.change(Key.SourceUrl, 'https://example.invalid/chosen');
+  let release!: () => void;
+  upload.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        release = () => resolve({ ok: true, value: asset });
+      }),
+  );
+  const pending = service.upload(file);
+  service.change(Key.Credit, 'Lost during upload');
+  service.change(Key.SourceUrl, 'https://example.invalid/lost');
+  service.change(Key.AltText, 'Concurrent alt text');
+  expect(value(service.getSnapshot().draft!, Key.Credit)).toBe('Chosen credit');
+  expect(value(service.getSnapshot().draft!, Key.SourceUrl)).toBe(
+    'https://example.invalid/chosen',
+  );
+  release();
+  await pending;
+  expect(service.getSnapshot().attributionLocked).toBe(true);
+  expect(value(service.getSnapshot().draft!, Key.Credit)).toBe(asset.credit);
+  expect(value(service.getSnapshot().draft!, Key.SourceUrl)).toBe(
+    asset.sourceUrl,
+  );
+  expect(value(service.getSnapshot().draft!, Key.AltText)).toBe(
+    'Concurrent alt text',
+  );
+  service.change(Key.Credit, 'Lost after upload');
+  service.change(Key.SourceUrl, 'https://example.invalid/also-lost');
+  expect(value(service.getSnapshot().draft!, Key.Credit)).toBe(asset.credit);
+  expect(value(service.getSnapshot().draft!, Key.SourceUrl)).toBe(
+    asset.sourceUrl,
+  );
+  service.removeImage();
+  expect(service.getSnapshot().attributionLocked).toBe(false);
+  service.change(Key.Credit, 'Replacement credit');
+  service.change(Key.SourceUrl, 'https://example.invalid/replacement');
+  await service.upload(file);
+  expect(upload).toHaveBeenLastCalledWith({
+    file,
+    credit: 'Replacement credit',
+    sourceUrl: 'https://example.invalid/replacement',
+  });
+});

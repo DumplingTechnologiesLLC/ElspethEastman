@@ -34,7 +34,7 @@ export function usePortfolioState({ services }: PortfolioWiring) {
     screen,
     editor,
     authenticated: state.authenticated,
-    pageId: selected?.id ?? 0,
+    pageId: selected?.id ?? '',
     pageKind: selected?.kind ?? null,
     title:
       selected === null

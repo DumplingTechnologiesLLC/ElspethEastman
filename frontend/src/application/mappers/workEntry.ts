@@ -13,7 +13,7 @@ export function workEntry(
   page: PageController,
   editor: ContentEditorController,
   editing: boolean,
-  ids: readonly number[],
+  ids: readonly string[],
   index: number,
 ): WorkEntryView {
   const actions = editing
