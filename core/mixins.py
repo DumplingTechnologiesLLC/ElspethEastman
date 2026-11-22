@@ -26,6 +26,9 @@ def retrieve_request_db_token(request):
 
 
 class ProtectCUDWithTokenMixin:
+    lookup_field = "public_id"
+    lookup_url_kwarg = "pk"
+    lookup_value_regex = r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
 
     def dispatch(self, request, *args, **kwargs):
         if request.method != 'GET':
