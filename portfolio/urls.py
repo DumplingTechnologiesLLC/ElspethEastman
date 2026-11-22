@@ -10,11 +10,11 @@ app_name = "portfolio"
 urlpatterns = [
     path("site/", SiteAPIView.as_view(), name="site"),
     path("pages/<uuid:page_id>/", PageDetailAPIView.as_view(), name="page-detail"),
-    path("copy/", CopyAPIView.as_view(), name="copy"),
-    path("page-images/", PageImageAPIView.as_view(), name="page-images"),
-    path("eyebrows/", EyebrowAPIView.as_view(), name="eyebrows"),
-    path("eyebrows/<int:item_id>/", EyebrowDetailAPIView.as_view(), name="eyebrow-detail"),
-    path("trivia/", TriviaAPIView.as_view(), name="trivia"),
-    path("trivia/<int:item_id>/", TriviaDetailAPIView.as_view(), name="trivia-detail"),
+    path("pages/copy/", CopyAPIView.as_view(), name="copy"),
+    path("pages/images/", PageImageAPIView.as_view(), name="page-images"),
+    path("pages/eyebrows/", EyebrowAPIView.as_view(), name="eyebrows"),
+    path("pages/eyebrows/<uuid:item_id>/", EyebrowDetailAPIView.as_view(), name="eyebrow-detail"),
+    path("pages/trivia/", TriviaAPIView.as_view(), name="trivia"),
+    path("pages/trivia/<uuid:item_id>/", TriviaDetailAPIView.as_view(), name="trivia-detail"),
     path("collections/reorder/", ReorderAPIView.as_view(), name="reorder"),
 ]

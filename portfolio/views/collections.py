@@ -33,18 +33,18 @@ class OwnedCollectionDetailAPIView(ContentAPIView):
     def patch(self, request, item_id):
         serializer = self.patch_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        page_id = get_object_or_404(self.model, pk=item_id).page_id
+        page_id = get_object_or_404(self.model, public_id=item_id).page_id
         with locked_page(page_id):
-            row = get_object_or_404(self.model, pk=item_id)
+            row = get_object_or_404(self.model, public_id=item_id)
             for field, value in serializer.validated_data.items():
                 setattr(row, field, value)
             row.save()
             return Response(self.read_serializer(row).data)
 
     def delete(self, request, item_id):
-        page_id = get_object_or_404(self.model, pk=item_id).page_id
+        page_id = get_object_or_404(self.model, public_id=item_id).page_id
         with locked_page(page_id):
-            get_object_or_404(self.model, pk=item_id).delete()
+            get_object_or_404(self.model, public_id=item_id).delete()
         return Response(status=204)
 
 
