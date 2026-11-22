@@ -50,3 +50,42 @@ it('delegates inline contact changes/submission, presents errors, and disables d
 it('keeps its story submit independent of application services', async () => {
   await contactFormView.submit();
 });
+
+it('waits for a submission validation result and retains focus while its errors clear', () => {
+  const view = render(<ContactForm {...contactFormView} />);
+  fireEvent.submit(screen.getByRole('form'));
+  view.rerender(<ContactForm {...contactFormView} errors={{}} />);
+  view.rerender(
+    <ContactForm
+      {...contactFormView}
+      errors={{ name: 'Name required', email: 'Email required' }}
+    />,
+  );
+  const name = screen.getByLabelText('Name');
+  expect(name).toHaveFocus();
+  view.rerender(
+    <ContactForm
+      {...contactFormView}
+      draft={{ ...contactFormView.draft, name: 'A' }}
+      errors={{ email: 'Email required' }}
+    />,
+  );
+  expect(name).toHaveFocus();
+  fireEvent.submit(screen.getByRole('form'));
+  view.rerender(
+    <ContactForm {...contactFormView} errors={{ email: 'Email required' }} />,
+  );
+  expect(screen.getByLabelText('Email')).toHaveFocus();
+  fireEvent.submit(screen.getByRole('form'));
+  view.rerender(
+    <ContactForm
+      {...contactFormView}
+      errors={{ general: 'Please try again' }}
+    />,
+  );
+  expect(screen.getByLabelText('Email')).toHaveFocus();
+  view.rerender(
+    <ContactForm {...contactFormView} errors={{ name: 'Name required' }} />,
+  );
+  expect(screen.getByLabelText('Email')).toHaveFocus();
+});

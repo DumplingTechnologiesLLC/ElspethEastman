@@ -7,10 +7,11 @@ export function reportContentFailure(
   alerts: UIAlerts,
   session: Pick<Session, 'expire'>,
   returnTo: string,
+  revision: number,
   includeValidation = false,
 ): void {
   if (error.status === 403) {
-    session.expire(returnTo);
+    session.expire(returnTo, revision);
     return;
   }
   if (error.status === 400 && !includeValidation) return;

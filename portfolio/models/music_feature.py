@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 from .media_asset import MediaAsset
@@ -5,6 +6,7 @@ from .page import Page
 
 
 class MusicFeature(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     page = models.OneToOneField(Page, on_delete=models.CASCADE, related_name="music_feature")
     eyebrow = models.CharField(max_length=300)
     title = models.CharField(max_length=300)
@@ -17,6 +19,7 @@ class MusicFeature(models.Model):
 
 
 class PracticeFact(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     feature = models.ForeignKey(MusicFeature, on_delete=models.CASCADE, related_name="facts")
     label = models.CharField(max_length=200)
     value = models.CharField(max_length=500)

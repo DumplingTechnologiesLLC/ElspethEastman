@@ -31,7 +31,7 @@ const readers = {
 export function collectionIds(
   content: PageContent,
   scope: Pick<CollectionOrder, 'collection' | 'section'>,
-): readonly number[] | null {
+): readonly string[] | null {
   if (!PAGE_COLLECTIONS[content.kind].includes(scope.collection)) return null;
   if (scope.collection === PageCollection.Copy) {
     if (
@@ -49,7 +49,7 @@ export function collectionIds(
 
 function ordered<T extends OrderedPageRecord>(
   rows: readonly T[],
-  ids: readonly number[],
+  ids: readonly string[],
 ): readonly T[] | null {
   const members = new Map(rows.map((row) => [row.id, row]));
   if (

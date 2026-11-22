@@ -10,8 +10,8 @@ export interface EditableActions {
 }
 export interface EditableOrderActions {
   readonly scope: string;
-  readonly id: number;
+  readonly id: string;
   readonly up: (() => void) | null;
   readonly down: (() => void) | null;
-  readonly before: (sourceId: number) => void;
+  readonly before: (sourceId: string) => void;
 }

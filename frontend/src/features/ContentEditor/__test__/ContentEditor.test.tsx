@@ -143,3 +143,47 @@ it('keeps every Storybook callback runnable without application services', async
   await editorView.remove();
   await editorView.upload();
 });
+
+it('renders the locked upload attribution boundary and allows replacement metadata after removal', () => {
+  const title = editorView.form.fields[0]!;
+  const fields = [
+    title,
+    {
+      ...title,
+      key: Key.Credit,
+      label: 'New image credit',
+      value: 'Photographer',
+      disabled: true,
+    },
+    {
+      ...title,
+      key: Key.SourceUrl,
+      label: 'New image source URL',
+      value: 'https://example.invalid/photo',
+      disabled: true,
+    },
+  ];
+  const props = { ...editorView, form: { ...editorView.form, fields } };
+  const view = render(<ContentEditor {...props} uploading />);
+  expect(screen.getByLabelText('New image credit *')).toBeDisabled();
+  expect(screen.getByLabelText('New image source URL *')).toBeDisabled();
+  expect(screen.getByLabelText('Title *')).toBeEnabled();
+  view.rerender(<ContentEditor {...props} attributionLocked />);
+  expect(
+    screen.getByText(/Credit and source were saved with this upload/),
+  ).toBeVisible();
+  expect(screen.getByLabelText('New image credit *')).toBeDisabled();
+  view.rerender(
+    <ContentEditor
+      {...props}
+      form={{
+        ...props.form,
+        fields: fields.map((item) => ({ ...item, disabled: false })),
+      }}
+    />,
+  );
+  expect(screen.getByLabelText('New image credit *')).toBeEnabled();
+  expect(
+    screen.queryByText(/Credit and source were saved with this upload/),
+  ).not.toBeInTheDocument();
+});
