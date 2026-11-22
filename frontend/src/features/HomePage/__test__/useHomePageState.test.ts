@@ -13,7 +13,11 @@ import { useHomePageState } from '../useHomePageState';
 it('projects public/CMS Home from one aggregate and exposes only supported editor intents', () => {
   const { services, page, editor } = mockServices();
   const hook = renderHook(useHomePageState, {
-    initialProps: { services, pageId: 1, editor: false },
+    initialProps: {
+      services,
+      pageId: '00000000-0000-4000-8000-000000000001',
+      editor: false,
+    },
   });
   expect(hook.result.current).toMatchObject({
     ready: false,
@@ -38,8 +42,21 @@ it('projects public/CMS Home from one aggregate and exposes only supported edito
   expect(hook.result.current.error).toBe('Missing page');
   const home = toPageContent(
     aHomeDTO({
-      copy: [aCopyDTO(), aCopyDTO({ id: 31, key: 'other', section: 'other' })],
-      images: [{ page_id: 1, key: 'hero', image: anImageUseDTO() }],
+      copy: [
+        aCopyDTO(),
+        aCopyDTO({
+          id: '00000000-0000-4000-8000-00000000001f',
+          key: 'other',
+          section: 'other',
+        }),
+      ],
+      images: [
+        {
+          page_id: '00000000-0000-4000-8000-000000000001',
+          key: 'hero',
+          image: anImageUseDTO(),
+        },
+      ],
     }),
   );
   act(() =>
@@ -56,7 +73,11 @@ it('projects public/CMS Home from one aggregate and exposes only supported edito
     image: { url: '/media/uploads/portrait.png', actions: null },
     identities: [{ label: 'Voice actor', actions: null }],
   });
-  hook.rerender({ services, pageId: 1, editor: true });
+  hook.rerender({
+    services,
+    pageId: '00000000-0000-4000-8000-000000000001',
+    editor: true,
+  });
   const view = hook.result.current;
   view.controls!.settings();
   view.controls!.addText();
@@ -70,7 +91,7 @@ it('projects public/CMS Home from one aggregate and exposes only supported edito
     { type: 'eyebrows', id: null },
     { type: 'image', key: 'hero' },
     { type: 'copy', section: 'intro', key: 'intro-one' },
-    { type: 'eyebrows', id: 100 },
+    { type: 'eyebrows', id: '00000000-0000-4000-8000-000000000064' },
   ]);
   act(() =>
     page.publish({
