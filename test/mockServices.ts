@@ -33,6 +33,12 @@ export function observable<T>(initial: T) {
     },
   };
 }
+const collection = () => ({
+  create: vi.fn(),
+  update: vi.fn(),
+  remove: vi.fn(),
+});
+
 export function mockServices() {
   const { editor: _skillsEditor, ...skillsState } = skillsView;
   const { mode: _projectsMode, ...projectsState } = projectsView;
@@ -110,6 +116,17 @@ export function mockServices() {
     pageId: '00000000-0000-4000-8000-000000000001',
     start: vi.fn(() => vi.fn()),
     load: vi.fn().mockResolvedValue(undefined),
+    metadata: vi.fn(),
+    image: vi.fn(),
+    copy: collection(),
+    eyebrows: collection(),
+    trivia: collection(),
+    entries: collection(),
+    releases: collection(),
+    clips: collection(),
+    appearances: collection(),
+    chapters: collection(),
+    currentItems: collection(),
   };
   const services: ServiceContainer = {
     session,

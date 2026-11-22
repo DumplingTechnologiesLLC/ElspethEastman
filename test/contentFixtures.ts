@@ -81,8 +81,9 @@ export function aCopyDTO(overrides: Partial<PageCopyDTO> = {}): PageCopyDTO {
 export function anEntryDTO(
   overrides: Partial<ContentEntryDTO> = {},
 ): ContentEntryDTO {
+  const entryId = overrides.id ?? '00000000-0000-4000-8000-000000000028';
   return {
-    id: '00000000-0000-4000-8000-000000000028',
+    id: entryId,
     page_id: '00000000-0000-4000-8000-000000000002',
     title: 'Tristana',
     eyebrow: 'League of Legends',
@@ -97,8 +98,10 @@ export function anEntryDTO(
     published_at: null,
     metadata: [
       {
-        id: '00000000-0000-4000-8000-000000000029',
-        entry_id: '00000000-0000-4000-8000-000000000028',
+        id:
+          entryId.slice(0, 24) +
+          (parseInt(entryId.slice(-12), 16) + 1).toString(16).padStart(12, '0'),
+        entry_id: entryId,
         key: 'details',
         label: 'Details',
         value: 'Character detail',
@@ -265,7 +268,12 @@ export function aStreamingDTO(
 ): StreamingContentDTO {
   return {
     ...sharedDTO('streaming'),
-    entries: [anEntryDTO({ page_id: '00000000-0000-4000-8000-000000000004' })],
+    entries: [
+      anEntryDTO({
+        page_id: '00000000-0000-4000-8000-000000000004',
+        is_featured: true,
+      }),
+    ],
     clips: [aClipDTO()],
     feature: {
       page_id: '00000000-0000-4000-8000-000000000004',
@@ -282,6 +290,7 @@ export function aPressDTO(
     entries: [
       anEntryDTO({
         page_id: '00000000-0000-4000-8000-000000000005',
+        is_featured: true,
         published_at: '2026-10-01T14:30:00Z',
         metadata: [
           {

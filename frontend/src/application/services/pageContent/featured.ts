@@ -10,7 +10,7 @@ import type {
   StreamingContent,
   VoiceoverContent,
 } from '../../../domain/models/PageContent';
-import { withoutRecord } from './shared';
+import { upsertRecord, withoutRecord } from './shared';
 
 function isFeaturedPage(
   content: PageContent,
@@ -20,6 +20,33 @@ function isFeaturedPage(
     content.kind === PageKind.Streaming ||
     content.kind === PageKind.Press
   );
+}
+
+export function withEntry(
+  content: PageContent,
+  entry: ContentEntry,
+): PageContent {
+  if (
+    !isFeaturedPage(content) ||
+    entry.pageId !== content.page.id ||
+    (entry.isFeatured && entry.image === null)
+  )
+    return content;
+  const rows =
+    content.kind === PageKind.Voiceover ? content.roles : content.entries;
+  const updated = upsertRecord(rows, entry);
+  const next =
+    content.kind === PageKind.Voiceover
+      ? { ...content, roles: updated }
+      : { ...content, entries: updated };
+  if (entry.isFeatured)
+    return withFeaturedItem(next, {
+      pageId: content.page.id,
+      itemId: entry.id,
+    });
+  return next.feature.itemId === entry.id
+    ? withFeaturedItem(next, { pageId: content.page.id, itemId: null })
+    : next;
 }
 
 export function withFeaturedItem(
