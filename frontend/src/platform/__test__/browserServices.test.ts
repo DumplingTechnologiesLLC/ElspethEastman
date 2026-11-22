@@ -93,12 +93,12 @@ it('binds navigation, token storage, confirmation and timers to its owning windo
   expect(window.sessionStorage.getItem(tokenKey)).toBe('abc');
   services.session.navigate('/projects');
   expect(services.session.getSnapshot().path).toBe('/projects');
-  services.session.navigate('/projects?role=4#roles');
-  expect(services.session.getSnapshot().path).toBe('/projects?role=4#roles');
+  services.session.navigate('/projects?role=00000000-0000-4000-8000-000000000004#roles');
+  expect(services.session.getSnapshot().path).toBe('/projects?role=00000000-0000-4000-8000-000000000004#roles');
   const historyLength = window.history.length;
-  services.session.replace('/projects?role=5#roles');
+  services.session.replace('/projects?role=00000000-0000-4000-8000-000000000005#roles');
   expect(window.history.length).toBe(historyLength);
-  expect(services.session.getSnapshot().path).toBe('/projects?role=5#roles');
+  expect(services.session.getSnapshot().path).toBe('/projects?role=00000000-0000-4000-8000-000000000005#roles');
   window.dispatchEvent(new PopStateEvent('popstate'));
   window.dispatchEvent(new StorageEvent('storage'));
   await Promise.resolve();

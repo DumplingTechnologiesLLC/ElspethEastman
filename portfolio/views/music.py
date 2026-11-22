@@ -31,13 +31,13 @@ class MusicReleaseDetailAPIView(ContentAPIView):
     def patch(self, request, item_id):
         serializer = MusicReleasePatchSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        page_id = get_object_or_404(MusicRelease, pk=item_id).page_id
+        page_id = get_object_or_404(MusicRelease, public_id=item_id).page_id
         with locked_page(page_id) as page:
-            row = get_object_or_404(MusicRelease, pk=item_id)
+            row = get_object_or_404(MusicRelease, public_id=item_id)
             return Response(MusicReleaseSerializer(save_music_release(page, row, serializer.validated_data)).data)
 
     def delete(self, request, item_id):
-        page_id = get_object_or_404(MusicRelease, pk=item_id).page_id
+        page_id = get_object_or_404(MusicRelease, public_id=item_id).page_id
         with locked_page(page_id):
-            get_object_or_404(MusicRelease, pk=item_id).delete()
+            get_object_or_404(MusicRelease, public_id=item_id).delete()
         return Response(status=204)
