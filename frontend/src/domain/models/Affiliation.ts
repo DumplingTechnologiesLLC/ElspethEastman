@@ -1,7 +1,7 @@
-export const NEW_AFFILIATION_ID = -1;
+export const NEW_AFFILIATION_ID = '-1';
 
 export interface Affiliation {
-  id: number;
+  id: string;
   affiliation: string;
   link: string | null;
 }

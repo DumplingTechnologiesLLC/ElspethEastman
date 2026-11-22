@@ -20,7 +20,7 @@ def page_content_queryset():
 
 class PageDetailAPIView(ContentAPIView):
     def get(self, request, page_id):
-        page = get_object_or_404(page_content_queryset(), pk=page_id)
+        page = get_object_or_404(page_content_queryset(), public_id=page_id)
         reader = PAGE_READERS.get(page.kind)
         if reader is None:
             raise NotFound("Page content was not found.")
