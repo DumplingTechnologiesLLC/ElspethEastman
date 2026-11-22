@@ -75,6 +75,12 @@ class ApiContractTests(TestCase):
     def send(self, method, path, data=None):
         return getattr(self.client, method)(path, data=json.dumps(data), content_type='application/json', **self.headers)
 
+    def test_skills_lookup_contains_only_editable_content_fields(self):
+        response = self.client.get('/api/skills/')
+        self.assertEqual(set(response.json()['lookup']), {
+            'game_development', 'Game Development', 'streaming', 'Streaming', 'voice_acting', 'Voice Acting',
+        })
+
     def test_skills_update_validation_and_missing_required_fields(self):
         valid = {'game_development': 'Games', 'streaming': 'Streams', 'voice_acting': 'Voice'}
         self.assertEqual(self.send('patch', '/api/skills/', {}).status_code, 400)
