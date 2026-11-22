@@ -1,3 +1,4 @@
+import type { IdentifierSource } from '../frontend/src/domain/ports/IdentifierSource';
 import { vi } from 'vitest';
 import { createServiceContainer } from '../frontend/src/composition/createServiceContainer';
 
@@ -30,6 +31,13 @@ const noop = () => {};
 export function fixturePorts() {
   let token: string | null = null;
   let revision = 0;
+  let identity = 0;
+  const identifiers: IdentifierSource = {
+    next: vi.fn(
+      () =>
+        `00000000-0000-4000-8000-${(++identity).toString(16).padStart(12, '0')}`,
+    ),
+  };
   let path = '/';
   let navigationListener = noop;
   let storageListener = noop;
@@ -81,6 +89,7 @@ export function fixturePorts() {
   const confirm = vi.fn(() => true);
   return {
     http,
+    identifiers,
     tokens,
     navigation,
     clock,
@@ -88,6 +97,13 @@ export function fixturePorts() {
     pending,
     storageChanged: () => storageListener(),
     services: () =>
-      createServiceContainer({ http, tokens, navigation, clock, confirm }),
+      createServiceContainer({
+        http,
+        tokens,
+        identifiers,
+        navigation,
+        clock,
+        confirm,
+      }),
   };
 }

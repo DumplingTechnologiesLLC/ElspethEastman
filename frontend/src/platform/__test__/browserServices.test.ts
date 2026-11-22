@@ -11,6 +11,7 @@ import { useFooterService } from '../../hooks/useFooterService';
 import { useSiteService } from '../../hooks/useSiteService';
 import { usePageService } from '../../hooks/usePageService';
 import { useMediaService } from '../../hooks/useMediaService';
+import { useContentEditorService } from '../../hooks/useContentEditorService';
 
 import { fixturePorts } from '../../../../test/fakes';
 it('creates independent request-scoped domain aggregates with interface-based accessors', () => {
@@ -29,6 +30,31 @@ it('creates independent request-scoped domain aggregates with interface-based ac
   expect(first.page('00000000-0000-4000-8000-000000000001')).not.toBe(
     first.page('00000000-0000-4000-8000-000000000002'),
   );
+  expect(first.editor('00000000-0000-4000-8000-000000000001')).not.toBe(
+    second.editor('00000000-0000-4000-8000-000000000001'),
+  );
+  expect(first.editor('00000000-0000-4000-8000-000000000001')).not.toBe(
+    first.editor('00000000-0000-4000-8000-000000000002'),
+  );
+  first
+    .editor('00000000-0000-4000-8000-000000000001')
+    .open({ type: 'settings' });
+  expect(
+    first.editor('00000000-0000-4000-8000-000000000001').getSnapshot().draft,
+  ).toBeNull();
+  const editor = renderHook(useContentEditorService, {
+    initialProps: {
+      services: first,
+      pageId: '00000000-0000-4000-8000-000000000001',
+    },
+  });
+  expect(editor.result.current).toBe(
+    first.editor('00000000-0000-4000-8000-000000000001'),
+  );
+  editor.rerender({
+    services: first,
+    pageId: '00000000-0000-4000-8000-000000000001',
+  });
   const page = renderHook(usePageService, {
     initialProps: {
       services: first,

@@ -1,3 +1,4 @@
+import { BrowserIdentifiers } from './BrowserIdentifiers';
 import { createServiceContainer } from '../composition/createServiceContainer';
 
 import type { Clock } from '../domain/ports/Clock';
@@ -48,6 +49,7 @@ export function browserServices(browser: Window) {
       tokens,
     ),
     tokens,
+    identifiers: new BrowserIdentifiers(browser.crypto),
     navigation,
     clock,
     confirm: () =>

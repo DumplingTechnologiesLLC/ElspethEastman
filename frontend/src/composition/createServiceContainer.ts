@@ -10,6 +10,9 @@ import { SiteService } from '../application/services/SiteService';
 import { HttpContentRepository } from '../platform/HttpContentRepository';
 import { PageService } from '../application/services/PageService';
 import { MediaService } from '../application/services/MediaService';
+import { ContentEditorService } from '../application/services/ContentEditorService';
+import { planForPage } from '../application/services/editing/planForPage';
+import type { ContentEditorController } from '../domain/ports/ContentEditorController';
 import type { PageId } from '../domain/models/Page';
 import type { PageController } from '../domain/ports/PageController';
 import type { ServiceContainer } from './ServiceContainer';
@@ -17,6 +20,7 @@ import type { ServiceDependencies } from './ServiceDependencies';
 export function createServiceContainer({
   http,
   tokens,
+  identifiers,
   navigation,
   clock,
   confirm,
@@ -33,24 +37,33 @@ export function createServiceContainer({
   const repository = new HttpContentRepository(http);
   const site = new SiteService(repository, session, notifications);
   const pages = new Map<PageId, PageController>();
+  const editors = new Map<PageId, ContentEditorController>();
+  const media = new MediaService(repository, notifications, session);
+  const pageFor = (pageId: PageId): PageController => {
+    let page = pages.get(pageId);
+    if (page === undefined) {
+      page = new PageService(pageId, repository, notifications, site, session);
+      pages.set(pageId, page);
+    }
+    return page;
+  };
   return {
     notifications,
     session,
     site,
-    media: new MediaService(repository, notifications, session),
-    page: (pageId) => {
-      let page = pages.get(pageId);
-      if (page === undefined) {
-        page = new PageService(
-          pageId,
-          repository,
+    media,
+    page: pageFor,
+    editor: (pageId) => {
+      let editor = editors.get(pageId);
+      if (editor === undefined) {
+        editor = new ContentEditorService(
+          (target) => planForPage(pageFor(pageId), target, identifiers),
+          media,
           notifications,
-          site,
-          session,
         );
-        pages.set(pageId, page);
+        editors.set(pageId, editor);
       }
-      return page;
+      return editor;
     },
     contact: new ContactService(api, notifications),
     skills: (editor) => new SkillsService(api, notifications, editor),
