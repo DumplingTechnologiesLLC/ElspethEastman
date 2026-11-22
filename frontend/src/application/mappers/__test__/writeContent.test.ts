@@ -77,7 +77,7 @@ it('keeps page identity out of metadata edits and distinguishes omission from cl
     title: 'Characters',
     slug: 'characters',
     primaryAction: action,
-    id: 2,
+    id: '00000000-0000-4000-8000-000000000002',
     kind: 'voiceover',
   };
   expect(writeMetadata(input)).toEqual({
@@ -93,33 +93,44 @@ it('keeps page identity out of metadata edits and distinguishes omission from cl
 
 it('keeps copy addresses required without allowing an update to move sections', () => {
   const input = {
-    pageId: 1,
+    pageId: '00000000-0000-4000-8000-000000000001',
     key: 'intro',
     section: 'intro',
     kind: CopyKind.Body,
     value: 'Text',
-    id: 30,
+    id: '00000000-0000-4000-8000-00000000001e',
     sortOrder: 4,
   };
   expect(writeCopy(input)).toEqual({
-    page_id: 1,
+    page_id: '00000000-0000-4000-8000-000000000001',
     key: 'intro',
     section: 'intro',
     kind: 'body',
     value: 'Text',
   });
   expect(writeCopyChanges(input)).toEqual({
-    page_id: 1,
+    page_id: '00000000-0000-4000-8000-000000000001',
     key: 'intro',
     kind: 'body',
     value: 'Text',
   });
-  expect(writeCopyChanges({ pageId: 1, key: 'intro' })).toEqual({
-    page_id: 1,
+  expect(
+    writeCopyChanges({
+      pageId: '00000000-0000-4000-8000-000000000001',
+      key: 'intro',
+    }),
+  ).toEqual({
+    page_id: '00000000-0000-4000-8000-000000000001',
     key: 'intro',
   });
-  expect(writePageImage({ pageId: 1, key: 'hero', image })).toEqual({
-    page_id: 1,
+  expect(
+    writePageImage({
+      pageId: '00000000-0000-4000-8000-000000000001',
+      key: 'hero',
+      image,
+    }),
+  ).toEqual({
+    page_id: '00000000-0000-4000-8000-000000000001',
     key: 'hero',
     image: imageDTO,
   });
@@ -150,7 +161,7 @@ it('preserves explicit nulls and empty fact replacement without leaking nested r
 it('maps complete practice values and copies collection order while preserving hero identity', () => {
   expect(
     writePractice({
-      pageId: 3,
+      pageId: '00000000-0000-4000-8000-000000000003',
       eyebrow: 'Practice',
       title: 'Cello',
       description: 'Notes',
@@ -159,7 +170,7 @@ it('maps complete practice values and copies collection order while preserving h
       action,
     }),
   ).toEqual({
-    page_id: 3,
+    page_id: '00000000-0000-4000-8000-000000000003',
     eyebrow: 'Practice',
     title: 'Cello',
     description: 'Notes',
@@ -167,26 +178,42 @@ it('maps complete practice values and copies collection order while preserving h
     facts: [{ label: 'Focus', value: 'Bowing' }],
     action,
   });
-  const ids = [41, 40];
+  const ids = [
+    '00000000-0000-4000-8000-000000000029',
+    '00000000-0000-4000-8000-000000000028',
+  ];
   const order = writeOrder({
-    pageId: 2,
+    pageId: '00000000-0000-4000-8000-000000000002',
     collection: PageCollection.ContentEntries,
     section: null,
     orderedIds: ids,
   });
   ids.reverse();
   expect(order).toEqual({
-    page_id: 2,
+    page_id: '00000000-0000-4000-8000-000000000002',
     collection: 'content_entries',
     section: null,
-    ordered_ids: [41, 40],
+    ordered_ids: [
+      '00000000-0000-4000-8000-000000000029',
+      '00000000-0000-4000-8000-000000000028',
+    ],
   });
-  expect(writeFeature({ pageId: 2, itemId: 40 })).toEqual({
-    page_id: 2,
-    item_id: 40,
+  expect(
+    writeFeature({
+      pageId: '00000000-0000-4000-8000-000000000002',
+      itemId: '00000000-0000-4000-8000-000000000028',
+    }),
+  ).toEqual({
+    page_id: '00000000-0000-4000-8000-000000000002',
+    item_id: '00000000-0000-4000-8000-000000000028',
   });
-  expect(writeFeature({ pageId: 2, itemId: null })).toEqual({
-    page_id: 2,
+  expect(
+    writeFeature({
+      pageId: '00000000-0000-4000-8000-000000000002',
+      itemId: null,
+    }),
+  ).toEqual({
+    page_id: '00000000-0000-4000-8000-000000000002',
     item_id: null,
   });
 });

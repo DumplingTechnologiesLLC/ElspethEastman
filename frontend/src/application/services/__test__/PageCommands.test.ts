@@ -42,35 +42,53 @@ it('promotes an eligible existing entry and clears promotion without changing id
   const { service, repository } = await fixture();
   repository.feature.mockResolvedValueOnce({
     ok: true,
-    value: { pageId: 2, itemId: 40 },
+    value: {
+      pageId: '00000000-0000-4000-8000-000000000002',
+      itemId: '00000000-0000-4000-8000-000000000028',
+    },
   });
-  expect((await service.feature(40)).ok).toBe(true);
+  expect(
+    (await service.feature('00000000-0000-4000-8000-000000000028')).ok,
+  ).toBe(true);
   const promoted = service.getSnapshot().content;
   expect(promoted).toMatchObject({
-    feature: { itemId: 40 },
-    roles: [{ id: 40, isFeatured: true, sortOrder: 0 }],
+    feature: { itemId: '00000000-0000-4000-8000-000000000028' },
+    roles: [
+      {
+        id: '00000000-0000-4000-8000-000000000028',
+        isFeatured: true,
+        sortOrder: 0,
+      },
+    ],
   });
   repository.feature.mockResolvedValueOnce({
     ok: true,
-    value: { pageId: 2, itemId: null },
+    value: { pageId: '00000000-0000-4000-8000-000000000002', itemId: null },
   });
   expect((await service.feature(null)).ok).toBe(true);
   expect(service.getSnapshot().content).toMatchObject({
     feature: { itemId: null },
-    roles: [{ id: 40, isFeatured: false }],
+    roles: [{ id: '00000000-0000-4000-8000-000000000028', isFeatured: false }],
   });
   expect(repository.page).toHaveBeenCalledOnce();
 });
 
 it('rejects unsupported promotion, unknown entries, and invalid canonical acknowledgements', async () => {
   const { service, repository } = await fixture();
-  expect((await service.feature(999)).ok).toBe(false);
+  expect(
+    (await service.feature('00000000-0000-4000-8000-0000000003e7')).ok,
+  ).toBe(false);
   expect(repository.feature).not.toHaveBeenCalled();
   repository.feature.mockResolvedValueOnce({
     ok: true,
-    value: { pageId: 99, itemId: 40 },
+    value: {
+      pageId: '00000000-0000-4000-8000-000000000063',
+      itemId: '00000000-0000-4000-8000-000000000028',
+    },
   });
-  expect((await service.feature(40)).ok).toBe(false);
+  expect(
+    (await service.feature('00000000-0000-4000-8000-000000000028')).ok,
+  ).toBe(false);
   expect(service.getSnapshot().content).toBe(voice);
   const other = await fixture(music);
   expect((await other.service.feature(null)).ok).toBe(false);
@@ -102,30 +120,38 @@ it('reorders only complete scoped membership, preserving all canonical records',
   const input = {
     collection: PageCollection.ContentEntries,
     section: null,
-    orderedIds: [40],
+    orderedIds: ['00000000-0000-4000-8000-000000000028'],
   };
   repository.reorder.mockResolvedValueOnce({
     ok: true,
-    value: { ...input, pageId: 2 },
+    value: { ...input, pageId: '00000000-0000-4000-8000-000000000002' },
   });
   expect((await service.reorder(input)).ok).toBe(true);
   expect(repository.reorder).toHaveBeenCalledExactlyOnceWith({
     ...input,
-    pageId: 2,
+    pageId: '00000000-0000-4000-8000-000000000002',
   });
   expect(service.getSnapshot().content).toMatchObject({
-    roles: [{ id: 40, sortOrder: 0 }],
+    roles: [{ id: '00000000-0000-4000-8000-000000000028', sortOrder: 0 }],
   });
   expect((await service.reorder({ ...input, orderedIds: [] })).ok).toBe(false);
   expect(repository.reorder).toHaveBeenCalledOnce();
   repository.reorder.mockResolvedValueOnce({
     ok: true,
-    value: { ...input, pageId: 2, collection: PageCollection.Eyebrows },
+    value: {
+      ...input,
+      pageId: '00000000-0000-4000-8000-000000000002',
+      collection: PageCollection.Eyebrows,
+    },
   });
   expect((await service.reorder(input)).ok).toBe(false);
   repository.reorder.mockResolvedValueOnce({
     ok: true,
-    value: { ...input, pageId: 2, section: 'other' },
+    value: {
+      ...input,
+      pageId: '00000000-0000-4000-8000-000000000002',
+      section: 'other',
+    },
   });
   expect((await service.reorder(input)).ok).toBe(false);
 });
@@ -135,22 +161,22 @@ it('supports keyed copy order and independent Bio chapters', async () => {
   const input = {
     collection: PageCollection.Copy,
     section: 'intro',
-    orderedIds: [30],
+    orderedIds: ['00000000-0000-4000-8000-00000000001e'],
   };
   repository.reorder.mockResolvedValueOnce({
     ok: true,
-    value: { ...input, pageId: 1 },
+    value: { ...input, pageId: '00000000-0000-4000-8000-000000000001' },
   });
   expect((await service.reorder(input)).ok).toBe(true);
   const bio = await fixture(toPageContent(aBioDTO()));
   const chapters = {
     collection: PageCollection.BioChapters,
     section: null,
-    orderedIds: [80],
+    orderedIds: ['00000000-0000-4000-8000-000000000050'],
   };
   bio.repository.reorder.mockResolvedValueOnce({
     ok: true,
-    value: { ...chapters, pageId: 6 },
+    value: { ...chapters, pageId: '00000000-0000-4000-8000-000000000006' },
   });
   expect((await bio.service.reorder(chapters)).ok).toBe(true);
 });

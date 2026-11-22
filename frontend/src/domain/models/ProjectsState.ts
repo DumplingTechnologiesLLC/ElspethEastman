@@ -8,8 +8,8 @@ export interface ProjectsState {
   cached: Project[];
   page: number;
   pages: number;
-  errors: Record<number, Errors>;
+  errors: Record<string, Errors>;
   draft: Project;
   open: boolean;
-  busy: number[];
+  busy: string[];
 }
