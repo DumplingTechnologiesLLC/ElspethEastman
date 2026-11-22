@@ -30,25 +30,25 @@ export const bioPageView = {
       },
     ],
     identities: ['Voice actor', 'Streamer', 'Musician'].map((label, id) => ({
-      id,
+      id: `00000000-0000-4000-8000-${id.toString(16).padStart(12, '0')}`,
       label,
       actions: null,
     })),
     trivia: [
       {
-        id: 1,
+        id: '00000000-0000-4000-8000-000000000001',
         label: 'Started with',
         value: 'Theater · YouTube',
         actions: null,
       },
       {
-        id: 2,
+        id: '00000000-0000-4000-8000-000000000002',
         label: 'Breakthrough',
         value: 'Tristana · Riot Games',
         actions: null,
       },
       {
-        id: 3,
+        id: '00000000-0000-4000-8000-000000000003',
         label: 'Currently',
         value: 'VO · Streaming · Cello',
         actions: null,
@@ -102,25 +102,25 @@ export const bioPageView = {
   ],
   chapters: [
     {
-      id: 1,
+      id: '00000000-0000-4000-8000-000000000001',
       eyebrow: 'Early years',
       heading: 'From theater to a microphone in a closet.',
       body: 'Growing up in northern Indiana, Elspeth gravitated toward performance early through school theater. In college, voice acting became a side hobby: recording character voices, posting experiments online, and learning the craft by doing it.',
     },
     {
-      id: 2,
+      id: '00000000-0000-4000-8000-000000000002',
       eyebrow: 'The turn',
       heading: 'YouTube found its way to Riot.',
       body: 'In 2013, Elspeth posted a video voicing League of Legends champions. Riot employees found it, passed it around internally, and later invited her to audition for Tristana. She recorded the audition at home, landed the role, and the credit became a major turning point into professional voice work.',
     },
     {
-      id: 3,
+      id: '00000000-0000-4000-8000-000000000003',
       eyebrow: 'More than one lane',
       heading: 'Voice acting was never the only thing.',
       body: "Alongside character work, Elspeth has composed, produced, sung, streamed, hosted, and appeared at events and panels. Streaming grew from another creative outlet into a long-running career of its own, including recognition as one of Twitch's original Ambassador cohort.",
     },
     {
-      id: 4,
+      id: '00000000-0000-4000-8000-000000000004',
       eyebrow: 'Now',
       heading: 'The current obsession has four strings.',
       body: 'Today the mix still changes. Voice work and streaming continue, while cello has become the most visible musical focus: near-daily practice, increasingly serious repertoire, and a running record of what progress actually looks like.',
@@ -128,29 +128,45 @@ export const bioPageView = {
   ].map((row) => ({ ...row, actions: null })),
   current: [
     {
-      id: 1,
+      id: '00000000-0000-4000-8000-000000000001',
       eyebrow: 'Voice acting',
       title: 'Games & animation',
       description: 'Character-forward performance and recurring roles.',
     },
     {
-      id: 2,
+      id: '00000000-0000-4000-8000-000000000002',
       eyebrow: 'Streaming',
       title: 'Variety & live chaos',
       description: 'Games, roleplay, collaborations, and conversation.',
     },
     {
-      id: 3,
+      id: '00000000-0000-4000-8000-000000000003',
       eyebrow: 'Music',
       title: 'Cello',
       description: 'Two-plus years of near-daily practice and counting.',
     },
   ].map((row) => ({ ...row, link: null, actions: null })),
   explore: [
-    { id: 2, label: 'Voiceover', href: '/voiceover' },
-    { id: 3, label: 'Music', href: '/music' },
-    { id: 4, label: 'Streaming', href: '/streaming' },
-    { id: 5, label: 'Press', href: '/press' },
+    {
+      id: '00000000-0000-4000-8000-000000000002',
+      label: 'Voiceover',
+      href: '/voiceover',
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000003',
+      label: 'Music',
+      href: '/music',
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000004',
+      label: 'Streaming',
+      href: '/streaming',
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000005',
+      label: 'Press',
+      href: '/press',
+    },
   ],
   navigate: noop,
   controls: null,
@@ -160,7 +176,7 @@ export function BioPreview(props: Parameters<typeof BioPage>[0]) {
     <Portfolio
       {...portfolioView}
       title="Bio · Elspeth Eastman"
-      pageId={6}
+      pageId={'00000000-0000-4000-8000-000000000006'}
       pageKind={PageKind.Bio}
       editor={props.controls !== null}
       authenticated={props.controls !== null}

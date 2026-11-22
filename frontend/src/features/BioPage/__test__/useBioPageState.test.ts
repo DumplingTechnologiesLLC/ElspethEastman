@@ -13,7 +13,11 @@ import { useBioPageState } from '../useBioPageState';
 it('owns biography collections while deriving ordered Explore links from canonical registry labels and slugs', () => {
   const { services, page, site, editor } = mockServices();
   const hook = renderHook(useBioPageState, {
-    initialProps: { services, pageId: 6, editor: false },
+    initialProps: {
+      services,
+      pageId: '00000000-0000-4000-8000-000000000006',
+      editor: false,
+    },
   });
   expect(hook.result.current).toMatchObject({
     ready: false,
@@ -33,7 +37,7 @@ it('owns biography collections while deriving ordered Explore links from canonic
           current_items: [
             aCurrentItemDTO(),
             aCurrentItemDTO({
-              id: 92,
+              id: '00000000-0000-4000-8000-00000000005c',
               link: {
                 label: 'Visit',
                 href: 'https://example.invalid/activity',
@@ -57,13 +61,25 @@ it('owns biography collections while deriving ordered Explore links from canonic
     });
   });
   expect(hook.result.current.explore).toEqual([
-    { id: 2, label: 'voiceover', href: '/voiceover' },
-    { id: 3, label: 'Recordings', href: '/recordings' },
+    {
+      id: '00000000-0000-4000-8000-000000000002',
+      label: 'voiceover',
+      href: '/voiceover',
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000003',
+      label: 'Recordings',
+      href: '/recordings',
+    },
   ]);
   expect(hook.result.current.chapters[0]!.actions).toBeNull();
   expect(hook.result.current.current[0]!.link).toBeNull();
   expect(hook.result.current.current[1]!.link!.label).toBe('Visit');
-  hook.rerender({ services, pageId: 6, editor: true });
+  hook.rerender({
+    services,
+    pageId: '00000000-0000-4000-8000-000000000006',
+    editor: true,
+  });
   expect(hook.result.current.explore[1]!.href).toBe('/cms/recordings');
   hook.result.current.chapters[0]!.actions!.edit();
   hook.result.current.current[0]!.actions!.edit();
@@ -75,8 +91,8 @@ it('owns biography collections while deriving ordered Explore links from canonic
   controls.addCurrentHeading();
   controls.addExploreHeading();
   expect(editor.open.mock.calls.map(([target]) => target)).toEqual([
-    { type: 'bio_chapters', id: 80 },
-    { type: 'current_items', id: 90 },
+    { type: 'bio_chapters', id: '00000000-0000-4000-8000-000000000050' },
+    { type: 'current_items', id: '00000000-0000-4000-8000-00000000005a' },
     { type: 'copy', section: 'short_bio', key: null },
     { type: 'bio_chapters', id: null },
     { type: 'current_items', id: null },
