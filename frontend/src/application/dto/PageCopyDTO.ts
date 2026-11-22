@@ -6,3 +6,12 @@ export interface PageCopyDTO extends KeyedPageScopeDTO, OrderedPageRecordDTO {
   kind: CopyKindDTO;
   value: string;
 }
+export interface CopyInputDTO extends KeyedPageScopeDTO {
+  section: string;
+  kind: CopyKindDTO;
+  value: string;
+}
+export interface CopyChangesDTO extends KeyedPageScopeDTO {
+  kind?: CopyKindDTO;
+  value?: string;
+}

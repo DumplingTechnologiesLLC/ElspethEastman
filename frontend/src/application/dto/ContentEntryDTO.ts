@@ -1,5 +1,5 @@
-import type { LinkDTO } from './LinkDTO';
-import type { ImageUseDTO } from './MediaAssetDTO';
+import type { LinkDTO, LinkInputDTO } from './LinkDTO';
+import type { ImageUseDTO, ImageUseInputDTO } from './MediaAssetDTO';
 import type { OrderedPageRecordDTO, PageScopeDTO } from './PageDTO';
 
 export interface EntryMetadataDTO {
@@ -23,4 +23,19 @@ export interface ContentEntryDTO extends OrderedPageRecordDTO {
 }
 export interface FeaturedItemDTO extends PageScopeDTO {
   item_id: string | null;
+}
+export interface EntryMetadataInputDTO {
+  key: string;
+  label: string;
+  value: string;
+}
+export interface ContentEntryInputDTO extends PageScopeDTO {
+  title: string;
+  eyebrow: string;
+  description: string;
+  image: ImageUseInputDTO | null;
+  action: LinkInputDTO | null;
+  category: string | null;
+  published_at: string | null;
+  metadata: EntryMetadataInputDTO[];
 }
