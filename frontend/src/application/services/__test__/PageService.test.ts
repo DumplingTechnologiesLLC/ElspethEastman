@@ -21,6 +21,7 @@ function fixture() {
   const alerts = fakeNotifications();
   return {
     repository,
+    session,
     alerts,
     service: new PageService(
       '00000000-0000-4000-8000-000000000001',
@@ -31,6 +32,23 @@ function fixture() {
     ),
   };
 }
+
+it('expires authentication on a forbidden aggregate read without retaining an editor', async () => {
+  const { service, session, repository } = fixture();
+  session.publish({
+    ...session.getSnapshot(),
+    path: '/cms/voiceover?role=00000000-0000-4000-8000-000000000028',
+  });
+  repository.page.mockResolvedValue({
+    ok: false,
+    error: { status: 403, detail: 'Expired', fields: {} },
+  });
+  await service.load();
+  expect(session.expire).toHaveBeenCalledWith(
+    '/cms/voiceover?role=00000000-0000-4000-8000-000000000028',
+    session.revision(),
+  );
+});
 
 it('loads one aggregate and reuses it across subscribers without refetching', async () => {
   const { service, repository } = fixture();

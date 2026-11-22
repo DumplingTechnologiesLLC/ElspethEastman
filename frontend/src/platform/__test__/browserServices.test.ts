@@ -146,6 +146,15 @@ it('binds navigation, token storage, confirmation and timers to its owning windo
     '/projects?role=00000000-0000-4000-8000-000000000005#roles',
   );
   window.dispatchEvent(new PopStateEvent('popstate'));
+  window.history.replaceState(
+    null,
+    '',
+    '/projects?role=00000000-0000-4000-8000-000000000005#changed',
+  );
+  window.dispatchEvent(new HashChangeEvent('hashchange'));
+  expect(services.session.getSnapshot().path).toBe(
+    '/projects?role=00000000-0000-4000-8000-000000000005#changed',
+  );
   window.dispatchEvent(new StorageEvent('storage'));
   await Promise.resolve();
   const projects = services.projects('editor');

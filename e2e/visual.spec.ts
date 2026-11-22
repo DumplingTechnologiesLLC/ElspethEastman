@@ -1,83 +1,98 @@
-import { it, expect, login, stablePage } from './fixtures.ts';
-const viewports = [
-  { name: 'desktop', width: 1440, height: 900 },
-  { name: 'mobile', width: 390, height: 844 },
-] as const;
-const routes = [
-  ['home', '/'],
-  ['projects', '/projects'],
-  ['login', '/login'],
-  ['cms', '/cms'],
-] as const;
-it.each(
-  viewports.flatMap((viewport) =>
-    routes.map(([name, path]) => ({ viewport, name, path })),
-  ),
-)(({ viewport, name, path }) =>
-  it(`preserves the ${viewport.name} ${name} baseline`, async ({ page }) => {
-    await page.setViewportSize({
-      width: viewport.width,
-      height: viewport.height,
-    });
-    if (name === 'cms') await login(page);
-    else await page.goto(path);
-    if (name === 'home') {
-      await expect(
-        page.getByText(
-          'Voice acting fixture: characters, narration, and animation.',
-        ),
-      ).toBeVisible();
-      await expect(
-        page.locator('img[alt^="Select this thumbnail"]'),
-      ).toHaveCount(4);
-    }
-    if (name === 'projects')
-      await expect(
-        page.locator('img[alt^="Select this thumbnail"]'),
-      ).toHaveCount(6);
+/* oxlint-disable no-await-in-loop -- These interactions share one browser and depend on its preceding state. */
+import { it, expect, login, aggregate, stablePage } from './fixtures.ts';
+it('matches the reviewed redesign across public, selected, CMS, and modal states', async ({
+  page,
+}, testInfo) => {
+  it.setTimeout(240_000);
+  const capture = async (name: string, fullPage = true) => {
     await stablePage(page);
-    await expect(page).toHaveScreenshot(`${viewport.name}-${name}.png`, {
-      fullPage: true,
+    await page.mouse.move(0, 0);
+    // Preserve review evidence even when Playwright rejects a missing baseline.
+    await page.screenshot({
+      path: testInfo.outputPath(name + '-actual.png'),
+      fullPage,
+      animations: 'disabled',
+      caret: 'hide',
     });
-  }),
-);
-it.each(viewports)((viewport) =>
-  it(`preserves the ${viewport.name} contact form and validation baseline`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({
-      width: viewport.width,
-      height: viewport.height,
-    });
+    await expect.soft(page).toHaveScreenshot(name + '.png', { fullPage });
+  };
+  for (const viewport of [
+    { name: 'desktop', width: 1728, height: 996 },
+    { name: 'mobile', width: 400, height: 900 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await page.evaluate(() =>
+      sessionStorage.removeItem('ElspethEastmanAuthToken'),
+    );
+    for (const kind of [
+      'home',
+      'voiceover',
+      'music',
+      'streaming',
+      'press',
+      'bio',
+      'login',
+    ]) {
+      await page.goto(kind === 'home' ? '/' : '/' + kind);
+      await stablePage(page);
+      await expect(
+        page.getByText('Editor signed in', { exact: true }),
+      ).toHaveCount(0);
+      await capture('redesign-' + viewport.name + '-' + kind);
+    }
+    for (const [kind, parameter] of [
+      ['voiceover', 'role'],
+      ['press', 'entry'],
+    ] as const) {
+      const content = await aggregate(page, kind);
+      const rows =
+        'roles' in content
+          ? content.roles
+          : 'entries' in content
+            ? content.entries
+            : [];
+      await page.goto('/' + kind + '?' + parameter + '=' + rows[0]!.id);
+      await expect(
+        page.getByRole('button', { name: 'Close detail' }),
+      ).toBeVisible();
+      await capture('redesign-' + viewport.name + '-' + kind + '-selected');
+    }
     await page.goto('/');
     await page
-      .getByRole('button', { name: 'Get in touch', exact: true })
+      .getByRole('button', { name: 'Send message', exact: true })
       .click();
-    const dialog = page.getByRole('dialog', { name: /Contact Me/ });
-    await expect(dialog).toHaveCSS('opacity', '1');
-    await stablePage(page);
-    await expect(page).toHaveScreenshot(`${viewport.name}-contact.png`);
-    await dialog.getByRole('button', { name: 'Get in touch' }).click();
-    await expect(dialog.getByText('Name is required')).toBeVisible();
-    await expect(page).toHaveScreenshot(
-      `${viewport.name}-contact-validation.png`,
-    );
-  }),
-);
-it.each([
-  ['project', 'Add New Project', 'Add new Project'],
-  ['experience', 'Add new credit', 'Experience Form'],
-  ['affiliation', 'Create new affiliation', 'Add new Affiliation'],
-] as const)(([name, button, title]) =>
-  it(`preserves the desktop ${name} editor baseline`, async ({ page }) => {
+    await expect(page.getByText('Name is required')).toBeVisible();
+    await capture('redesign-' + viewport.name + '-contact-validation');
     await login(page);
-    await page
-      .getByRole('button', { name: button, exact: true })
-      .first()
-      .click();
-    const dialog = page.getByRole('dialog', { name: title, exact: true });
-    await expect(dialog).toHaveCSS('opacity', '1');
-    await stablePage(page);
-    await expect(page).toHaveScreenshot(`desktop-${name}-editor.png`);
-  }),
-);
+    for (const kind of [
+      'home',
+      'voiceover',
+      'music',
+      'streaming',
+      'press',
+      'bio',
+    ]) {
+      await page.goto('/cms' + (kind === 'home' ? '' : '/' + kind));
+      await expect(
+        page.getByText('Content editor', { exact: true }),
+      ).toBeVisible();
+      await capture('redesign-' + viewport.name + '-cms-' + kind);
+    }
+    for (const [kind, button, label] of [
+      ['voiceover', 'Edit Tristana', 'role'],
+      ['music', 'Edit current practice', 'practice'],
+      ['press', 'Add coverage', 'coverage'],
+      ['bio', 'Add chapter', 'chapter'],
+    ] as const) {
+      await page.goto('/cms/' + kind);
+      await page
+        .getByRole('button', { name: button, exact: true })
+        .first()
+        .click();
+      await expect(page.getByRole('dialog')).toBeVisible();
+      await capture('redesign-' + viewport.name + '-editor-' + label, false);
+      await page.keyboard.press('Escape');
+    }
+  }
+});

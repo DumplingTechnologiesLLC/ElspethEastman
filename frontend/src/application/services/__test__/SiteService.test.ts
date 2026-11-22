@@ -37,6 +37,21 @@ function fixture(path = '/', authenticated = false) {
   };
 }
 
+it('expires authentication when the registry read is forbidden', async () => {
+  const { site, session, repository } = fixture(
+    '/cms/press?entry=00000000-0000-4000-8000-00000000000c',
+  );
+  repository.site.mockResolvedValue({
+    ok: false,
+    error: { status: 403, detail: 'Expired', fields: {} },
+  });
+  await site.load();
+  expect(session.expire).toHaveBeenCalledWith(
+    '/cms/press?entry=00000000-0000-4000-8000-00000000000c',
+    session.revision(),
+  );
+});
+
 it('loads the registry once and resolves subsequent path, selection, and auth changes from memory', async () => {
   const { site, repository, session } = fixture(
     '/voiceover?role=00000000-0000-4000-8000-000000000028',

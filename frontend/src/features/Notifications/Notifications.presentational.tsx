@@ -3,7 +3,7 @@ import Info from '../../assets/svg/info.svg?react';
 import ErrorIcon from '../../assets/svg/error.svg?react';
 import Warning from '../../assets/svg/warning.svg?react';
 import Success from '../../assets/svg/success.svg?react';
-import { styles } from '../../ui/styles';
+import { tokens } from '../../ui/tokens.stylex';
 import type { useNotificationsState } from './useNotificationsState';
 const enter = stylex.keyframes({
   from: { transform: 'translateY(20px)' },
@@ -17,13 +17,13 @@ const exit = stylex.keyframes({
 const css = stylex.create({
   rack: {
     position: 'fixed',
-    paddingTop: '8em',
-    paddingRight: '1.25em',
+    paddingTop: 90,
+    paddingRight: 16,
     right: 0,
     top: 0,
     bottom: 0,
     pointerEvents: 'none',
-    width: 300,
+    width: 'min(340px,calc(100vw - 24px))',
     display: 'flex',
     flexDirection: 'column',
     zIndex: 102,
@@ -33,11 +33,21 @@ const css = stylex.create({
     boxSizing: 'border-box',
     display: 'flex',
     padding: '.5em .5em .5em 1.25em',
-    backgroundColor: 'white',
-    borderRadius: 3,
+    backgroundColor: tokens.surface,
+    borderRadius: 0,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: tokens.line,
+    color: tokens.foreground,
     position: 'relative',
-    animationName: `${enter}, ${exit}`,
-    animationDuration: '.3s, 6s',
+    animationName: {
+      default: `${enter}, ${exit}`,
+      '@media (prefers-reduced-motion: reduce)': 'none',
+    },
+    animationDuration: {
+      default: '.3s, 6s',
+      '@media (prefers-reduced-motion: reduce)': '0s, 0s',
+    },
     animationTimingFunction: 'ease-out',
     animationDelay: '0s, .3s',
     animationFillMode: 'forwards',
@@ -51,10 +61,10 @@ const css = stylex.create({
     width: 12,
     borderRadius: '3px 0 0 3px',
   },
-  info: { backgroundColor: '#01d1fe' },
-  error: { backgroundColor: '#b80975' },
-  warning: { backgroundColor: '#feff8a' },
-  success: { backgroundColor: '#00cf80' },
+  info: { backgroundColor: '#c58a4b' },
+  error: { backgroundColor: '#df806f' },
+  warning: { backgroundColor: '#c58a4b' },
+  success: { backgroundColor: '#c58a4b' },
   iconContainer: {
     width: 30,
     display: 'flex',
@@ -62,19 +72,25 @@ const css = stylex.create({
     justifyContent: 'center',
   },
   icon: { height: 30 },
-  infoIcon: { fill: '#01d1fe' },
-  errorIcon: { fill: '#b80975' },
-  warningIcon: { fill: '#feff8a' },
-  successIcon: { fill: '#00cf80' },
+  infoIcon: { fill: '#c58a4b' },
+  errorIcon: { fill: '#df806f' },
+  warningIcon: { fill: '#c58a4b' },
+  successIcon: { fill: '#c58a4b' },
   text: { padding: '0 1em', flex: 1 },
   title: {
     marginTop: 0,
     marginBottom: '.25em',
     fontSize: '1.25em',
-    fontFamily: 'Montserrat, sans-serif',
+    fontFamily: tokens.sans,
     fontWeight: 'bold',
   },
-  content: { margin: 0 },
+  content: {
+    margin: 0,
+    fontFamily: tokens.sans,
+    fontSize: 13,
+    lineHeight: 1.5,
+    color: tokens.copy,
+  },
 });
 const icons = {
   info: Info,
@@ -106,9 +122,7 @@ export function Notifications({
               ) : (
                 ''
               )}
-              <p {...stylex.props(styles.content, css.content)}>
-                {toast.content}
-              </p>
+              <p {...stylex.props(css.content)}>{toast.content}</p>
             </div>
           </div>
         );

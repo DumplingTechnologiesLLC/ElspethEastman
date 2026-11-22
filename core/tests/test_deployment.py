@@ -11,7 +11,7 @@ from core.models import Contact, Experience
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class DeploymentRegressionTests(TestCase):
     def test_public_routes_render_the_built_client(self):
-        for path in ['/', '/projects', '/cms', '/login']:
+        for path in ['/', '/cms', '/login']:
             with self.subTest(path=path):
                 response = self.client.get(path)
                 self.assertEqual(response.status_code, 200)

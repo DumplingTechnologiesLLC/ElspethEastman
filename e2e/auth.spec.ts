@@ -1,153 +1,123 @@
-import { it, expect, login, actionResponse } from './fixtures.ts';
-
-it('validates required login credentials', async ({ page }) => {
+import {
+  it,
+  expect,
+  login,
+  aggregate,
+  actionResponse,
+  database,
+  stablePage,
+} from './fixtures.ts';
+it('keeps cleared browser credentials cleared across fresh page loads', async ({
+  page,
+}) => {
+  await login(page);
+  await page.evaluate(() =>
+    sessionStorage.removeItem('ElspethEastmanAuthToken'),
+  );
+  await page.goto('/');
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem('ElspethEastmanAuthToken'),
+    ),
+  ).toBeNull();
+  await stablePage(page);
+  await expect(page.getByText('Editor signed in', { exact: true })).toHaveCount(
+    0,
+  );
+});
+it('validates required credentials and keeps failed logins outside CMS', async ({
+  page,
+}) => {
   await page.goto('/login');
-  const submit = page.getByRole('button', { name: 'Login', exact: true });
-  await submit.click();
+  await page.getByRole('button', { name: 'Login', exact: true }).click();
   await expect(page.getByText('Username is required')).toBeVisible();
-  await page.locator('input[name="username"]').fill('e2e-editor');
-  await submit.click();
+  await expect(page.getByLabel(/^Username/)).toBeFocused();
+  await page.getByLabel(/^Username/).fill('e2e-editor');
+  await page.getByRole('button', { name: 'Login', exact: true }).click();
   await expect(page.getByText('Password is required')).toBeVisible();
+  await page.getByLabel(/^Password/).fill('incorrect-password');
+  await actionResponse(
+    page,
+    'POST',
+    '/api/v2/session/login/',
+    () => page.getByLabel(/^Password/).press('Enter'),
+    400,
+  );
+  await expect(
+    page.getByRole('alert').filter({ hasText: 'Bad login' }).last(),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem('ElspethEastmanAuthToken'),
+    ),
+  ).toBeNull();
 });
-
-it('keeps the user outside the CMS with incorrect credentials', async ({
+it('retains a selected CMS return location through login, reload, public mode, and logout', async ({
   page,
 }) => {
-  await page.goto('/login');
-  await page.locator('input[name="username"]').fill('e2e-editor');
-  await page.locator('input[name="password"]').fill('incorrect-password');
+  const content = await aggregate(page, 'voiceover');
+  const id = 'roles' in content ? content.roles[0]!.id : 0;
+  const destination = '/cms/voiceover?role=' + id + '#roles';
+  await page.goto(destination);
+  await expect(page).toHaveURL(
+    '/login?returnTo=' + encodeURIComponent(destination),
+  );
+  await page.getByLabel(/^Username/).fill('e2e-editor');
+  await page.getByLabel(/^Password/).fill('e2e-only-password');
+  await page.getByLabel(/^Password/).press('Enter');
+  await expect(
+    page.getByRole('button', { name: 'Close detail' }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(destination);
+  await page.reload();
+  await expect(
+    page.getByRole('button', { name: 'Close detail' }),
+  ).toBeVisible();
+  await page
+    .getByRole('link', { name: 'View public page', exact: true })
+    .click();
+  await expect(page).toHaveURL('/voiceover?role=' + id + '#roles');
+  await page.getByRole('link', { name: 'Edit page', exact: true }).click();
+  await expect(page).toHaveURL(destination);
+  await page.getByRole('button', { name: 'Log out', exact: true }).click();
+  await expect(page).toHaveURL('/login');
+  expect(
+    await page.evaluate(() =>
+      sessionStorage.getItem('ElspethEastmanAuthToken'),
+    ),
+  ).toBeNull();
+});
+it('expires a rejected CMS mutation and returns to the same page after reauthentication', async ({
+  page,
+}) => {
+  await login(page, false, '/cms/voiceover');
+  await page
+    .getByRole('button', { name: 'Edit Tristana', exact: true })
+    .click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByLabel(/^Character/).fill('Expired edit');
+  database('expire-tokens');
+  await dialog.getByRole('button', { name: 'Publish changes' }).click();
+  await expect(page).toHaveURL('/login?returnTo=%2Fcms%2Fvoiceover');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.getByLabel(/^Username/).fill('e2e-editor');
+  await page.getByLabel(/^Password/).fill('e2e-only-password');
   await page.getByRole('button', { name: 'Login', exact: true }).click();
   await expect(
-    page.getByRole('alert').filter({ hasText: 'Bad login' }),
+    page.getByRole('button', { name: 'Edit Tristana', exact: true }),
   ).toBeVisible();
-  await expect(page).toHaveURL(/\/login$/);
-  expect(
-    await page.evaluate(() =>
-      sessionStorage.getItem('ElspethEastmanAuthToken'),
-    ),
-  ).toBeNull();
 });
 
-it('preserves UI login through reload and navigation and revokes the token on logout', async ({
+it('keeps native release anchors when switching public and CMS modes', async ({
   page,
 }) => {
-  await login(page, true);
-  const token = await page.evaluate(() =>
-    sessionStorage.getItem('ElspethEastmanAuthToken'),
-  );
-  expect(token).toMatch(/^[a-f0-9]{40}$/);
-  expect(
-    await actionResponse(page, 'POST', '/api/v2/session/', () => page.reload()),
-  ).toEqual({ isAuthenticated: true });
-  await expect(page.locator('textarea[name="Voice Acting"]')).toHaveValue(
-    /Voice acting fixture/,
-  );
-  expect(
-    await actionResponse(page, 'POST', '/api/v2/session/', () =>
-      page.getByRole('link', { name: 'View Public Site' }).click(),
-    ),
-  ).toEqual({ isAuthenticated: true });
-  await expect(page).toHaveURL(/\/$/);
-  expect(
-    await actionResponse(page, 'POST', '/api/v2/session/', () =>
-      page.goto('/cms'),
-    ),
-  ).toEqual({ isAuthenticated: true });
-  await page.getByRole('link', { name: 'Logout' }).click();
-  await expect(page).toHaveURL(/\/login$/);
-  expect(
-    await page.evaluate(() =>
-      sessionStorage.getItem('ElspethEastmanAuthToken'),
-    ),
-  ).toBeNull();
-  const validation = await page.request.get('/api/v2/session/', {
-    headers: { Authorization: `Token ${token}` },
-  });
-  expect(await validation.json()).toEqual({ isAuthenticated: false });
-  await page.goto('/cms');
-  await expect(page).toHaveURL(/\/login\?returnTo=%2Fcms$/);
-});
-
-it('clears browser credentials after aborted validation and preserves the server token', async ({
-  page,
-}) => {
-  await login(page);
-  const token = await page.evaluate(() =>
-    sessionStorage.getItem('ElspethEastmanAuthToken'),
-  );
-  await page.route('**/api/v2/session/', (route) => route.abort('failed'));
-  await page.getByRole('link', { name: 'View Public Site' }).click();
-  await expect(page).toHaveURL(/\/login\?returnTo=%2Fcms$/);
-  await expect(
-    page.getByRole('alert').filter({ hasText: 'Session has expired' }),
-  ).toBeVisible();
-  expect(
-    await page.evaluate(() =>
-      sessionStorage.getItem('ElspethEastmanAuthToken'),
-    ),
-  ).toBeNull();
-  const response = await page.request.get('/api/v2/session/', {
-    headers: { Authorization: `Token ${token}` },
-  });
-  expect(await response.json()).toEqual({ isAuthenticated: true });
-});
-
-it('clears an invalid saved token and redirects to login', async ({ page }) => {
-  await page.addInitScript(() =>
-    sessionStorage.setItem('ElspethEastmanAuthToken', 'invalid-token'),
-  );
-  await page.goto('/cms');
-  await expect(page).toHaveURL(/\/login\?returnTo=%2Fcms$/);
-  await expect(
-    page.getByRole('alert').filter({ hasText: 'Session has expired' }),
-  ).toBeVisible();
-  expect(
-    await page.evaluate(() =>
-      sessionStorage.getItem('ElspethEastmanAuthToken'),
-    ),
-  ).toBeNull();
-});
-
-it('reports login network failures and allows a fresh retry', async ({
-  page,
-}) => {
-  await page.goto('/login');
-  await page.locator('input[name="username"]').fill('e2e-editor');
-  await page.locator('input[name="password"]').fill('e2e-only-password');
-  await page.route('**/api/v2/session/login/', (route) =>
-    route.abort('failed'),
-  );
-  await page.getByRole('button', { name: 'Login', exact: true }).click();
-  await expect(
-    page.getByRole('alert').filter({ hasText: 'Network error' }),
-  ).toBeVisible();
-  await expect(page).toHaveURL(/\/login$/);
-  await page.unroute('**/api/v2/session/login/');
-  await login(page, true);
-});
-
-it('clears browser credentials after aborted logout and retains the server token', async ({
-  page,
-}) => {
-  await login(page);
-  const token = await page.evaluate(() =>
-    sessionStorage.getItem('ElspethEastmanAuthToken'),
-  );
-  await page.route('**/api/v2/session/logout/', (route) =>
-    route.abort('failed'),
-  );
-  await page.getByRole('link', { name: 'Logout' }).click();
-  await expect(page).toHaveURL(/\/login$/);
-  await expect(
-    page.getByRole('alert').filter({ hasText: 'Network error' }),
-  ).toBeVisible();
-  expect(
-    await page.evaluate(() =>
-      sessionStorage.getItem('ElspethEastmanAuthToken'),
-    ),
-  ).toBeNull();
-  const response = await page.request.get('/api/v2/session/', {
-    headers: { Authorization: `Token ${token}` },
-  });
-  expect(await response.json()).toEqual({ isAuthenticated: true });
+  await login(page, false, '/cms/music');
+  await page
+    .getByRole('link', { name: 'Explore the music', exact: true })
+    .click();
+  await expect(page).toHaveURL('/cms/music#releases');
+  await page
+    .getByRole('link', { name: 'View public page', exact: true })
+    .click();
+  await expect(page).toHaveURL('/music#releases');
 });

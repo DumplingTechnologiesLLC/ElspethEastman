@@ -13,3 +13,4 @@ e2e/snapshots
 .e2e
 .venv
 templates/
+/.cache/

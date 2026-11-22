@@ -7,6 +7,36 @@ import { usePortfolioState } from '../usePortfolioState';
 
 const home = toPage(aPageDTO('home')),
   voice = toPage(aPageDTO('voiceover'));
+it('preserves selection and anchors when switching modes and never mounts an editor on a missing route', () => {
+  const { services, site } = mockServices();
+  const hook = renderHook(usePortfolioState, { initialProps: { services } });
+  act(() =>
+    site.publish({
+      ...site.getSnapshot(),
+      path: '/voiceover?role=00000000-0000-4000-8000-000000000028#roles',
+      pages: [home, voice],
+      status: 'ready',
+      authenticated: true,
+      route: {
+        type: 'page',
+        page: voice,
+        editor: false,
+        selectedId: '00000000-0000-4000-8000-000000000028',
+        anchor: '#roles',
+      },
+    }),
+  );
+  expect(hook.result.current.toggleHref).toBe(
+    '/cms/voiceover?role=00000000-0000-4000-8000-000000000028#roles',
+  );
+  act(() =>
+    site.publish({
+      ...site.getSnapshot(),
+      route: { type: 'missing', editor: true },
+    }),
+  );
+  expect(hook.result.current.editor).toBe(false);
+});
 it('owns registry/session lifecycles and projects current routes and canonical navigation', () => {
   const { services, site, session, stopSession } = mockServices();
   const hook = renderHook(usePortfolioState, { initialProps: { services } });

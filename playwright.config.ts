@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { baseURL, environment, python } from './e2e/environment.ts';
+import { baseURL, environment } from './e2e/environment.ts';
 
 export default defineConfig({
   testDir: './e2e',
@@ -87,7 +87,8 @@ export default defineConfig({
       gracefulShutdown: { signal: 'SIGTERM', timeout: 5000 },
     },
     {
-      command: `${python} -m http.server 6006 --bind 127.0.0.1 --directory storybook-static`,
+      command:
+        'node node_modules/vite/bin/vite.js preview --host 127.0.0.1 --port 6006 --strictPort --outDir ../storybook-static',
       url: 'http://127.0.0.1:6006',
       reuseExistingServer: false,
       timeout: 30000,

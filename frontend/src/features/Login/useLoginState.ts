@@ -12,5 +12,15 @@ export function useLoginState({ services }: LoginWiring) {
     controller.getSnapshot,
     controller.getSnapshot,
   );
-  return { ...state, change: controller.change, login: controller.login };
+  return {
+    ...state,
+    errors: Object.fromEntries(
+      Object.entries(state.errors).map(
+        ([key, error]) =>
+          [key, Array.isArray(error) ? error.join(' ') : error] as const,
+      ),
+    ),
+    change: controller.change,
+    login: controller.login,
+  };
 }

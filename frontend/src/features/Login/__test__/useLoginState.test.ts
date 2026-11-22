@@ -11,9 +11,14 @@ it('subscribes to the service and exposes its view state', () => {
     mock.session.publish({
       ...mock.session.getSnapshot(),
       username: 'Updated',
+      errors: { username: ['Required', 'Try again'], password: 'Required' },
     }),
   );
   expect(hook.result.current.username).toBe('Updated');
+  expect(hook.result.current.errors).toEqual({
+    username: 'Required Try again',
+    password: 'Required',
+  });
   hook.unmount();
   expect(mock.session.stop).toHaveBeenCalledOnce();
 });

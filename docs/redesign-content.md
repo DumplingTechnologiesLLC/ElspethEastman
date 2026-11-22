@@ -10,7 +10,7 @@ Initial roles reuse the current site's Tristana and Cadence material and existin
 - [Return of the Elspeth!](https://elspetheastman.bandcamp.com/album/return-of-the-elspeth), 2013.
 - [i saw her across the world](https://elspetheastman.bandcamp.com/album/i-saw-her-across-the-world-official-soundtrack), 2014.
 
-The release artwork is each album's actual cover, retrieved from that page's Open Graph image metadata. The decorative rib artwork stays in Figma stories. Seeded images ship under `portfolio/static/redesign/v1/` and resolve through the existing `seed/` media convention, so release dynos do not need to write shared storage. Files retain their original bytes; filename extensions and stored MIME types match the decoded JPEG data. Tests check every file and dimension.
+The release artwork is each album's actual cover, retrieved from that page's Open Graph image metadata. The decorative rib artwork stays in Figma stories. Seeded images ship under `portfolio/static/portfolio/v1/` and resolve through the existing `seed/` media convention, so release dynos do not need to write shared storage. Files retain their original bytes; filename extensions and stored MIME types match the decoded JPEG data. Tests check every file and dimension.
 
 Music's initial watch action uses the existing official YouTube channel with the label “Watch on YouTube.” It does not claim a particular practice video. New reel, Twitch, interview, stream, and clip destinations remain unset. No publication timestamp or current-study/duration/follower fact is invented to satisfy a sample card. The client can add new roles, releases, streams, clips, coverage, appearances, biography chapters, current activities, and facts through their respective CMS editors.
 

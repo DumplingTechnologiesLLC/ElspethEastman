@@ -1,34 +1,4 @@
-@font-face {
-  font-family: Montserrat;
-  src:
-    local('Montserrat'),
-    url('./assets/Montserrat/Montserrat-Regular.woff') format('woff');
-}
-@font-face {
-  font-family: Dolcissimo;
-  src:
-    local('Dolcissimo'),
-    url('./assets/Dolcissimo/Dolcissimo.woff') format('woff');
-}
 body {
   margin: 0;
-  background: #fefefe;
-}
-.svg-inline--fa {
-  display: inline-block;
-  font-size: inherit;
-  height: 1em;
-  overflow: visible;
-  vertical-align: -0.125em;
-}
-.fa-pulse {
-  animation: fa-spin 1s steps(8) infinite;
-}
-@keyframes fa-spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  background: #090909;
 }

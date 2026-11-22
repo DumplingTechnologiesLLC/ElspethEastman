@@ -1,424 +1,632 @@
-import type { ProjectDTO } from '../frontend/src/application/dto/ProjectDTO';
-import {
-  it,
-  expect,
-  database,
-  login,
-  projectCards,
-  projectSection,
-  actionResponse,
-} from './fixtures.ts';
-
-it.beforeEach(async ({ page }) => login(page));
-
-it('switches skills, resets unsaved changes, and persists to the public page', async ({
-  page,
-}) => {
-  const field = page.locator('textarea[name="Voice Acting"]');
-  await field.fill('Discard this voice draft');
+/* oxlint-disable no-await-in-loop -- These interactions share one browser and depend on its preceding state. */
+import type { Locator, Page } from '@playwright/test';
+import { it, expect, login, aggregate, actionResponse } from './fixtures.ts';
+const cases = [
+  {
+    kind: 'voiceover',
+    add: 'Add role',
+    name: 'Character',
+    endpoint: 'content/entries',
+    image: true,
+    fields: {
+      Character: 'New role',
+      Franchise: 'Test franchise',
+      Summary: 'Test role summary',
+    },
+  },
+  {
+    kind: 'music',
+    add: 'Add release',
+    name: 'Title',
+    endpoint: 'music/releases',
+    image: true,
+    fields: {
+      Year: '2026',
+      Format: 'Single',
+      Title: 'New release',
+      Description: 'Test release',
+      'Action label': 'Listen',
+      'Action URL': 'https://example.invalid/new-release',
+    },
+  },
+  {
+    kind: 'streaming',
+    add: 'Add stream',
+    name: 'Title',
+    endpoint: 'content/entries',
+    image: false,
+    fields: {
+      Title: 'New stream',
+      Eyebrow: 'Game',
+      Description: 'Test stream',
+      'Action label': 'Watch',
+      'Action URL': 'https://example.invalid/new-stream',
+    },
+  },
+  {
+    kind: 'streaming',
+    add: 'Add clip',
+    name: 'Title',
+    endpoint: 'streaming/clips',
+    image: false,
+    fields: {
+      Title: 'New clip',
+      Eyebrow: 'Clip',
+      Category: 'Highlights',
+      'Action label': 'Play',
+      'Action URL': 'https://example.invalid/new-clip',
+    },
+  },
+  {
+    kind: 'press',
+    add: 'Add coverage',
+    name: 'Title',
+    endpoint: 'content/entries',
+    image: true,
+    fields: {
+      Title: 'New coverage',
+      Eyebrow: 'Interview',
+      Description: 'Test coverage',
+      'Action label': 'Read',
+      'Action URL': 'https://example.invalid/new-coverage',
+      'Row 1 value': 'Test outlet',
+    },
+  },
+  {
+    kind: 'press',
+    add: 'Add appearance',
+    name: 'Title',
+    endpoint: 'press/appearances',
+    image: false,
+    fields: { Year: '2026', Title: 'New appearance', Format: 'Panel' },
+  },
+  {
+    kind: 'bio',
+    add: 'Add chapter',
+    name: 'Heading',
+    endpoint: 'bio/chapters',
+    image: false,
+    fields: {
+      Eyebrow: 'New chapter',
+      Heading: 'A new chapter',
+      Body: 'Authored narrative',
+    },
+  },
+  {
+    kind: 'bio',
+    add: 'Add current work',
+    name: 'Title',
+    endpoint: 'bio/current',
+    image: false,
+    fields: {
+      Eyebrow: 'Activity',
+      Title: 'New activity',
+      Description: 'Current activity',
+    },
+  },
+] as const;
+async function fill(dialog: Locator, fields: Readonly<Record<string, string>>) {
+  for (const [label, value] of Object.entries(fields))
+    await dialog.getByLabel(new RegExp('^' + label + '(?: \\*)?$')).fill(value);
+}
+async function publish(
+  page: Page,
+  dialog: Locator,
+  method: string,
+  path: string,
+  status = 200,
+) {
+  const result = await actionResponse<{ id: string }>(
+    page,
+    method,
+    path,
+    () => dialog.getByRole('button', { name: 'Publish changes' }).click(),
+    status,
+  );
+  await expect(dialog).toHaveCount(0);
+  return result;
+}
+async function remove(page: Page, title: string, path: string) {
   await page
-    .getByRole('button', { name: 'Reset Changes', exact: true })
+    .getByRole('button', { name: 'Delete ' + title, exact: true })
     .first()
     .click();
-  await expect(field).toHaveValue(
-    'Voice acting fixture: characters, narration, and animation.',
-  );
-  await field.fill('Updated voice description');
-  await page
-    .getByRole('button', { name: 'Game Development', exact: true })
-    .click();
-  await page
-    .locator('textarea[name="Game Development"]')
-    .fill('Updated game description');
-  await actionResponse(page, 'PATCH', '/api/skills/', () =>
-    page.getByRole('button', { name: 'Save All Changes', exact: true }).click(),
-  );
-  expect(database().skills[0]!).toMatchObject({
-    voice_acting: 'Updated voice description',
-    game_development: 'Updated game description',
-  });
-  await page.goto('/');
+  const dialog = page.getByRole('dialog');
   await expect(
-    page.getByText('Updated voice description', { exact: true }),
+    dialog.getByRole('region', { name: 'Confirm deletion' }),
   ).toBeVisible();
-  await page
-    .getByRole('button', { name: 'Game Development', exact: true })
-    .click();
-  await expect(
-    page.getByText('Updated game description', { exact: true }),
-  ).toBeVisible();
-});
-
-it('validates blank skills without replacing saved content', async ({
-  page,
-}) => {
-  await page.locator('textarea[name="Voice Acting"]').fill('');
-  await actionResponse(
-    page,
-    'PATCH',
-    '/api/skills/',
-    () =>
-      page
-        .getByRole('button', { name: 'Save All Changes', exact: true })
-        .click(),
-    400,
-  );
-  await expect(
-    page
-      .getByRole('alert')
-      .filter({ hasText: 'There was an issue updating skills.' }),
-  ).toBeVisible();
-  expect(database().skills[0]!.voice_acting).toMatch(/^Voice acting fixture/);
-});
-
-it('reports expired write tokens and leaves saved skills intact', async ({
-  page,
-}) => {
-  database('expire-tokens');
-  await page
-    .locator('textarea[name="Voice Acting"]')
-    .fill('Unauthorized replacement');
-  await actionResponse(
-    page,
-    'PATCH',
-    '/api/skills/',
-    () =>
-      page
-        .getByRole('button', { name: 'Save All Changes', exact: true })
-        .click(),
-    403,
-  );
-  await expect(
-    page
-      .getByRole('alert')
-      .filter({ hasText: 'Your session has expired. Please log in again.' }),
-  ).toBeVisible();
-  expect(database().skills[0]!.voice_acting).toMatch(/^Voice acting fixture/);
-});
-
-it('preserves the cached project form through preview and reset', async ({
-  page,
-}) => {
-  const card = projectCards(page).first();
-  await expect(card.locator('input[name$="-title"]')).toHaveValue(
-    'Fixture Project 6',
-  );
-  await card.locator('input[name$="-title"]').fill('Unsaved project');
-  await card.getByRole('button', { name: 'Preview', exact: true }).click();
-  await expect(
-    card.getByText('Unsaved project', { exact: true }),
-  ).toBeVisible();
-  await card.getByRole('button', { name: 'View Form', exact: true }).click();
-  await card.getByRole('button', { name: 'Reset', exact: true }).click();
-  await expect(card.locator('input[name$="-title"]')).toHaveValue(
-    'Fixture Project 6',
-  );
-  expect(database().projects[0]!.title).toBe('Fixture Project 6');
-});
-
-it('creates, edits, and deletes projects through the browser and public API', async ({
-  page,
-}) => {
-  await page
-    .getByRole('button', { name: 'Add New Project', exact: true })
-    .click();
-  const dialog = page.getByRole('dialog', {
-    name: 'Add new Project',
-    exact: true,
-  });
-  await dialog.locator('input[name$="-title"]').fill('New integration project');
-  await dialog.locator('input[name$="-source"]').fill('new-video');
-  const created = await actionResponse<{ project: { id: string } }>(
-    page,
-    'POST',
-    '/api/projects/list/',
-    () => dialog.getByRole('button', { name: 'Save', exact: true }).click(),
-  );
-  await expect(projectCards(page)).toHaveCount(7);
-  const card = projectCards(page).last();
-  await card
-    .locator('input[name$="-title"]')
-    .fill('Updated integration project');
-  await actionResponse(
-    page,
-    'PATCH',
-    `/api/projects/list/${created.project.id}/`,
-    () => card.getByRole('button', { name: 'Save', exact: true }).click(),
-  );
-  await page.reload();
-  await expect(
-    page.locator('input[name$="-title"]').filter({ visible: true }).first(),
-  ).toBeVisible();
-  const updated = projectCards(page).filter({
-    has: page.locator('input[value="Updated integration project"]'),
-  });
-  await expect(updated).toHaveCount(1);
-  const publicProjects: ProjectDTO[] = await (
-    await page.request.get('/api/projects/list/')
-  ).json();
-  expect(
-    publicProjects.find((project) => project.id === created.project.id)!.title,
-  ).toBe('Updated integration project');
-  page.once('dialog', (confirmation) => confirmation.accept());
   await actionResponse(
     page,
     'DELETE',
-    `/api/projects/list/${created.project.id}/`,
-    () => updated.getByRole('button', { name: 'Delete', exact: true }).click(),
+    path,
+    () => dialog.getByRole('button', { name: 'Delete permanently' }).click(),
+    204,
   );
-  await expect(projectCards(page)).toHaveCount(6);
-  expect(
-    database().projects.some((project) => project.id === created.project.id),
-  ).toBe(false);
-});
-
-it('persists a project batch and keeps records after delete cancellation', async ({
+  await expect(dialog).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Edit ' + title, exact: true }),
+  ).toHaveCount(0);
+}
+it.each(cases)((item) =>
+  it(`creates, edits, reloads, and deletes ${item.add.toLowerCase()}`, async ({
+    page,
+  }) => {
+    await login(page, false, '/cms/' + item.kind);
+    await page.getByRole('button', { name: item.add, exact: true }).click();
+    const dialog = page.getByRole('dialog');
+    await fill(dialog, item.fields);
+    if (item.image) {
+      await dialog
+        .getByLabel('Choose image')
+        .setInputFiles('portfolio/static/portfolio/v1/tristana.jpg');
+      await expect(
+        dialog.getByRole('img', { name: 'Current image preview' }),
+      ).toBeVisible();
+      await dialog.getByLabel('Image alt text').fill('Test artwork');
+    }
+    if (item.add === 'Add coverage')
+      await dialog.getByLabel(/^Published at/).fill('2026-06-12T12:30:00');
+    const created = await publish(
+      page,
+      dialog,
+      'POST',
+      '/api/v2/' + item.endpoint + '/',
+      201,
+    );
+    const fields: Readonly<Record<string, string>> = item.fields;
+    const title = fields[item.name]!;
+    await expect(
+      page.getByRole('button', { name: 'Edit ' + title, exact: true }),
+    ).toBeVisible();
+    await page
+      .getByRole('button', { name: 'Edit ' + title, exact: true })
+      .click();
+    const updated = title + ' updated';
+    await fill(page.getByRole('dialog'), { [item.name]: updated });
+    const saved = await publish(
+      page,
+      page.getByRole('dialog'),
+      'PATCH',
+      '/api/v2/' + item.endpoint + '/' + created.id + '/',
+    );
+    expect(saved.id).toBe(created.id);
+    await page.reload();
+    await expect(
+      page.getByRole('button', { name: 'Edit ' + updated, exact: true }),
+    ).toBeVisible();
+    await remove(
+      page,
+      updated,
+      '/api/v2/' + item.endpoint + '/' + created.id + '/',
+    );
+  }),
+);
+it('edits page metadata without losing identity, selection, or query state', async ({
   page,
+  request,
 }) => {
-  const cards = projectCards(page);
-  await cards.nth(0).locator('input[name$="-title"]').fill('Batch project six');
-  await cards
-    .nth(1)
-    .locator('input[name$="-title"]')
-    .fill('Batch project five');
-  await actionResponse(page, 'PATCH', '/api/projects/list/batch_update/', () =>
-    projectSection(page)
-      .getByRole('button', { name: 'Save All', exact: true })
-      .click(),
-  );
-  await page.reload();
-  await expect(cards.nth(0).locator('input[name$="-title"]')).toHaveValue(
-    'Batch project six',
-  );
-  await expect(cards.nth(1).locator('input[name$="-title"]')).toHaveValue(
-    'Batch project five',
-  );
-  page.once('dialog', (confirmation) => confirmation.dismiss());
-  await cards
-    .first()
-    .getByRole('button', { name: 'Delete', exact: true })
-    .click();
-  await expect(cards).toHaveCount(6);
-  expect(database().projects).toHaveLength(6);
-});
-
-it('reports server errors without creating invalid projects', async ({
-  page,
-}) => {
+  await login(page, false, '/cms/voiceover');
+  const content = await aggregate(page, 'voiceover');
+  const id = 'roles' in content ? content.roles[0]!.id : 0;
+  await page.getByRole('button', { name: 'Open Tristana' }).click();
+  await page.goto('/cms/voiceover?role=' + id + '#roles');
   await page
-    .getByRole('button', { name: 'Add New Project', exact: true })
+    .getByRole('button', { name: 'Page settings', exact: true })
     .click();
-  const dialog = page.getByRole('dialog', {
-    name: 'Add new Project',
+  const dialog = page.getByRole('dialog');
+  await fill(dialog, {
+    'Navigation title': 'Characters',
+    'URL slug': 'characters',
+    'Action label': 'Reel',
+    'Action URL': 'https://example.invalid/reel-updated',
+  });
+  await publish(
+    page,
+    dialog,
+    'PATCH',
+    '/api/v2/pages/' + content.page.id + '/',
+  );
+  await expect(page).toHaveURL('/cms/characters?role=' + id + '#roles');
+  await expect(
+    page
+      .getByRole('navigation', { name: 'Main navigation' })
+      .getByRole('link', { name: 'Characters' }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole('button', { name: 'Close detail' }),
+  ).toBeVisible();
+  expect((await request.get('/voiceover')).status()).toBe(404);
+  expect((await request.get('/characters')).status()).toBe(200);
+  await page
+    .getByRole('link', { name: 'View public page', exact: true })
+    .click();
+  await expect(page).toHaveURL('/characters?role=' + id + '#roles');
+});
+it('reconciles promotion and complete ordering without refetching, then closes deleted selection', async ({
+  page,
+}) => {
+  await login(page, false, '/cms/voiceover');
+  let reads = 0;
+  page.on('request', (request) => {
+    if (
+      /^\/api\/v2\/pages\/[0-9a-f-]{36}\/$/i.test(
+        new URL(request.url()).pathname,
+      ) &&
+      request.method() === 'GET'
+    )
+      reads++;
+  });
+  const content = await aggregate(page, 'voiceover');
+  const roles = 'roles' in content ? content.roles : [];
+  const target = roles.find((row) => row.title === 'Cadence')!;
+  const group = page.getByRole('group', {
+    name: 'Cadence editor controls',
     exact: true,
   });
-  await actionResponse(
-    page,
-    'POST',
-    '/api/projects/list/',
-    () => dialog.getByRole('button', { name: 'Save', exact: true }).click(),
-    400,
+  await actionResponse(page, 'PATCH', '/api/v2/content/features/', () =>
+    group.getByRole('button', { name: 'Feature', exact: true }).click(),
   );
-  await expect(dialog.getByText('This field may not be blank.')).toHaveCount(2);
-  expect(database().projects).toHaveLength(6);
+  await expect(page.getByRole('button', { name: 'Open Cadence' })).toHaveCount(
+    2,
+  );
+  await actionResponse(page, 'PATCH', '/api/v2/collections/reorder/', () =>
+    page
+      .getByRole('group', { name: 'Cadence editor controls', exact: true })
+      .last()
+      .getByRole('button', { name: 'Move Cadence up' })
+      .click(),
+  );
+  const saved = await aggregate(page, 'voiceover');
+  expect('roles' in saved ? saved.roles[0]!.id : 0).toBe(target.id);
+  expect(reads).toBe(0);
+  await page.getByRole('button', { name: 'Open Cadence' }).first().click();
+  await remove(page, 'Cadence', '/api/v2/content/entries/' + target.id + '/');
+  await expect(page.getByRole('button', { name: 'Close detail' })).toHaveCount(
+    0,
+  );
+  await expect(page).toHaveURL('/cms/voiceover');
+  const final = await aggregate(page, 'voiceover');
+  expect(
+    'feature' in final && 'item_id' in final.feature
+      ? final.feature.item_id
+      : 0,
+  ).toBeNull();
+});
+it('edits the music singleton without changing release membership', async ({
+  page,
+}) => {
+  await login(page, false, '/cms/music');
+  const before = await aggregate(page, 'music');
+  await page
+    .getByRole('button', { name: 'Edit current practice', exact: true })
+    .click();
+  const dialog = page.getByRole('dialog');
+  await fill(dialog, {
+    Title: 'Piano practice',
+    'Row 1 label': 'Focus',
+    'Row 1 value': 'Scales',
+  });
+  await dialog.getByRole('button', { name: 'Move row 2 up' }).click();
+  await expect(
+    dialog.getByRole('button', { name: 'Add row', exact: true }),
+  ).toBeDisabled();
+  await publish(page, dialog, 'PATCH', '/api/v2/music/features/');
+  const after = await aggregate(page, 'music');
+  expect(
+    'releases' in after && 'releases' in before ? after.releases : [],
+  ).toEqual('releases' in before ? before.releases : []);
+  expect(
+    'feature' in after && 'title' in after.feature ? after.feature.title : '',
+  ).toBe('Piano practice');
 });
 
 it.each([
-  ['Voice Credits', 'Add new credit'],
-  ['Music - Games', 'Add new music'],
-  ['Music - Miscellaneous', 'Add new music'],
-  ['Streaming - Credits', 'Add new credit'],
-] as const)(([category, button]) =>
-  it(`creates, edits, and deletes experience with TBA formatting in ${category}`, async ({
+  ['voiceover', 'role', 'Tristana', 'Roles'],
+  ['press', 'entry', 'Finding her voice again', 'Coverage'],
+] as const)(([kind, parameter, title, collection]) =>
+  it(`restores ${kind} collection focus after deleting the selected entry through a native modal`, async ({
     page,
   }) => {
-    const section = page
-      .getByRole('heading', { name: category, exact: true })
-      .locator('..');
-    await section.getByRole('button', { name: button, exact: true }).click();
-    const dialog = page.getByRole('dialog', {
-      name: 'Experience Form',
-      exact: true,
-    });
-    await dialog
-      .locator('input[name="ExperienceCredit"]')
-      .fill(`New ${category}`);
-    await dialog.locator('input[name="ExperienceYear"]').fill('2025');
-    await dialog
-      .locator('input[name="ExperienceLink"]')
-      .fill('https://example.invalid/new-credit');
-    const created = await actionResponse<{ object: { id: string } }>(
-      page,
-      'POST',
-      '/api/experience/',
-      () => dialog.getByRole('button', { name: 'Save', exact: true }).click(),
+    await login(page, false, '/cms/' + kind);
+    const content = await aggregate(page, kind);
+    const entries =
+      'roles' in content
+        ? content.roles
+        : 'entries' in content
+          ? content.entries
+          : [];
+    const selected = entries.find((entry) => entry.title === title)!;
+    await page
+      .getByRole('button', { name: 'Open ' + title, exact: true })
+      .click();
+    await expect(page).toHaveURL(
+      '/cms/' + kind + '?' + parameter + '=' + selected.id,
     );
-    await expect(
-      section.getByRole('link', {
-        name: `(2025) New ${category}`,
-        exact: true,
-      }),
-    ).toBeVisible();
-    const row = section
-      .getByRole('link', { name: `(2025) New ${category}`, exact: true })
-      .locator('..');
-    await row.getByRole('button').nth(1).click();
-    await dialog
-      .locator('input[name="ExperienceCredit"]')
-      .fill(`Updated ${category}`);
-    await dialog.locator('input[name="ExperienceTBA"]').check();
-    await actionResponse(
-      page,
-      'PATCH',
-      `/api/experience/${created.object.id}/`,
-      () => dialog.getByRole('button', { name: 'Save', exact: true }).click(),
+    const detail = page.getByRole('region', { name: title, exact: true });
+    await expect(detail).toBeFocused();
+    await detail
+      .getByRole('button', { name: 'Delete ' + title, exact: true })
+      .click();
+    const dialog = page.locator('dialog[open]');
+    await expect(dialog).toBeVisible();
+    expect(await dialog.evaluate((element) => element.matches(':modal'))).toBe(
+      true,
     );
-    await page.reload();
-    const updated = section
-      .getByRole('link', { name: `(TBA) Updated ${category}`, exact: true })
-      .locator('..');
-    await expect(updated).toBeVisible();
-    page.once('dialog', (confirmation) => confirmation.dismiss());
-    await updated.getByRole('button').nth(0).click();
-    expect(
-      database().experience.some((item) => item.id === created.object.id),
-    ).toBe(true);
-    page.once('dialog', (confirmation) => confirmation.accept());
     await actionResponse(
       page,
       'DELETE',
-      `/api/experience/${created.object.id}/`,
-      () => updated.getByRole('button').nth(0).click(),
+      '/api/v2/content/entries/' + selected.id + '/',
+      () => dialog.getByRole('button', { name: 'Delete permanently' }).click(),
+      204,
     );
-    await expect(updated).toHaveCount(0);
-    expect(
-      database().experience.some((item) => item.id === created.object.id),
-    ).toBe(false);
+    await expect(dialog).toHaveCount(0);
+    await expect(detail).toHaveCount(0);
+    await expect(page).toHaveURL('/cms/' + kind);
+    await expect(
+      page.getByRole('region', { name: collection, exact: true }),
+    ).toBeFocused();
   }),
 );
-
-it('preserves saved experience through reset and required-credit validation', async ({
+it('edits shared copy, labels, facts, and fixed image uses through isolated forms', async ({
   page,
 }) => {
-  const row = page
-    .getByRole('link', { name: '(2021) Fixture Voice Credits', exact: true })
-    .locator('..');
-  await row.getByRole('button').nth(1).click();
-  const dialog = page.getByRole('dialog', {
-    name: 'Experience Form',
-    exact: true,
-  });
-  await dialog
-    .locator('input[name="ExperienceCredit"]')
-    .fill('Discard this credit');
-  await dialog
-    .getByRole('button', { name: 'Reset Changes', exact: true })
-    .click();
-  await expect(dialog.locator('input[name="ExperienceCredit"]')).toHaveValue(
-    'Fixture Voice Credits',
-  );
-  await dialog.locator('input[name="ExperienceCredit"]').fill('');
-  await actionResponse(
-    page,
-    'PATCH',
-    '/api/experience/00000000-0000-4000-8000-000000000001/',
-    () => dialog.getByRole('button', { name: 'Save', exact: true }).click(),
-    400,
-  );
-  await expect(dialog.getByText('This field may not be blank.')).toBeVisible();
-  expect(
-    database().experience.find(
-      (item) => item.id === '00000000-0000-4000-8000-000000000001',
-    )!.credit,
-  ).toBe('Fixture Voice Credits');
-});
-
-it('resets, creates, edits, and deletes affiliations with confirmation', async ({
-  page,
-}) => {
-  const form = page
-    .locator('form')
-    .filter({ has: page.locator('input[value="Fixture Studio"]') });
-  await form
-    .locator('input[name="affiliationLink"]')
-    .fill('https://example.invalid/unsaved');
-  await form.getByRole('button', { name: 'Reset', exact: true }).click();
-  await expect(form.locator('input[name="affiliationLink"]')).toHaveValue(
-    'https://example.invalid/studio',
-  );
-  await page.getByRole('button', { name: 'Create new affiliation' }).click();
-  const dialog = page.getByRole('dialog', {
-    name: 'Add new Affiliation',
-    exact: true,
-  });
-  await dialog.locator('input[name="affiliationText"]').fill('New Studio');
-  await dialog
-    .locator('input[name="affiliationLink"]')
-    .fill('https://example.invalid/new-studio');
-  const created = await actionResponse<{ id: string }>(
-    page,
-    'POST',
-    '/api/affiliations/',
-    () => dialog.getByRole('button', { name: 'Save', exact: true }).click(),
-  );
-  // Closed modals retain their inputs; select the saved footer form.
-  const newForm = page
-    .locator('form:not([role="dialog"] form)')
-    .filter({ has: page.locator('input[value="New Studio"]') });
-  await expect(newForm).toHaveCount(1);
-  await newForm
-    .locator('input[name="affiliationLink"]')
-    .fill('https://example.invalid/updated-studio');
-  await actionResponse(page, 'PATCH', `/api/affiliations/${created.id}/`, () =>
-    newForm.getByRole('button', { name: 'Save', exact: true }).click(),
-  );
-  await page.reload();
-  await expect(newForm.locator('input[name="affiliationLink"]')).toHaveValue(
-    'https://example.invalid/updated-studio',
-  );
-  page.once('dialog', (confirmation) => confirmation.dismiss());
-  await newForm.getByRole('button', { name: 'Delete', exact: true }).click();
-  expect(database().affiliations).toHaveLength(2);
-  page.once('dialog', (confirmation) => confirmation.accept());
-  await actionResponse(page, 'DELETE', `/api/affiliations/${created.id}/`, () =>
-    newForm.getByRole('button', { name: 'Delete', exact: true }).click(),
-  );
-  await expect(newForm).toHaveCount(0);
-  expect(database().affiliations).toHaveLength(1);
-});
-
-it('shows saved affiliations on the public site', async ({ page }) => {
-  const form = page
-    .locator('form')
-    .filter({ has: page.locator('input[value="Fixture Studio"]') });
-  const id = database().affiliations[0]!.id;
-  await form
-    .locator('input[name="affiliationLink"]')
-    .fill('https://example.invalid/public-studio');
-  await actionResponse(page, 'PATCH', `/api/affiliations/${id}/`, () =>
-    form.getByRole('button', { name: 'Save', exact: true }).click(),
-  );
-  await page.goto('/');
+  await login(page);
+  await page.getByRole('button', { name: 'Add text', exact: true }).click();
+  let dialog = page.getByRole('dialog');
+  await dialog.getByLabel(/^Text treatment/).selectOption('body');
+  await dialog.getByLabel(/^Text \*/).fill('New home paragraph');
+  await publish(page, dialog, 'POST', '/api/v2/pages/copy/', 201);
   await expect(
-    page.getByRole('link', { name: 'Fixture Studio' }),
-  ).toHaveAttribute('href', 'https://example.invalid/public-studio');
+    page.getByText('New home paragraph', { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole('button', { name: 'Add identity label', exact: true })
+    .click();
+  dialog = page.getByRole('dialog');
+  await fill(dialog, { Label: 'Creator' });
+  const label = await publish(
+    page,
+    dialog,
+    'POST',
+    '/api/v2/pages/eyebrows/',
+    201,
+  );
+  await page
+    .getByRole('button', { name: 'Edit identity label' })
+    .last()
+    .click();
+  dialog = page.getByRole('dialog');
+  await fill(dialog, { Label: 'Performer' });
+  await publish(
+    page,
+    dialog,
+    'PATCH',
+    '/api/v2/pages/eyebrows/' + label.id + '/',
+  );
+  await page
+    .getByRole('button', { name: 'Edit hero image', exact: true })
+    .click();
+  dialog = page.getByRole('dialog');
+  await fill(dialog, {
+    'Image alt text': 'Updated portrait alt',
+    'Image caption': 'Portrait caption',
+  });
+  await publish(page, dialog, 'PATCH', '/api/v2/pages/images/');
+  await expect(
+    page.getByRole('img', { name: 'Updated portrait alt' }),
+  ).toBeVisible();
+  await page.goto('/cms/bio');
+  await page.getByRole('button', { name: 'Add fact', exact: true }).click();
+  dialog = page.getByRole('dialog');
+  await fill(dialog, { Label: 'Instrument', Value: 'Cello' });
+  await publish(page, dialog, 'POST', '/api/v2/pages/trivia/', 201);
+  await expect(page.getByText('Instrument', { exact: true })).toBeVisible();
 });
-
-it('closes the invalid-affiliation form without creating a record', async ({
+it('retains failed drafts and canonical data, disables duplicate writes, and traps modal focus', async ({
   page,
 }) => {
-  await page.getByRole('button', { name: 'Create new affiliation' }).click();
-  const dialog = page.getByRole('dialog', {
-    name: 'Add new Affiliation',
-    exact: true,
+  await login(page, false, '/cms/voiceover');
+  await page
+    .getByRole('button', { name: 'Edit Tristana', exact: true })
+    .click();
+  const dialog = page.getByRole('dialog');
+  await fill(dialog, { Character: 'Retained draft' });
+  await page.route('**/api/v2/content/entries/*/', (route) =>
+    route.request().method() === 'PATCH'
+      ? route.fulfill({
+          status: 400,
+          json: {
+            detail: 'Review fields',
+            fields: { title: ['Server title error'] },
+          },
+        })
+      : route.continue(),
+  );
+  await dialog.getByRole('button', { name: 'Publish changes' }).click();
+  await expect(
+    dialog.getByText('Server title error', { exact: true }).first(),
+  ).toBeVisible();
+  await expect(dialog.getByLabel(/^Character/)).toHaveValue('Retained draft');
+  await expect(dialog.getByLabel(/^Character/)).toBeFocused();
+  await page.unroute('**/api/v2/content/entries/*/');
+  for (let index = 0; index < 24; index++) {
+    await page.keyboard.press('Tab');
+    expect(
+      await dialog.evaluate((element) =>
+        element.contains(document.activeElement),
+      ),
+    ).toBe(true);
+  }
+  let release!: () => void;
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
   });
+  let writes = 0;
+  await page.route('**/api/v2/content/entries/*/', async (route) => {
+    if (route.request().method() === 'PATCH') {
+      writes++;
+      await pending;
+    }
+    await route.continue();
+  });
+  const response = page.waitForResponse(
+    (pendingResponse) =>
+      pendingResponse.request().method() === 'PATCH' &&
+      pendingResponse.url().includes('/api/v2/content/entries/'),
+  );
+  await dialog.getByRole('button', { name: 'Publish changes' }).click();
+  await expect(
+    dialog.getByRole('button', { name: 'Publishing…' }),
+  ).toBeDisabled();
+  release();
+  expect((await response).status()).toBe(200);
+  await expect(dialog).toHaveCount(0);
+  expect(writes).toBe(1);
+  await expect(
+    page.getByRole('button', { name: 'Edit Retained draft', exact: true }),
+  ).toBeVisible();
+});
+it('Escape cancels a draft and restores its opener without saving', async ({
+  page,
+}) => {
+  await login(page, false, '/cms/bio');
+  const origin = page.getByRole('button', { name: 'Add chapter', exact: true });
+  await origin.click();
+  await page
+    .getByRole('dialog')
+    .getByLabel(/^Heading/)
+    .fill('Cancelled chapter');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(origin).toBeFocused();
+  await origin.click();
+  await expect(page.getByRole('dialog').getByLabel(/^Heading/)).toHaveValue('');
+});
+it.each(['server', 'network'] as const)((failure) =>
+  it(`keeps a CMS draft and allows retry after ${failure} failure`, async ({
+    page,
+  }) => {
+    await login(page, false, '/cms/voiceover');
+    await page
+      .getByRole('button', { name: 'Edit Tristana', exact: true })
+      .click();
+    const dialog = page.getByRole('dialog');
+    await fill(dialog, { Character: 'Retry draft' });
+    await page.route('**/api/v2/content/entries/*/', (route) =>
+      route.request().method() !== 'PATCH'
+        ? route.continue()
+        : failure === 'server'
+          ? route.fulfill({
+              status: 500,
+              json: { detail: 'Temporary failure', fields: {} },
+            })
+          : route.abort('failed'),
+    );
+    await dialog.getByRole('button', { name: 'Publish changes' }).click();
+    await expect(dialog.getByRole('alert')).toBeVisible();
+    await expect(dialog.getByLabel(/^Character/)).toHaveValue('Retry draft');
+    const current = await aggregate(page, 'voiceover');
+    expect('roles' in current ? current.roles[0]!.title : '').toBe('Tristana');
+    await page.unroute('**/api/v2/content/entries/*/');
+    const id = 'roles' in current ? current.roles[0]!.id : 0;
+    await publish(page, dialog, 'PATCH', '/api/v2/content/entries/' + id + '/');
+    await expect(
+      page.getByRole('button', { name: 'Edit Retry draft', exact: true }),
+    ).toBeVisible();
+  }),
+);
+it('rejects corrupt media without replacing the current image, then associates a verified upload', async ({
+  page,
+}) => {
+  await login(page, false, '/cms/voiceover');
+  const before = await aggregate(page, 'voiceover');
+  const entry = 'roles' in before ? before.roles[0]! : null;
+  expect(entry).not.toBeNull();
+  await page
+    .getByRole('button', { name: 'Edit Tristana', exact: true })
+    .click();
+  const dialog = page.getByRole('dialog');
   await actionResponse(
     page,
     'POST',
-    '/api/affiliations/',
-    () => dialog.getByRole('button', { name: 'Save', exact: true }).click(),
+    '/api/v2/media/assets/',
+    () =>
+      dialog.getByLabel('Choose image').setInputFiles({
+        name: 'invalid.jpg',
+        mimeType: 'image/jpeg',
+        buffer: Buffer.from('Invalid image bytes'),
+      }),
     400,
   );
-  await expect(dialog).toHaveCSS('opacity', '0');
-  expect(database().affiliations).toHaveLength(1);
+  await expect(dialog.getByRole('alert')).toBeVisible();
+  await expect(
+    dialog.getByRole('img', { name: 'Current image preview' }),
+  ).toHaveAttribute('src', entry!.image!.asset.url);
+  await dialog
+    .getByLabel('Choose image')
+    .setInputFiles('portfolio/static/portfolio/v1/tristana.jpg');
+  await expect(
+    dialog.getByRole('img', { name: 'Current image preview' }),
+  ).toHaveAttribute('src', /\/media\/uploads\//);
+  await publish(
+    page,
+    dialog,
+    'PATCH',
+    '/api/v2/content/entries/' + entry!.id + '/',
+  );
+  const after = await aggregate(page, 'voiceover');
+  expect('roles' in after ? after.roles[0]!.image!.asset.id : 0).not.toBe(
+    entry!.image!.asset.id,
+  );
 });
+
+it.each(['123456', '123000'] as const)((fraction) =>
+  it(`preserves a persisted publication timestamp with .${fraction} when editing another field`, async ({
+    page,
+  }) => {
+    await login(page, false, '/cms/press');
+    const before = await aggregate(page, 'press');
+    const entry =
+      'entries' in before
+        ? before.entries.find((row) => row.title === 'Finding her voice again')!
+        : null;
+    expect(entry).not.toBeNull();
+    const token = await page.evaluate(() =>
+      sessionStorage.getItem('ElspethEastmanAuthToken'),
+    );
+    const timestamp = `2026-04-04T12:00:00.${fraction}Z`;
+    const response = await page.request.patch(
+      '/api/v2/content/entries/' + entry!.id + '/',
+      {
+        headers: { Authorization: `Token ${token}` },
+        data: { published_at: timestamp },
+      },
+    );
+    expect(response.status()).toBe(200);
+    await page.reload();
+    await page
+      .getByRole('button', {
+        name: 'Edit Finding her voice again',
+        exact: true,
+      })
+      .click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog.getByLabel(/^Published at/)).toHaveValue(
+      '2026-04-04T12:00:00.123',
+    );
+    await dialog.getByLabel(/^Title/).fill('Same publication, updated title');
+    await publish(
+      page,
+      dialog,
+      'PATCH',
+      '/api/v2/content/entries/' + entry!.id + '/',
+    );
+    const after = await aggregate(page, 'press');
+    const saved =
+      'entries' in after
+        ? after.entries.find((row) => row.id === entry!.id)
+        : null;
+    expect(saved?.published_at).toBe(timestamp);
+  }),
+);

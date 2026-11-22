@@ -65,6 +65,9 @@ def reset():
         for record in model.objects.all():
             model.objects.filter(pk=record.pk).update(public_id=UUID(f'00000000-0000-4000-8000-{record.pk:012x}'))
 
+    from seed_redesign import seed_redesign
+    seed_redesign()
+
 
 def inspect():
     from core.models import Affiliations, Contact, Experience, Project, Skills
