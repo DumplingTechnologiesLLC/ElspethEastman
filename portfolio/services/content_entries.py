@@ -45,7 +45,7 @@ def replace_metadata(entry, rows):
 def save_entry(page, instance, data):
     """Persist an entry and its complete nested facts under the caller's Page lock."""
     with transaction.atomic():
-        entry = instance if instance is not None else ContentEntry(page=page, sort_order=append_position(page.entries.all()))
+        entry = instance if instance is not None else ContentEntry(page=page, sort_order=append_position(page.entries.filter(collection="entries")))
         data = dict(data)
         if "image" in data:
             image = data.pop("image")

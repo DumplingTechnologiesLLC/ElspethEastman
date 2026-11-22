@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from django.db import models
 from rest_framework.exceptions import ValidationError
@@ -13,6 +13,10 @@ class OwnedCollection:
     model: type[models.Model]
     page_kind: str | None = None
     limit: int | None = None
+    filters: dict = field(default_factory=dict)
+
+    def queryset(self):
+        return self.model.objects.filter(**self.filters)
 
     def require_owner(self, page):
         if self.page_kind is not None and page.kind != self.page_kind:
@@ -20,10 +24,10 @@ class OwnedCollection:
 
     def create(self, page, data):
         self.require_owner(page)
-        collection = self.model.objects.filter(page=page)
+        collection = self.queryset().filter(page=page)
         if self.limit is not None and collection.count() >= self.limit:
             raise ValidationError({"page_id": f"This page supports at most {self.limit} facts."})
-        return self.model.objects.create(page=page, sort_order=append_position(collection), **data)
+        return self.model.objects.create(page=page, sort_order=append_position(collection), **self.filters, **data)
 
     def update(self, page, row, data):
         self.require_owner(page)

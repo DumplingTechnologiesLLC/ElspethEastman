@@ -1,4 +1,4 @@
-from portfolio.models import Appearance, BioChapter, CurrentItem, PageKind, StreamClip
+from portfolio.models import Appearance, BioChapter, ContentEntry, PageKind
 from portfolio.serializers.appearance import AppearanceCreateSerializer, AppearancePatchSerializer, AppearanceSerializer
 from portfolio.serializers.bio_chapter import BioChapterCreateSerializer, BioChapterPatchSerializer, BioChapterSerializer
 from portfolio.serializers.current_item import CurrentItemCreateSerializer, CurrentItemPatchSerializer, CurrentItemSerializer
@@ -8,7 +8,7 @@ from portfolio.views.collections import OwnedCollectionAPIView, OwnedCollectionD
 
 
 class StreamClipSettings:
-    collection = OwnedCollection(StreamClip, PageKind.STREAMING)
+    collection = OwnedCollection(ContentEntry, PageKind.STREAMING, filters={"collection": "stream_clips"})
     create_serializer = StreamClipCreateSerializer
     patch_serializer = StreamClipPatchSerializer
     read_serializer = StreamClipSerializer
@@ -29,7 +29,7 @@ class BioChapterSettings:
 
 
 class CurrentItemSettings:
-    collection = OwnedCollection(CurrentItem, PageKind.BIO)
+    collection = OwnedCollection(ContentEntry, PageKind.BIO, filters={"collection": "current_items"})
     create_serializer = CurrentItemCreateSerializer
     patch_serializer = CurrentItemPatchSerializer
     read_serializer = CurrentItemSerializer
