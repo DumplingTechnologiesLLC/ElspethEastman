@@ -130,6 +130,21 @@ class PublicIdentityUpgradeTests(SimpleTestCase):
                     for key, value in collections[name].items():
                         self.assertEqual(getattr(row, key), value)
                 self.assertEqual(restored.get_model('portfolio', 'ContentEntry').objects.using(alias).count(), 1)
+                joined_target = [('core', '0009_public_identifiers'), ('portfolio', '0012_join_seed_and_public_identity_history')]
+                executor = MigrationExecutor(connection)
+                executor.migrate(joined_target)
+                joined = executor.loader.project_state(joined_target).apps
+                for (app, name), rows in snapshots.items():
+                    if name in ('StreamClip', 'CurrentItem'):
+                        continue
+                    model = joined.get_model(app, name)
+                    for row, identity in zip(rows, identities[(app, name)]):
+                        record = model.objects.using(alias).get(pk=row['id'])
+                        self.assertEqual({key: getattr(record, key) for key in row}, row)
+                        self.assertEqual(record.public_id, identity)
+                    self.assertTrue(all(identifier.version == 4 for identifier in model.objects.using(alias).values_list('public_id', flat=True)))
+                for name, collection in (('StreamClip', 'stream_clips'), ('CurrentItem', 'current_items')):
+                    self.assertEqual(joined.get_model('portfolio', 'ContentEntry').objects.using(alias).get(public_id=identities[('portfolio', name)][0]).collection, collection)
             finally:
                 routing.disable()
                 connection.close()

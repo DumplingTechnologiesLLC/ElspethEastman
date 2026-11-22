@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from portfolio.tests.base import EmptyPortfolioTestCase as TestCase
 from rest_framework.authtoken.models import Token
 
 from portfolio.models import MediaAsset, MusicFeature, MusicRelease, Page, PageKind, PracticeFact
