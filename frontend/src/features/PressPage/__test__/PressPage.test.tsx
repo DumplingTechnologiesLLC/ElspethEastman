@@ -20,7 +20,7 @@ it('opens canonical coverage, restores the originating card, and retains safe ap
   });
   origin.focus();
   fireEvent.click(origin);
-  expect(open).toHaveBeenCalledWith(2);
+  expect(open).toHaveBeenCalledWith(pressPageView.entries[0]!.id);
   view.rerender(
     <PressPage
       {...pressPageView}
@@ -66,4 +66,24 @@ it('opens canonical coverage, restores the originating card, and retains safe ap
   pressPageView.open();
   pressPageView.close();
   void pressPageView.retry();
+});
+
+it('restores deleted coverage focus after modal closure', async () => {
+  const view = render(
+    <PressPage {...pressPageView} selected={pressPageView.entries[0]!} />,
+  );
+  const dialog = document.createElement('dialog');
+  dialog.open = true;
+  document.body.append(dialog);
+  try {
+    const focus = vi.spyOn(HTMLElement.prototype, 'focus');
+    view.rerender(<PressPage {...pressPageView} entries={[]} />);
+    expect(focus).not.toHaveBeenCalled();
+    dialog.open = false;
+    fireEvent(dialog, new Event('close'));
+    await Promise.resolve();
+    expect(screen.getByRole('region', { name: 'Coverage' })).toHaveFocus();
+  } finally {
+    dialog.remove();
+  }
 });
