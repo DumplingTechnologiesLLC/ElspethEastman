@@ -65,7 +65,7 @@ it('preserves UI login through reload and navigation and revokes the token on lo
   });
   expect(await validation.json()).toEqual({ isAuthenticated: false });
   await page.goto('/cms');
-  await expect(page).toHaveURL(/\/login$/);
+  await expect(page).toHaveURL(/\/login\?returnTo=%2Fcms$/);
 });
 
 it('clears browser credentials after aborted validation and preserves the server token', async ({
@@ -77,7 +77,7 @@ it('clears browser credentials after aborted validation and preserves the server
   );
   await page.route('**/api/v2/session/', (route) => route.abort('failed'));
   await page.getByRole('link', { name: 'View Public Site' }).click();
-  await expect(page).toHaveURL(/\/login$/);
+  await expect(page).toHaveURL(/\/login\?returnTo=%2Fcms$/);
   await expect(
     page.getByRole('alert').filter({ hasText: 'Session has expired' }),
   ).toBeVisible();
@@ -97,7 +97,7 @@ it('clears an invalid saved token and redirects to login', async ({ page }) => {
     sessionStorage.setItem('ElspethEastmanAuthToken', 'invalid-token'),
   );
   await page.goto('/cms');
-  await expect(page).toHaveURL(/\/login$/);
+  await expect(page).toHaveURL(/\/login\?returnTo=%2Fcms$/);
   await expect(
     page.getByRole('alert').filter({ hasText: 'Session has expired' }),
   ).toBeVisible();
