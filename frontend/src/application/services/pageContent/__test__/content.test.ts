@@ -24,7 +24,12 @@ import {
   releasePolicy,
   triviaPolicy,
 } from '../collections';
-import { withFeaturedItem, withoutEntry, withPractice } from '../featured';
+import {
+  withEntry,
+  withFeaturedItem,
+  withoutEntry,
+  withPractice,
+} from '../featured';
 import { orderCollection, withCollectionOrder } from '../order';
 import {
   upsertRecord,
@@ -55,7 +60,12 @@ const bio = toPageContent(aBioDTO());
 it('reconciles an edited entry with its canonical hero flag and rejects invalid ownership', () => {
   const row = entryPolicy.rows(voice)![0]!;
   expect(withEntry(home, row)).toBe(home);
-  expect(withEntry(voice, { ...row, pageId: 999 })).toBe(voice);
+  expect(
+    withEntry(voice, {
+      ...row,
+      pageId: '00000000-0000-4000-8000-0000000003e7',
+    }),
+  ).toBe(voice);
   expect(withEntry(voice, { ...row, isFeatured: true, image: null })).toBe(
     voice,
   );
@@ -70,7 +80,10 @@ it('reconciles an edited entry with its canonical hero flag and rejects invalid 
     const demoted = withEntry(featured, { ...original, isFeatured: false });
     expect(demoted).toMatchObject({ feature: { itemId: null } });
   }
-  const featured = withFeaturedItem(voice, { pageId: 2, itemId: row.id });
+  const featured = withFeaturedItem(voice, {
+    pageId: '00000000-0000-4000-8000-000000000002',
+    itemId: row.id,
+  });
   const other = entryPolicy.rows(voice)![1]!;
   expect(withEntry(featured, { ...other, title: 'Other edit' })).toMatchObject({
     feature: { itemId: row.id },
@@ -81,7 +94,9 @@ it('keeps existing copy keys and sections immutable and rejects duplicate keyed 
   const block = home.copy[0]!;
   expect(withCopy(home, { ...block, key: 'moved' })).toBe(home);
   expect(withCopy(home, { ...block, section: 'moved' })).toBe(home);
-  expect(withCopy(home, { ...block, id: 999 })).toBe(home);
+  expect(
+    withCopy(home, { ...block, id: '00000000-0000-4000-8000-0000000003e7' }),
+  ).toBe(home);
 });
 
 it('preserves canonical membership order for opaque identity ties and keeps old snapshots', () => {
@@ -240,7 +255,10 @@ it('promotes and demotes the same canonical records without changing positions',
   ).toBe(voice);
   const imageless = toPageContent(
     aStreamingDTO({
-      feature: { page_id: '00000000-0000-4000-8000-000000000004', item_id: null },
+      feature: {
+        page_id: '00000000-0000-4000-8000-000000000004',
+        item_id: null,
+      },
       entries: [
         anEntryDTO({
           page_id: '00000000-0000-4000-8000-000000000004',

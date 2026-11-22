@@ -22,10 +22,10 @@ import type { Unsubscribe } from './Unsubscribe';
 export interface PageCollectionController<TRecord, TInput extends PageScope> {
   create: (input: Omit<TInput, 'pageId'>) => Promise<ContentResult<TRecord>>;
   update: (
-    id: number,
+    id: string,
     changes: Partial<Omit<TInput, 'pageId'>>,
   ) => Promise<ContentResult<TRecord>>;
-  remove: (id: number) => Promise<ContentResult<void>>;
+  remove: (id: string) => Promise<ContentResult<void>>;
 }
 
 export interface PageController extends Readable<PageContentState> {
