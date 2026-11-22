@@ -200,6 +200,13 @@ it('requires the Press outlet row but hides publication fields on other entry ki
     '00000000-0000-4000-8000-000000000028',
     expect.objectContaining({ publishedAt: null, category: 'Interview' }),
   );
+  await edit.save(
+    change(edit.draft, Key.PublishedAt, '2026-10-01T14:30:00.123456'),
+  );
+  expect(page.entries.update).toHaveBeenCalledWith(
+    '00000000-0000-4000-8000-000000000028',
+    expect.objectContaining({ publishedAt: '2026-10-01T14:30:00.123456Z' }),
+  );
   const noDate = fixture(
     toPageContent(
       aPressDTO({
