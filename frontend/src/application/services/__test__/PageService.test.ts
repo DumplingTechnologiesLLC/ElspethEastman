@@ -23,7 +23,11 @@ function fixture() {
   return {
     repository,
     alerts,
-    service: new PageService(1, repository, alerts),
+    service: new PageService(
+      '00000000-0000-4000-8000-000000000001',
+      repository,
+      alerts,
+    ),
   };
 }
 
@@ -32,7 +36,7 @@ it('loads one aggregate and reuses it across subscribers without refetching', as
   const first = service.start();
   const second = service.start();
   expect(service.getSnapshot()).toMatchObject({
-    pageId: 1,
+    pageId: '00000000-0000-4000-8000-000000000001',
     status: 'loading',
     content: null,
   });
@@ -42,7 +46,9 @@ it('loads one aggregate and reuses it across subscribers without refetching', as
     content: home,
     error: null,
   });
-  expect(repository.page).toHaveBeenCalledExactlyOnceWith(1);
+  expect(repository.page).toHaveBeenCalledExactlyOnceWith(
+    '00000000-0000-4000-8000-000000000001',
+  );
   first();
   await service.load();
   expect(service.getSnapshot().content).toBe(home);
@@ -131,13 +137,13 @@ it('keeps page identity and caches isolated between page services', async () => 
   repository.page.mockResolvedValueOnce({ ok: true, value: voiceover });
   await service.load();
   expect(service.getSnapshot()).toMatchObject({
-    pageId: 1,
+    pageId: '00000000-0000-4000-8000-000000000001',
     status: 'error',
     content: null,
   });
   await service.load();
   const other = new PageService(
-    2,
+    '00000000-0000-4000-8000-000000000002',
     { page: vi.fn().mockResolvedValue({ ok: true, value: voiceover }) },
     fakeNotifications(),
   );

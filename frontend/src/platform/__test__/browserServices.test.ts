@@ -20,15 +20,27 @@ it('creates independent request-scoped domain aggregates with interface-based ac
   expect(first.notifications).not.toBe(second.notifications);
   expect(first.site).not.toBe(second.site);
   expect(useSiteService(first)).toBe(first.site);
-  expect(first.page(1)).not.toBe(second.page(1));
-  expect(first.page(1)).not.toBe(first.page(2));
+  expect(first.page('00000000-0000-4000-8000-000000000001')).not.toBe(
+    second.page('00000000-0000-4000-8000-000000000001'),
+  );
+  expect(first.page('00000000-0000-4000-8000-000000000001')).not.toBe(
+    first.page('00000000-0000-4000-8000-000000000002'),
+  );
   const page = renderHook(usePageService, {
-    initialProps: { services: first, pageId: 1 },
+    initialProps: {
+      services: first,
+      pageId: '00000000-0000-4000-8000-000000000001',
+    },
   });
-  expect(page.result.current).toBe(first.page(1));
-  page.rerender({ services: first, pageId: 1 });
+  expect(page.result.current).toBe(
+    first.page('00000000-0000-4000-8000-000000000001'),
+  );
+  page.rerender({
+    services: first,
+    pageId: '00000000-0000-4000-8000-000000000001',
+  });
   expect(page.result.current.getSnapshot()).toMatchObject({
-    pageId: 1,
+    pageId: '00000000-0000-4000-8000-000000000001',
     status: 'idle',
   });
   expect(useSessionService(first)).toBe(first.session);
