@@ -8,6 +8,7 @@ import { useSkillsService } from '../../hooks/useSkillsService';
 import { useProjectsService } from '../../hooks/useProjectsService';
 import { useExperienceService } from '../../hooks/useExperienceService';
 import { useFooterService } from '../../hooks/useFooterService';
+import { useSiteService } from '../../hooks/useSiteService';
 
 import { fixturePorts } from '../../../../test/fakes';
 it('creates independent request-scoped domain aggregates with interface-based accessors', () => {
@@ -16,6 +17,8 @@ it('creates independent request-scoped domain aggregates with interface-based ac
   const second = a.services();
   expect(first.session).not.toBe(second.session);
   expect(first.notifications).not.toBe(second.notifications);
+  expect(first.site).not.toBe(second.site);
+  expect(useSiteService(first)).toBe(first.site);
   expect(useSessionService(first)).toBe(first.session);
   expect(useUIAlertService(first)).toBe(first.notifications);
   expect(useContactService(first)).toBe(first.contact);
@@ -75,12 +78,20 @@ it('binds navigation, token storage, confirmation and timers to its owning windo
   expect(window.sessionStorage.getItem(tokenKey)).toBe('abc');
   services.session.navigate('/projects');
   expect(services.session.getSnapshot().path).toBe('/projects');
-  services.session.navigate('/projects?role=4#roles');
-  expect(services.session.getSnapshot().path).toBe('/projects?role=4#roles');
+  services.session.navigate(
+    '/projects?role=00000000-0000-4000-8000-000000000004#roles',
+  );
+  expect(services.session.getSnapshot().path).toBe(
+    '/projects?role=00000000-0000-4000-8000-000000000004#roles',
+  );
   const historyLength = window.history.length;
-  services.session.replace('/projects?role=5#roles');
+  services.session.replace(
+    '/projects?role=00000000-0000-4000-8000-000000000005#roles',
+  );
   expect(window.history.length).toBe(historyLength);
-  expect(services.session.getSnapshot().path).toBe('/projects?role=5#roles');
+  expect(services.session.getSnapshot().path).toBe(
+    '/projects?role=00000000-0000-4000-8000-000000000005#roles',
+  );
   window.dispatchEvent(new PopStateEvent('popstate'));
   window.dispatchEvent(new StorageEvent('storage'));
   await Promise.resolve();
