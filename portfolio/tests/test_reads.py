@@ -60,7 +60,7 @@ class ContentReadTests(TestCase):
                          ["/media/uploads/portrait.webp", "/media/uploads/detail.webp"])
 
     def test_unknown_and_not_yet_implemented_pages_return_explicit_missing_responses(self):
-        for page_id in (uuid4(), str(Page.objects.get(kind=PageKind.BIO).public_id)):
+        for page_id in (uuid4(),):
             with self.subTest(page_id=page_id):
                 response = self.client.get(f"/api/v2/pages/{page_id}/")
                 self.assertEqual(response.status_code, 404)

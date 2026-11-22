@@ -13,7 +13,7 @@ def select_feature(page_id, item_id):
             raise ValidationError({"page_id": "This page does not support entry promotion."})
         entry = None
         if item_id is not None:
-            entry = get_object_or_404(ContentEntry, page=page, public_id=item_id)
+            entry = get_object_or_404(ContentEntry, page=page, collection="entries", public_id=item_id)
             if entry.asset_id is None:
                 raise ValidationError({"item_id": "Add an image before featuring this entry."})
         page.entries.filter(is_featured=True).update(is_featured=False)

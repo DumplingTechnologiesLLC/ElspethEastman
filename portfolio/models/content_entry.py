@@ -7,6 +7,7 @@ from .page import Page
 
 class ContentEntry(models.Model):
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    collection = models.SlugField(max_length=100, default="entries", db_index=True)
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="entries")
     title = models.CharField(max_length=300)
     eyebrow = models.CharField(max_length=300)
@@ -24,6 +25,7 @@ class ContentEntry(models.Model):
     class Meta:
         ordering = ("sort_order", "id")
         constraints = [
+            models.CheckConstraint(condition=models.Q(is_featured=False) | models.Q(collection="entries"), name="portfolio_only_entries_featured"),
             models.UniqueConstraint(fields=("page",), condition=models.Q(is_featured=True), name="portfolio_one_feature_per_page"),
             models.CheckConstraint(condition=models.Q(is_featured=False) | models.Q(asset__isnull=False), name="portfolio_feature_requires_image"),
             models.CheckConstraint(condition=models.Q(asset__isnull=True) | ~models.Q(alt_text=""), name="portfolio_entry_image_alt"),
