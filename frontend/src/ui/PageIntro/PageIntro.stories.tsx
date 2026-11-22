@@ -28,20 +28,37 @@ export const voiceIntroView = {
     },
   ],
   identities: [
-    { id: "00000000-0000-4000-8000-000000000001", label: 'Character', actions: null },
-    { id: "00000000-0000-4000-8000-000000000002", label: 'Games', actions: null },
-    { id: "00000000-0000-4000-8000-000000000003", label: 'Animation', actions: null },
+    {
+      id: '00000000-0000-4000-8000-000000000001',
+      label: 'Character',
+      actions: null,
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000002',
+      label: 'Games',
+      actions: null,
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000003',
+      label: 'Animation',
+      actions: null,
+    },
   ],
   trivia: [
     {
-      id: "00000000-0000-4000-8000-000000000001",
+      id: '00000000-0000-4000-8000-000000000001',
       label: 'Selected work',
       value: 'Games · Animation',
       actions: null,
     },
-    { id: "00000000-0000-4000-8000-000000000002", label: 'Active since', value: '2012', actions: null },
     {
-      id: "00000000-0000-4000-8000-000000000003",
+      id: '00000000-0000-4000-8000-000000000002',
+      label: 'Active since',
+      value: '2012',
+      actions: null,
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000003',
       label: 'Availability',
       value: 'Contact for casting',
       actions: null,
