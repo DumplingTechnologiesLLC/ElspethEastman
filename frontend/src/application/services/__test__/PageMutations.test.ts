@@ -61,7 +61,7 @@ function fixture(content = home) {
   const { site, session } = mockServices();
   session.publish({
     ...session.getSnapshot(),
-    path: '/cms/voiceover?role=40',
+    path: '/cms/voiceover?role=00000000-0000-4000-8000-000000000028',
     authenticated: true,
   });
   const alerts = fakeNotifications();
@@ -99,7 +99,10 @@ function collectionCase<T extends OrderedPageRecord, Input extends PageScope>(
   input: Omit<Input, 'pageId'>,
   canonical?: T,
 ): CollectionCase {
-  const row = canonical ?? { ...policy.rows(content)![0]!, id: 200 };
+  const row = canonical ?? {
+    ...policy.rows(content)![0]!,
+    id: '00000000-0000-4000-8000-0000000000c8',
+  };
   return {
     name,
     content,
@@ -114,12 +117,17 @@ function collectionCase<T extends OrderedPageRecord, Input extends PageScope>(
       port.remove.mockResolvedValue({ ok: true, value: undefined });
     },
     create: (page) => controller(page).create(input),
-    update: (page) => controller(page).update(200, input),
-    remove: (page) => controller(page).remove(200),
+    update: (page) =>
+      controller(page).update('00000000-0000-4000-8000-0000000000c8', input),
+    remove: (page) =>
+      controller(page).remove('00000000-0000-4000-8000-0000000000c8'),
     createdInput: (repository) => source(repository).create.mock.lastCall![0],
   };
 }
-const untrustedEyebrow = { ...eyebrow, pageId: 999 };
+const untrustedEyebrow = {
+  ...eyebrow,
+  pageId: '00000000-0000-4000-8000-0000000003e7',
+};
 const cases = [
   collectionCase(
     'eyebrows',
@@ -144,7 +152,9 @@ const cases = [
     (p) => p.entries,
     (r) => r.entries,
     entry,
-    toContentEntry(anEntryDTO({ id: 200, metadata: [] })),
+    toContentEntry(
+      anEntryDTO({ id: '00000000-0000-4000-8000-0000000000c8', metadata: [] }),
+    ),
   ),
   collectionCase(
     'releases',
@@ -196,7 +206,10 @@ it.each(cases)(
     testCase.prepare(repository);
     expect(await testCase.create(service)).toMatchObject({
       ok: true,
-      value: { id: 200, pageId: service.pageId },
+      value: {
+        id: '00000000-0000-4000-8000-0000000000c8',
+        pageId: service.pageId,
+      },
     });
     expect(testCase.createdInput(repository)).toMatchObject({
       pageId: service.pageId,
@@ -204,11 +217,11 @@ it.each(cases)(
     expect(
       testCase
         .rows(service.getSnapshot().content!)!
-        .some((row) => row.id === 200),
+        .some((row) => row.id === '00000000-0000-4000-8000-0000000000c8'),
     ).toBe(true);
     expect(await testCase.update(service)).toMatchObject({
       ok: true,
-      value: { id: 200, sortOrder: 3 },
+      value: { id: '00000000-0000-4000-8000-0000000000c8', sortOrder: 3 },
     });
     expect(await testCase.remove(service)).toEqual({
       ok: true,
@@ -217,7 +230,7 @@ it.each(cases)(
     expect(
       testCase
         .rows(service.getSnapshot().content!)!
-        .some((row) => row.id === 200),
+        .some((row) => row.id === '00000000-0000-4000-8000-0000000000c8'),
     ).toBe(false);
     expect(repository.page).toHaveBeenCalledOnce();
     expect(service.getSnapshot()).toMatchObject({
@@ -237,27 +250,34 @@ it('updates registry metadata and keyed copy/image content from canonical respon
   expect(service.getSnapshot().content!.page.title).toBe('Canonical title');
   const block = {
     ...home.copy[0]!,
-    id: 31,
+    id: '00000000-0000-4000-8000-00000000001f',
     key: 'new',
     value: 'Canonical copy',
   };
   repository.copy.create.mockResolvedValue({ ok: true, value: block });
   const input = {
-    pageId: 999,
+    pageId: '00000000-0000-4000-8000-0000000003e7',
     key: 'new',
     section: 'intro',
     kind: CopyKind.Body,
     value: 'Submitted',
   };
   await service.copy.create(input);
-  expect(repository.copy.create).toHaveBeenCalledWith({ ...input, pageId: 1 });
+  expect(repository.copy.create).toHaveBeenCalledWith({
+    ...input,
+    pageId: '00000000-0000-4000-8000-000000000001',
+  });
   repository.copy.update.mockResolvedValue({
     ok: true,
     value: { ...block, value: 'Canonical edit' },
   });
   await service.copy.update({ key: 'new', value: 'Submitted edit' });
   expect(
-    service.getSnapshot().content!.copy.find((row) => row.id === 31)!.value,
+    service
+      .getSnapshot()
+      .content!.copy.find(
+        (row) => row.id === '00000000-0000-4000-8000-00000000001f',
+      )!.value,
   ).toBe('Canonical edit');
   repository.copy.remove.mockResolvedValue({ ok: true, value: undefined });
   await service.copy.remove('new');
@@ -285,17 +305,29 @@ it('rejects unloaded, overlapping, unavailable, and unsupported mutations before
   expect(
     await service.trivia.create({ label: 'Hidden', value: 'Fact' }),
   ).toMatchObject({ ok: false });
-  expect(await service.trivia.update(101, { value: 'Hidden' })).toMatchObject({
+  expect(
+    await service.trivia.update('00000000-0000-4000-8000-000000000065', {
+      value: 'Hidden',
+    }),
+  ).toMatchObject({
     ok: false,
   });
   expect(await service.entries.create(entry)).toMatchObject({ ok: false });
-  expect(await service.entries.update(40, { title: 'Foreign' })).toMatchObject({
+  expect(
+    await service.entries.update('00000000-0000-4000-8000-000000000028', {
+      title: 'Foreign',
+    }),
+  ).toMatchObject({
     ok: false,
   });
   expect(
-    await service.eyebrows.update(999, { label: 'Missing' }),
+    await service.eyebrows.update('00000000-0000-4000-8000-0000000003e7', {
+      label: 'Missing',
+    }),
   ).toMatchObject({ ok: false });
-  expect(await service.eyebrows.remove(999)).toMatchObject({ ok: false });
+  expect(
+    await service.eyebrows.remove('00000000-0000-4000-8000-0000000003e7'),
+  ).toMatchObject({ ok: false });
   expect(
     await service.copy.update({ key: 'missing', value: 'Text' }),
   ).toMatchObject({ ok: false });
@@ -344,7 +376,8 @@ it('retains the cache and canonical failure on validation, forbidden, and reject
   });
   await service.metadata({ title: 'Text' });
   expect(session.expire).toHaveBeenCalledExactlyOnceWith(
-    '/cms/voiceover?role=40',
+    '/cms/voiceover?role=00000000-0000-4000-8000-000000000028',
+    0,
   );
   expect(service.getSnapshot()).toMatchObject({
     content: voice,
@@ -357,16 +390,23 @@ it('rejects canonical replies that change ownership, identity, or a keyed addres
   await service.load();
   repository.eyebrows.create.mockResolvedValueOnce({
     ok: true,
-    value: { ...home.eyebrows[0]!, pageId: 999 },
+    value: {
+      ...home.eyebrows[0]!,
+      pageId: '00000000-0000-4000-8000-0000000003e7',
+    },
   });
   expect(await service.eyebrows.create({ label: 'Text' })).toMatchObject({
     ok: false,
   });
   repository.eyebrows.update.mockResolvedValueOnce({
     ok: true,
-    value: { ...home.eyebrows[0]!, id: 999 },
+    value: { ...home.eyebrows[0]!, id: '00000000-0000-4000-8000-0000000003e7' },
   });
-  expect(await service.eyebrows.update(100, { label: 'Text' })).toMatchObject({
+  expect(
+    await service.eyebrows.update('00000000-0000-4000-8000-000000000064', {
+      label: 'Text',
+    }),
+  ).toMatchObject({
     ok: false,
   });
   repository.copy.create.mockResolvedValueOnce({
@@ -400,13 +440,28 @@ it('rejects canonical replies that change ownership, identity, or a keyed addres
 
 it('deleting an entry clears its hero and closes only a matching selected location', async () => {
   for (const [routePageId, selectedId, close] of [
-    [2, 40, true],
-    [2, 42, false],
-    [3, 40, false],
+    [
+      '00000000-0000-4000-8000-000000000002',
+      '00000000-0000-4000-8000-000000000028',
+      true,
+    ],
+    [
+      '00000000-0000-4000-8000-000000000002',
+      '00000000-0000-4000-8000-00000000002a',
+      false,
+    ],
+    [
+      '00000000-0000-4000-8000-000000000003',
+      '00000000-0000-4000-8000-000000000028',
+      false,
+    ],
   ] as const) {
     const data = toPageContent(
       aVoiceoverDTO({
-        feature: { page_id: 2, item_id: 40 },
+        feature: {
+          page_id: '00000000-0000-4000-8000-000000000002',
+          item_id: '00000000-0000-4000-8000-000000000028',
+        },
         roles: [anEntryDTO({ is_featured: true })],
       }),
     );
@@ -425,10 +480,10 @@ it('deleting an entry clears its hero and closes only a matching selected locati
     });
     repository.entries.remove.mockResolvedValue({ ok: true, value: undefined });
     // oxlint-disable-next-line no-await-in-loop -- Complete this context before checking the next.
-    await service.entries.remove(40);
+    await service.entries.remove('00000000-0000-4000-8000-000000000028');
     expect(service.getSnapshot().content).toMatchObject({
       roles: [],
-      feature: { pageId: 2, itemId: null },
+      feature: { pageId: '00000000-0000-4000-8000-000000000002', itemId: null },
     });
     expect(site.select).toHaveBeenCalledTimes(close ? 1 : 0);
   }

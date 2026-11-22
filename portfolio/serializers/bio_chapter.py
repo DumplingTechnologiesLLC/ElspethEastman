@@ -5,6 +5,8 @@ from portfolio.serializers.input import PageScopeSerializer, StrictInputSerializ
 
 
 class BioChapterSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="public_id", read_only=True)
+    page_id = serializers.UUIDField(source="page.public_id", read_only=True)
     class Meta:
         model = BioChapter
         fields = ("id", "page_id", "eyebrow", "heading", "body", "sort_order")

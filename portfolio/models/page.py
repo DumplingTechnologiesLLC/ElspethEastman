@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 
@@ -11,6 +12,7 @@ class PageKind(models.TextChoices):
 
 
 class Page(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     kind = models.CharField(max_length=20, choices=PageKind.choices, unique=True, editable=False)
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
