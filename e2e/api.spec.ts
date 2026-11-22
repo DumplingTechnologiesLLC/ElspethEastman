@@ -19,15 +19,15 @@ it.each(Object.entries(publicAPI))(([path, expected]) =>
 it.each([
   ['PATCH', '/api/skills/'],
   ['POST', '/api/projects/list/'],
-  ['PATCH', '/api/projects/list/6/'],
-  ['DELETE', '/api/projects/list/6/'],
+  ['PATCH', '/api/projects/list/00000000-0000-4000-8000-000000000006/'],
+  ['DELETE', '/api/projects/list/00000000-0000-4000-8000-000000000006/'],
   ['PATCH', '/api/projects/list/batch_update/'],
   ['POST', '/api/experience/'],
-  ['PATCH', '/api/experience/1/'],
-  ['DELETE', '/api/experience/1/'],
+  ['PATCH', '/api/experience/00000000-0000-4000-8000-000000000001/'],
+  ['DELETE', '/api/experience/00000000-0000-4000-8000-000000000001/'],
   ['POST', '/api/affiliations/'],
-  ['PATCH', '/api/affiliations/1/'],
-  ['DELETE', '/api/affiliations/1/'],
+  ['PATCH', '/api/affiliations/00000000-0000-4000-8000-000000000001/'],
+  ['DELETE', '/api/affiliations/00000000-0000-4000-8000-000000000001/'],
 ] as const)(([method, path]) =>
   it(`rejects anonymous ${method} ${path} without modifying content`, async ({
     request,
@@ -44,14 +44,15 @@ it('keeps contact listing private and enforces CSRF for session POSTs', async ({
   request,
 }) => {
   expect((await request.get('/api/contact-me/')).status()).toBe(403);
-  expect((await request.post('/api/session/')).status()).toBe(403);
-  const response = await request.get('/api/session/');
+  expect((await request.get('/api/v2/contact/')).status()).toBe(405);
+  expect((await request.post('/api/v2/session/')).status()).toBe(403);
+  const response = await request.get('/api/v2/session/');
   expect(response.status()).toBe(200);
   expect(await response.json()).toEqual({ isAuthenticated: false });
   const csrf = (await request.storageState()).cookies.find(
     (cookie) => cookie.name === 'csrftoken',
   )!.value;
-  const validPost = await request.post('/api/session/', {
+  const validPost = await request.post('/api/v2/session/', {
     headers: { 'X-CSRFToken': csrf },
   });
   expect(validPost.status()).toBe(200);
@@ -102,10 +103,10 @@ it.each(['sqlite', 'postgres'] as const)((target) =>
 it('rejects every anonymous redesign mutation and preserves all six aggregates', async ({
   request,
 }) => {
-  const registry = (await (await request.get('/api/site/')).json()) as {
-    pages: { id: number }[];
+  const registry = (await (await request.get('/api/v2/site/')).json()) as {
+    pages: { id: string }[];
   };
-  const urls = registry.pages.map((page) => '/api/pages/' + page.id + '/');
+  const urls = registry.pages.map((page) => '/api/v2/pages/' + page.id + '/');
   const read = async () =>
     Promise.all(
       urls.map(async (url) => {
@@ -117,24 +118,24 @@ it('rejects every anonymous redesign mutation and preserves all six aggregates',
   const before = await read();
   const operations = [
     ...[
-      'copy',
-      'eyebrows',
-      'trivia',
-      'content-entries',
-      'music-releases',
-      'stream-clips',
-      'appearances',
-      'bio-chapters',
-      'current-items',
-      'media-assets',
-    ].map((name) => ({ method: 'POST', url: '/api/' + name + '/' })),
+      'pages/copy',
+      'pages/eyebrows',
+      'pages/trivia',
+      'content/entries',
+      'music/releases',
+      'streaming/clips',
+      'press/appearances',
+      'bio/chapters',
+      'bio/current',
+      'media/assets',
+    ].map((name) => ({ method: 'POST', url: '/api/v2/' + name + '/' })),
     ...[
-      'copy',
-      'page-images',
-      'featured-items',
-      'music-features',
+      'pages/copy',
+      'pages/images',
+      'content/features',
+      'music/features',
       'collections/reorder',
-    ].map((name) => ({ method: 'PATCH', url: '/api/' + name + '/' })),
+    ].map((name) => ({ method: 'PATCH', url: '/api/v2/' + name + '/' })),
     { method: 'PATCH', url: urls[0]! },
   ];
   const responses = await Promise.all(

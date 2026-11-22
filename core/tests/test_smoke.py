@@ -19,23 +19,23 @@ class DeploymentSmokeTests(SimpleTestCase):
 
     def setUp(self):
         self.pages = [
-            {'id': index, 'kind': kind, 'title': kind.title(),
+            {'id': f'00000000-0000-4000-8000-{index:012x}', 'kind': kind, 'title': kind.title(),
              'slug': '' if kind == 'home' else 'voice-acting' if kind == 'voiceover' else kind,
              'primary_action': None}
             for index, kind in enumerate(['home', 'voiceover', 'music', 'streaming', 'press', 'bio'], 1)
         ]
         self.responses = {
             '/static/revision.json': {'commit': self.commit},
-            '/api/site/': {'pages': self.pages},
+            '/api/v2/site/': {'pages': self.pages},
             '/static/app.js': b'compiled application',
-            '/api/contact-me/': {'message': 'Success'},
+            '/api/v2/contact/': {'message': 'Success'},
         }
         html = b'<div id="root"></div><script src="/static/app.js"></script>'
         for page in self.pages:
             path = '' if page['kind'] == 'home' else '/' + page['slug']
             self.responses[path or '/'] = html
             self.responses['/cms' + path] = html
-            self.responses[f'/api/pages/{page["id"]}/'] = {'page': page}
+            self.responses[f'/api/v2/pages/{page["id"]}/'] = {'page': page}
         self.responses['/login'] = html
         for path in ['/api/skills/', '/api/experience/', '/api/footerstats/',
                      '/api/projects/list/', '/api/projects/paginated/?page=1']:
@@ -72,7 +72,7 @@ class DeploymentSmokeTests(SimpleTestCase):
         self.assertNotIn('/voiceover', paths)
         self.assertNotIn('/projects', paths)
         for page in self.pages:
-            self.assertIn(f'/api/pages/{page["id"]}/', paths)
+            self.assertIn(f'/api/v2/pages/{page["id"]}/', paths)
         self.assertTrue(all(request.get_method() == 'GET' for request in self.requests))
 
     def test_rejects_production_and_non_heroku_targets_before_any_optional_contact(self):
@@ -94,7 +94,7 @@ class DeploymentSmokeTests(SimpleTestCase):
 
     def test_requires_all_six_unique_page_kinds(self):
         for pages in [self.pages[:-1], [self.pages[0], *self.pages[:-1]]]:
-            self.responses['/api/site/'] = {'pages': pages}
+            self.responses['/api/v2/site/'] = {'pages': pages}
             with self.subTest(pages=pages), self.assertRaisesRegex(RuntimeError, 'six page kinds'):
                 self.run_smoke()
 
@@ -105,7 +105,7 @@ class DeploymentSmokeTests(SimpleTestCase):
                 self.run_smoke()
 
     def test_detects_an_aggregate_with_the_wrong_page_identity(self):
-        self.responses['/api/pages/2/'] = {'page': self.pages[0]}
+        self.responses[f'/api/v2/pages/{self.pages[1]["id"]}/'] = {'page': self.pages[0]}
         with self.assertRaisesRegex(RuntimeError, 'page identity'):
             self.run_smoke()
 
@@ -126,6 +126,6 @@ class DeploymentSmokeTests(SimpleTestCase):
             'name': 'CI deployment verification', 'email': 'ci@example.invalid',
             'message': f'Non-production smoke check for {self.commit}',
         })
-        self.responses['/api/contact-me/'] = {'message': 'Not sent'}
+        self.responses['/api/v2/contact/'] = {'message': 'Not sent'}
         with self.assertRaisesRegex(RuntimeError, 'Contact submission failed'):
             self.run_smoke('--contact')

@@ -34,7 +34,7 @@ export class ContactService extends Store<ContactState> implements Contact {
     }
     this.patch({ submitting: true });
     const reply = await this.api.request<Errors>(
-      '/api/contact-me/',
+      '/api/v2/contact/',
       'POST',
       draft,
     );

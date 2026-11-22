@@ -33,7 +33,7 @@ def request(path, payload=None):
 revision = json.loads(request('/static/revision.json'))
 if revision['commit'] != args.commit:
     raise RuntimeError(f'Wrong deployed commit: {revision["commit"]}')
-pages = json.loads(request('/api/site/'))['pages']
+pages = json.loads(request('/api/v2/site/'))['pages']
 if len(pages) != 6 or {page['kind'] for page in pages} != {
     'home', 'voiceover', 'music', 'streaming', 'press', 'bio',
 }:
@@ -42,7 +42,7 @@ routes = ['/login']
 for page in pages:
     path = '' if page['kind'] == 'home' else '/' + quote(page['slug'], safe='')
     routes.extend([path or '/', '/cms' + path])
-    content = json.loads(request(f'/api/pages/{page["id"]}/'))
+    content = json.loads(request(f'/api/v2/pages/{page["id"]}/'))
     if content['page'] != page:
         raise RuntimeError(f'{page["kind"]}: aggregate page identity differs from the registry')
 for path in routes:
@@ -58,7 +58,7 @@ for path in ['/api/skills/', '/api/experience/', '/api/footerstats/',
              '/api/projects/list/', '/api/projects/paginated/?page=1']:
     json.loads(request(path))
 if args.contact:
-    result = json.loads(request('/api/contact-me/', {
+    result = json.loads(request('/api/v2/contact/', {
         'name': 'CI deployment verification', 'email': 'ci@example.invalid',
         'message': f'Non-production smoke check for {args.commit}',
     }))

@@ -9,7 +9,7 @@ import type { EditorPlan } from './EditorPlan';
 export function clipPlan(
   content: PageContent,
   page: PageController,
-  id: number | null,
+  id: string | null,
 ): EditorPlan | null {
   if (content.kind !== PageKind.Streaming) return null;
   return collectionPlan(
@@ -38,7 +38,7 @@ export function clipPlan(
 export function appearancePlan(
   content: PageContent,
   page: PageController,
-  id: number | null,
+  id: string | null,
 ): EditorPlan | null {
   if (content.kind !== PageKind.Press) return null;
   return collectionPlan(
@@ -67,7 +67,7 @@ export function appearancePlan(
 export function chapterPlan(
   content: PageContent,
   page: PageController,
-  id: number | null,
+  id: string | null,
 ): EditorPlan | null {
   if (content.kind !== PageKind.Bio) return null;
   return collectionPlan(
@@ -94,7 +94,7 @@ export function chapterPlan(
 export function currentPlan(
   content: PageContent,
   page: PageController,
-  id: number | null,
+  id: string | null,
 ): EditorPlan | null {
   if (content.kind !== PageKind.Bio) return null;
   return collectionPlan(

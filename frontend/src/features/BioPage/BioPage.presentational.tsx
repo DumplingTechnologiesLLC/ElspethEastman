@@ -208,8 +208,8 @@ export function BioPage({
   navigate,
   controls,
 }: ReturnType<typeof useBioPageState>) {
-  const [hovered, setHovered] = useState<number | null>(null),
-    [focused, setFocused] = useState<number | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null),
+    [focused, setFocused] = useState<string | null>(null);
   return (
     <PageBoundary ready={ready} error={error} retry={retry}>
       <InteriorLayout

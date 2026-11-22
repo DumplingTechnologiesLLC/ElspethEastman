@@ -7,6 +7,6 @@ export type PageRoute =
       readonly type: 'page';
       readonly page: Page;
       readonly editor: boolean;
-      readonly selectedId: number | null;
+      readonly selectedId: string | null;
       readonly anchor: string;
     };

@@ -28,10 +28,10 @@ import type { Trivia, TriviaInput } from '../models/Trivia';
 export interface OwnedCollectionRepository<TRecord, TInput extends PageScope> {
   create: (input: TInput) => Promise<ContentResult<TRecord>>;
   update: (
-    id: number,
+    id: string,
     changes: Partial<Omit<TInput, 'pageId'>>,
   ) => Promise<ContentResult<TRecord>>;
-  remove: (id: number) => Promise<ContentResult<void>>;
+  remove: (id: string) => Promise<ContentResult<void>>;
 }
 
 export interface ContentRepository {

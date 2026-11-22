@@ -13,14 +13,15 @@ async function preloadRequest(value: string, editor: boolean) {
   }
   const home = aHomeDTO({ copy: [aCopyDTO({ value })] });
   vi.mocked(ports.http.request).mockImplementation(async (path) => {
-    if (path === '/api/site/')
+    if (path === '/api/v2/site/')
       return { status: 200, data: { pages: [home.page] } } as never;
-    if (path === '/api/pages/1/') return { status: 200, data: home } as never;
+    if (path === '/api/v2/pages/' + home.page.id + '/')
+      return { status: 200, data: home } as never;
     throw new Error('Unexpected request: ' + path);
   });
   const services = ports.services();
   await services.site.load();
-  await services.page(1).load();
+  await services.page(home.page.id).load();
   vi.mocked(ports.http.request).mockClear();
   return { ports, services };
 }

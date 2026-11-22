@@ -62,7 +62,9 @@ it.each([
     let reads = 0;
     page.on('request', (request) => {
       if (
-        /^\/api\/pages\/\d+\/$/.test(new URL(request.url()).pathname) &&
+        /^\/api\/v2\/pages\/[0-9a-f-]{36}\/$/i.test(
+          new URL(request.url()).pathname,
+        ) &&
         request.method() === 'GET'
       )
         reads++;
@@ -71,7 +73,9 @@ it.each([
     await stablePage(page);
     const trigger = page.getByRole('button', { name: 'Open ' + title });
     await trigger.click();
-    await expect(page).toHaveURL(new RegExp('\\?' + parameter + '=\\d+$'));
+    await expect(page).toHaveURL(
+      new RegExp('\\?' + parameter + '=[0-9a-f-]{36}$', 'i'),
+    );
     await expect(
       page.getByRole('region', { name: title, exact: true }),
     ).toBeFocused();
@@ -123,7 +127,7 @@ it('keeps old and unknown page addresses missing', async ({ request }) => {
 it('retries a failed aggregate read without replacing the registered route', async ({
   page,
 }) => {
-  await page.route('**/api/pages/*/', (route) =>
+  await page.route('**/api/v2/pages/*/', (route) =>
     route.fulfill({
       status: 503,
       json: { detail: 'Temporarily unavailable', fields: {} },
@@ -136,7 +140,7 @@ it('retries a failed aggregate read without replacing the registered route', asy
       exact: true,
     }),
   ).toBeVisible();
-  await page.unroute('**/api/pages/*/');
+  await page.unroute('**/api/v2/pages/*/');
   await page.getByRole('button', { name: 'Try again', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Open Tristana' }),

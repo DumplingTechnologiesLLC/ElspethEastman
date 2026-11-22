@@ -17,7 +17,7 @@ it('opens loaded entries and restores focus to the recreated originating card', 
   const origin = screen.getByRole('button', { name: 'Open Cadence' });
   origin.focus();
   fireEvent.click(origin);
-  expect(open).toHaveBeenCalledWith(42);
+  expect(open).toHaveBeenCalledWith(voiceoverPageView.rows[1]!.id);
   view.rerender(
     <VoiceoverPage
       {...voiceoverPageView}
@@ -102,7 +102,7 @@ it('composes featured, CMS, loading and empty states through the same page frame
     />,
   );
   fireEvent.click(screen.getByRole('button', { name: 'Open Tristana' }));
-  expect(open).toHaveBeenCalledWith(40);
+  expect(open).toHaveBeenCalledWith(voiceoverPageView.rows[0]!.id);
   view.rerender(
     <VoiceoverPreview
       {...voiceoverPageView}
@@ -146,4 +146,67 @@ it('composes featured, CMS, loading and empty states through the same page frame
   CMS.args!.controls!.add();
   CMS.args!.controls!.addHeading();
   await voiceoverPageView.retry();
+});
+
+it('waits for modal close cleanup before restoring a deleted selection to the collection', async () => {
+  const view = render(
+    <VoiceoverPage
+      {...voiceoverPageView}
+      selected={voiceoverPageView.rows[0]!}
+    />,
+  );
+  const dialog = document.createElement('dialog');
+  dialog.open = true;
+  document.body.append(dialog);
+  try {
+    const focus = vi.spyOn(HTMLElement.prototype, 'focus');
+    view.rerender(
+      <VoiceoverPage
+        {...voiceoverPageView}
+        rows={voiceoverPageView.rows.slice(1)}
+      />,
+    );
+    expect(focus).not.toHaveBeenCalled();
+    dialog.open = false;
+    fireEvent(dialog, new Event('close'));
+    await Promise.resolve();
+    expect(screen.getByRole('region', { name: 'Roles' })).toHaveFocus();
+  } finally {
+    dialog.remove();
+  }
+});
+
+it('cancels queued modal-close focus when selection changes or the page unmounts', async () => {
+  const view = render(
+    <VoiceoverPage
+      {...voiceoverPageView}
+      selected={voiceoverPageView.rows[0]!}
+    />,
+  );
+  const dialog = document.createElement('dialog');
+  dialog.open = true;
+  document.body.append(dialog);
+  try {
+    view.rerender(<VoiceoverPage {...voiceoverPageView} />);
+    dialog.open = false;
+    fireEvent(dialog, new Event('close'));
+    view.rerender(
+      <VoiceoverPage
+        {...voiceoverPageView}
+        selected={voiceoverPageView.rows[1]!}
+      />,
+    );
+    await Promise.resolve();
+    expect(screen.getByRole('region', { name: 'Cadence' })).toHaveFocus();
+    dialog.open = true;
+    view.rerender(<VoiceoverPage {...voiceoverPageView} />);
+    const remove = vi.spyOn(dialog, 'removeEventListener');
+    view.unmount();
+    expect(remove).toHaveBeenCalledWith('close', expect.any(Function));
+    dialog.open = false;
+    fireEvent(dialog, new Event('close'));
+    await Promise.resolve();
+  } finally {
+    dialog.remove();
+  }
 });

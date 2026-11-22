@@ -57,6 +57,7 @@ export interface ContentEditorState {
   readonly draft: ContentDraft | null;
   readonly saving: boolean;
   readonly uploading: boolean;
+  readonly attributionLocked: boolean;
   readonly confirmingDelete: boolean;
   readonly error: ContentFailure | null;
 }
@@ -70,5 +71,5 @@ export type EditorTarget =
     }
   | {
       readonly type: Exclude<PageCollection, PageCollection.Copy>;
-      readonly id: number | null;
+      readonly id: string | null;
     };
