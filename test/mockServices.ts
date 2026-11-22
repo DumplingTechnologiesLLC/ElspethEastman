@@ -144,6 +144,7 @@ export function mockServices() {
         draft: null,
         saving: false,
         uploading: false,
+        attributionLocked: false,
         confirmingDelete: false,
         error: null,
       }),
