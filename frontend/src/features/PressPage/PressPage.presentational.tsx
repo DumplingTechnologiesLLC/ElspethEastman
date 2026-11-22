@@ -99,7 +99,7 @@ export function PressPage({
   controls,
 }: ReturnType<typeof usePressPageState>) {
   const { list, detail, remember } = useEntryFocus(selected?.id ?? null);
-  const select = (id: number, button: HTMLButtonElement) => {
+  const select = (id: string, button: HTMLButtonElement) => {
     remember(button);
     open(id);
   };

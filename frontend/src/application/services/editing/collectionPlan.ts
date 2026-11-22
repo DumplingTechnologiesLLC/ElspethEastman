@@ -9,7 +9,7 @@ export function collectionPlan<
 >(
   controller: PageCollectionController<T, Input>,
   rows: readonly T[],
-  id: number | null,
+  id: string | null,
   describe: (record: T | null) => ContentDraft,
   input: (draft: ContentDraft) => Omit<Input, 'pageId'>,
 ): EditorPlan | null {

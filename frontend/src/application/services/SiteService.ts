@@ -14,14 +14,21 @@ import { Store } from './Store';
 
 export class SiteService extends Store<SiteState> implements SiteController {
   private pages: readonly Page[] | undefined;
-  private pending: Promise<ContentResult<readonly Page[]>> | undefined;
+  private pending:
+    | { revision: number; reply: Promise<ContentResult<readonly Page[]>> }
+    | undefined;
   private version = 0;
 
   constructor(
     private repository: Pick<ContentRepository, 'site'>,
     private session: Pick<
       Session,
-      'getSnapshot' | 'subscribe' | 'navigate' | 'replace'
+      | 'getSnapshot'
+      | 'subscribe'
+      | 'navigate'
+      | 'replace'
+      | 'expire'
+      | 'revision'
     >,
     private alerts: UIAlerts,
     readonly year: number,
@@ -66,22 +73,30 @@ export class SiteService extends Store<SiteState> implements SiteController {
       return;
     }
     this.patch({ path, authenticated, status: 'loading', error: null });
-    this.pending ??= this.repository
-      .site()
-      .catch((): ContentResult<readonly Page[]> => ({
-        ok: false,
-        error: {
-          status: null,
-          detail: 'Could not load the site. Please try again.',
-          fields: {},
-        },
-      }));
-    const result = await this.pending;
+    this.pending ??= {
+      revision: this.session.revision(),
+      reply: this.repository
+        .site()
+        .catch((): ContentResult<readonly Page[]> => ({
+          ok: false,
+          error: {
+            status: null,
+            detail: 'Could not load the site. Please try again.',
+            fields: {},
+          },
+        })),
+    };
+    const { revision, reply } = this.pending;
+    const result = await reply;
     this.pending = undefined;
     if (result.ok) this.pages = result.value;
     if (version !== this.version) return;
     if (!result.ok) {
       this.patch({ status: 'error', error: result.error });
+      if (result.error.status === 403) {
+        this.session.expire(path, revision);
+        return;
+      }
       this.alerts.show({
         title: 'Could not load the site',
         content: result.error.detail,
@@ -98,7 +113,7 @@ export class SiteService extends Store<SiteState> implements SiteController {
 
   navigate = (path: string) => this.session.navigate(path);
 
-  select = (id: number | null) => {
+  select = (id: string | null) => {
     const { route, path } = this.getSnapshot();
     if (route.type !== 'page') return;
     const next = withSelection(path, route.page.kind, id);

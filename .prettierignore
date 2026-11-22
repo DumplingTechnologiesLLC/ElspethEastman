@@ -13,6 +13,3 @@ e2e/snapshots
 .e2e
 .venv
 templates/
-
-# Preserve the authored local design reference.
-docs/elspeth-eastman-redesign-tdd.md

@@ -1,3 +1,4 @@
+import type { IdentifierSource } from '../../../domain/ports/IdentifierSource';
 import { EditorFieldKey as Key } from '../../../domain/models/ContentEditor';
 import type { EditorTarget } from '../../../domain/models/ContentEditor';
 import { PageKind } from '../../../domain/models/Page';
@@ -24,6 +25,7 @@ export function sharedPlan(
   content: PageContent,
   page: PageController,
   target: EditorTarget,
+  identifiers: IdentifierSource,
 ): EditorPlan | null {
   switch (target.type) {
     case 'settings': {
@@ -72,9 +74,7 @@ export function sharedPlan(
               (row) => row.key === target.key && row.section === target.section,
             );
       if (copy === undefined) return null;
-      let index = 1;
-      while (content.copy.some((row) => row.key === `copy-${index}`)) index++;
-      const key = copy?.key ?? `copy-${index}`;
+      const key = copy?.key ?? `copy-${identifiers.next()}`;
       const kinds = copyKindsFor(target.section);
       return {
         draft: emptyDraft(

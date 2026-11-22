@@ -5,7 +5,11 @@ import { useContentPage } from '../useContentPage';
 it('owns a page subscription and exposes scoped ports to page-specific projections', () => {
   const { services, page, site, editor } = mockServices();
   const hook = renderHook(useContentPage, {
-    initialProps: { services, pageId: 1, editor: true },
+    initialProps: {
+      services,
+      pageId: '00000000-0000-4000-8000-000000000001',
+      editor: true,
+    },
   });
   expect(page.start).toHaveBeenCalledOnce();
   expect(hook.result.current.page).toBe(page);

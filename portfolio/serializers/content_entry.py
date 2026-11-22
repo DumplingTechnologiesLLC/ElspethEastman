@@ -5,12 +5,16 @@ from portfolio.serializers.page_image import ImageUseSerializer
 
 
 class ContentEntryMetadataSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="public_id", read_only=True)
+    entry_id = serializers.UUIDField(source="entry.public_id", read_only=True)
     class Meta:
         model = ContentEntryMetadata
         fields = ("id", "entry_id", "key", "label", "value", "sort_order")
 
 
 class ContentEntrySerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="public_id", read_only=True)
+    page_id = serializers.UUIDField(source="page.public_id", read_only=True)
     image = serializers.SerializerMethodField()
     action = serializers.SerializerMethodField()
     metadata = ContentEntryMetadataSerializer(many=True)

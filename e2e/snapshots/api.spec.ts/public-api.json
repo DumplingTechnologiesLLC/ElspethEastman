@@ -17,19 +17,19 @@
   "/api/footerstats/": {
     "stats": [
       {
-        "id": 1,
+        "id": "00000000-0000-4000-8000-000000000001",
         "value": "10+",
         "label": "Fixture games",
         "percent": 70
       },
       {
-        "id": 2,
+        "id": "00000000-0000-4000-8000-000000000002",
         "value": "20+",
         "label": "Fixture voices",
         "percent": 80
       },
       {
-        "id": 3,
+        "id": "00000000-0000-4000-8000-000000000003",
         "value": "30+",
         "label": "Fixture broadcasts",
         "percent": 90
@@ -37,7 +37,7 @@
     ],
     "affiliations": [
       {
-        "id": 1,
+        "id": "00000000-0000-4000-8000-000000000001",
         "affiliation": "Fixture Studio",
         "link": "https://example.invalid/studio"
       }
@@ -46,7 +46,7 @@
   "/api/experience/": {
     "Voice Credits": [
       {
-        "id": 1,
+        "id": "00000000-0000-4000-8000-000000000001",
         "year": "(2021)",
         "link": "https://example.invalid/credit-1",
         "tba": false,
@@ -55,7 +55,7 @@
     ],
     "Music - Games": [
       {
-        "id": 2,
+        "id": "00000000-0000-4000-8000-000000000002",
         "year": "(2022)",
         "link": "https://example.invalid/credit-2",
         "tba": false,
@@ -64,7 +64,7 @@
     ],
     "Music - Miscellaneous": [
       {
-        "id": 3,
+        "id": "00000000-0000-4000-8000-000000000003",
         "year": "(2023)",
         "link": "https://example.invalid/credit-3",
         "tba": false,
@@ -73,7 +73,7 @@
     ],
     "Streaming - Credits": [
       {
-        "id": 4,
+        "id": "00000000-0000-4000-8000-000000000004",
         "year": "(TBA)",
         "link": "https://example.invalid/credit-4",
         "tba": true,
@@ -83,74 +83,74 @@
   },
   "/api/affiliations/": [
     {
-      "id": 1,
+      "id": "00000000-0000-4000-8000-000000000001",
       "affiliation": "Fixture Studio",
       "link": "https://example.invalid/studio"
     }
   ],
   "/api/projects/list/": [
     {
-      "id": 6,
+      "id": "00000000-0000-4000-8000-000000000006",
       "src": "e2e-video-6",
       "title": "Fixture Project 6",
-      "uuid": 6
+      "uuid": "00000000-0000-4000-8000-000000000006"
     },
     {
-      "id": 5,
+      "id": "00000000-0000-4000-8000-000000000005",
       "src": "e2e-video-5",
       "title": "Fixture Project 5",
-      "uuid": 5
+      "uuid": "00000000-0000-4000-8000-000000000005"
     },
     {
-      "id": 4,
+      "id": "00000000-0000-4000-8000-000000000004",
       "src": "e2e-video-4",
       "title": "Fixture Project 4",
-      "uuid": 4
+      "uuid": "00000000-0000-4000-8000-000000000004"
     },
     {
-      "id": 3,
+      "id": "00000000-0000-4000-8000-000000000003",
       "src": "e2e-video-3",
       "title": "Fixture Project 3",
-      "uuid": 3
+      "uuid": "00000000-0000-4000-8000-000000000003"
     },
     {
-      "id": 2,
+      "id": "00000000-0000-4000-8000-000000000002",
       "src": "e2e-video-2",
       "title": "Fixture Project 2",
-      "uuid": 2
+      "uuid": "00000000-0000-4000-8000-000000000002"
     },
     {
-      "id": 1,
+      "id": "00000000-0000-4000-8000-000000000001",
       "src": "e2e-video-1",
       "title": "Fixture Project 1",
-      "uuid": 1
+      "uuid": "00000000-0000-4000-8000-000000000001"
     }
   ],
   "/api/projects/paginated/?page=1": {
     "data": [
       {
-        "id": 6,
+        "id": "00000000-0000-4000-8000-000000000006",
         "src": "e2e-video-6",
         "title": "Fixture Project 6",
-        "uuid": 6
+        "uuid": "00000000-0000-4000-8000-000000000006"
       },
       {
-        "id": 5,
+        "id": "00000000-0000-4000-8000-000000000005",
         "src": "e2e-video-5",
         "title": "Fixture Project 5",
-        "uuid": 5
+        "uuid": "00000000-0000-4000-8000-000000000005"
       },
       {
-        "id": 4,
+        "id": "00000000-0000-4000-8000-000000000004",
         "src": "e2e-video-4",
         "title": "Fixture Project 4",
-        "uuid": 4
+        "uuid": "00000000-0000-4000-8000-000000000004"
       },
       {
-        "id": 3,
+        "id": "00000000-0000-4000-8000-000000000003",
         "src": "e2e-video-3",
         "title": "Fixture Project 3",
-        "uuid": 3
+        "uuid": "00000000-0000-4000-8000-000000000003"
       }
     ],
     "pages": 2

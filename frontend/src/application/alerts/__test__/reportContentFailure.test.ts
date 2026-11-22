@@ -9,14 +9,19 @@ it('expires forbidden sessions, leaves form validation inline, and reports other
     { status: 403, detail: 'Forbidden', fields: {} },
     alerts,
     session,
-    '/cms/press?entry=40',
+    '/cms/press?entry=00000000-0000-4000-8000-000000000028',
+    7,
   );
-  expect(session.expire).toHaveBeenCalledExactlyOnceWith('/cms/press?entry=40');
+  expect(session.expire).toHaveBeenCalledExactlyOnceWith(
+    '/cms/press?entry=00000000-0000-4000-8000-000000000028',
+    7,
+  );
   reportContentFailure(
     { status: 400, detail: 'Invalid', fields: { title: ['Required'] } },
     alerts,
     session,
     '/cms',
+    7,
   );
   expect(alerts.show).not.toHaveBeenCalled();
   reportContentFailure(
@@ -24,6 +29,7 @@ it('expires forbidden sessions, leaves form validation inline, and reports other
     alerts,
     session,
     '/cms',
+    7,
   );
   expect(alerts.show).toHaveBeenLastCalledWith({
     title: 'Could not save changes',
@@ -39,6 +45,7 @@ it('expires forbidden sessions, leaves form validation inline, and reports other
     alerts,
     session,
     '/cms',
+    7,
     true,
   );
   expect(alerts.show).toHaveBeenLastCalledWith({
@@ -51,6 +58,7 @@ it('expires forbidden sessions, leaves form validation inline, and reports other
     alerts,
     session,
     '/cms',
+    7,
     true,
   );
   expect(alerts.show).toHaveBeenLastCalledWith({

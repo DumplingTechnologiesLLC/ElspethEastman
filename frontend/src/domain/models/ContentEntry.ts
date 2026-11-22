@@ -8,8 +8,8 @@ export interface EntryMetadataInput {
   readonly value: string;
 }
 export interface EntryMetadata extends EntryMetadataInput {
-  readonly id: number;
-  readonly entryId: number;
+  readonly id: string;
+  readonly entryId: string;
   readonly sortOrder: number;
 }
 export interface ContentEntryInput extends PageScope {
@@ -34,5 +34,5 @@ export interface ContentEntry extends OrderedPageRecord {
   readonly isFeatured: boolean;
 }
 export interface FeaturedItem extends PageScope {
-  readonly itemId: number | null;
+  readonly itemId: string | null;
 }
