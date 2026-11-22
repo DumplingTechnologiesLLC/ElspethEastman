@@ -10,12 +10,12 @@ import {
 } from './contentFixtures';
 
 export const image = {
-  assetId: 20,
+  assetId: '00000000-0000-4000-8000-000000000014',
   altText: 'Portrait',
   caption: 'In the studio',
 };
 export const imageDTO = {
-  asset_id: 20,
+  asset_id: '00000000-0000-4000-8000-000000000014',
   alt_text: 'Portrait',
   caption: 'In the studio',
 };
@@ -25,8 +25,8 @@ interface CollectionCase {
   name: string;
   path: string;
   dto: unknown;
-  pageId: number;
-  id: number;
+  pageId: string;
+  id: string;
   body: object;
   create: (repository: ContentRepository) => Promise<ContentResult<unknown>>;
   update: (repository: ContentRepository) => Promise<ContentResult<unknown>>;
@@ -35,10 +35,17 @@ interface CollectionCase {
   ) => Promise<ContentResult<unknown>>;
   remove: (repository: ContentRepository) => Promise<ContentResult<void>>;
 }
-export const eyebrow = { pageId: 2, label: 'Voice actor' };
-export const trivia = { pageId: 2, label: 'Since', value: '2012' };
+export const eyebrow = {
+  pageId: '00000000-0000-4000-8000-000000000002',
+  label: 'Voice actor',
+};
+export const trivia = {
+  pageId: '00000000-0000-4000-8000-000000000002',
+  label: 'Since',
+  value: '2012',
+};
 export const entry = {
-  pageId: 2,
+  pageId: '00000000-0000-4000-8000-000000000002',
   title: 'Role',
   eyebrow: 'Game',
   description: 'Summary',
@@ -51,17 +58,17 @@ export const entry = {
       key: 'details',
       label: 'Detail',
       value: 'Text',
-      id: 41,
-      entryId: 40,
+      id: '00000000-0000-4000-8000-000000000029',
+      entryId: '00000000-0000-4000-8000-000000000028',
       sortOrder: 0,
     },
   ],
-  id: 40,
+  id: '00000000-0000-4000-8000-000000000028',
   isFeatured: true,
   sortOrder: 10,
 };
 export const release = {
-  pageId: 3,
+  pageId: '00000000-0000-4000-8000-000000000003',
   year: '2014',
   format: 'Album',
   title: 'Music',
@@ -71,27 +78,27 @@ export const release = {
   action,
 };
 export const clip = {
-  pageId: 4,
+  pageId: '00000000-0000-4000-8000-000000000004',
   eyebrow: 'Game',
   title: 'Clip',
   category: 'Highlights',
   action,
 };
 export const appearance = {
-  pageId: 5,
+  pageId: '00000000-0000-4000-8000-000000000005',
   year: '2026',
   title: 'Panel',
   format: 'Panel',
   url: null,
 };
 export const chapter = {
-  pageId: 6,
+  pageId: '00000000-0000-4000-8000-000000000006',
   eyebrow: 'Early years',
   heading: 'Beginning',
   body: 'Story',
 };
 export const current = {
-  pageId: 6,
+  pageId: '00000000-0000-4000-8000-000000000006',
   eyebrow: 'Music',
   title: 'Practice',
   description: 'Notes',
@@ -102,32 +109,47 @@ export const cases = [
   {
     name: 'eyebrows',
     path: '/api/eyebrows/',
-    pageId: 2,
-    id: 100,
-    dto: { id: 100, page_id: 2, label: 'Canonical label', sort_order: 0 },
+    pageId: '00000000-0000-4000-8000-000000000002',
+    id: '00000000-0000-4000-8000-000000000064',
+    dto: {
+      id: '00000000-0000-4000-8000-000000000064',
+      page_id: '00000000-0000-4000-8000-000000000002',
+      label: 'Canonical label',
+      sort_order: 0,
+    },
     body: { label: 'Voice actor' },
     create: (r) => r.eyebrows.create(eyebrow),
-    update: (r) => r.eyebrows.update(100, eyebrow),
-    emptyUpdate: (r) => r.eyebrows.update(100, {}),
-    remove: (r) => r.eyebrows.remove(100),
+    update: (r) =>
+      r.eyebrows.update('00000000-0000-4000-8000-000000000064', eyebrow),
+    emptyUpdate: (r) =>
+      r.eyebrows.update('00000000-0000-4000-8000-000000000064', {}),
+    remove: (r) => r.eyebrows.remove('00000000-0000-4000-8000-000000000064'),
   },
   {
     name: 'trivia',
     path: '/api/trivia/',
-    pageId: 2,
-    id: 101,
-    dto: { id: 101, page_id: 2, label: 'Since', value: '2012', sort_order: 0 },
+    pageId: '00000000-0000-4000-8000-000000000002',
+    id: '00000000-0000-4000-8000-000000000065',
+    dto: {
+      id: '00000000-0000-4000-8000-000000000065',
+      page_id: '00000000-0000-4000-8000-000000000002',
+      label: 'Since',
+      value: '2012',
+      sort_order: 0,
+    },
     body: { label: 'Since', value: '2012' },
     create: (r) => r.trivia.create(trivia),
-    update: (r) => r.trivia.update(101, trivia),
-    emptyUpdate: (r) => r.trivia.update(101, {}),
-    remove: (r) => r.trivia.remove(101),
+    update: (r) =>
+      r.trivia.update('00000000-0000-4000-8000-000000000065', trivia),
+    emptyUpdate: (r) =>
+      r.trivia.update('00000000-0000-4000-8000-000000000065', {}),
+    remove: (r) => r.trivia.remove('00000000-0000-4000-8000-000000000065'),
   },
   {
     name: 'entries',
     path: '/api/content-entries/',
-    pageId: 2,
-    id: 40,
+    pageId: '00000000-0000-4000-8000-000000000002',
+    id: '00000000-0000-4000-8000-000000000028',
     dto: anEntryDTO(),
     body: {
       title: 'Role',
@@ -140,15 +162,17 @@ export const cases = [
       metadata: [{ key: 'details', label: 'Detail', value: 'Text' }],
     },
     create: (r) => r.entries.create(entry),
-    update: (r) => r.entries.update(40, entry),
-    emptyUpdate: (r) => r.entries.update(40, {}),
-    remove: (r) => r.entries.remove(40),
+    update: (r) =>
+      r.entries.update('00000000-0000-4000-8000-000000000028', entry),
+    emptyUpdate: (r) =>
+      r.entries.update('00000000-0000-4000-8000-000000000028', {}),
+    remove: (r) => r.entries.remove('00000000-0000-4000-8000-000000000028'),
   },
   {
     name: 'releases',
     path: '/api/music-releases/',
-    pageId: 3,
-    id: 50,
+    pageId: '00000000-0000-4000-8000-000000000003',
+    id: '00000000-0000-4000-8000-000000000032',
     dto: aReleaseDTO(),
     body: {
       year: '2014',
@@ -160,51 +184,58 @@ export const cases = [
       action,
     },
     create: (r) => r.releases.create(release),
-    update: (r) => r.releases.update(50, release),
-    emptyUpdate: (r) => r.releases.update(50, {}),
-    remove: (r) => r.releases.remove(50),
+    update: (r) =>
+      r.releases.update('00000000-0000-4000-8000-000000000032', release),
+    emptyUpdate: (r) =>
+      r.releases.update('00000000-0000-4000-8000-000000000032', {}),
+    remove: (r) => r.releases.remove('00000000-0000-4000-8000-000000000032'),
   },
   {
     name: 'clips',
     path: '/api/stream-clips/',
-    pageId: 4,
-    id: 60,
+    pageId: '00000000-0000-4000-8000-000000000004',
+    id: '00000000-0000-4000-8000-00000000003c',
     dto: aClipDTO(),
     body: { eyebrow: 'Game', title: 'Clip', category: 'Highlights', action },
     create: (r) => r.clips.create(clip),
-    update: (r) => r.clips.update(60, clip),
-    emptyUpdate: (r) => r.clips.update(60, {}),
-    remove: (r) => r.clips.remove(60),
+    update: (r) => r.clips.update('00000000-0000-4000-8000-00000000003c', clip),
+    emptyUpdate: (r) =>
+      r.clips.update('00000000-0000-4000-8000-00000000003c', {}),
+    remove: (r) => r.clips.remove('00000000-0000-4000-8000-00000000003c'),
   },
   {
     name: 'appearances',
     path: '/api/appearances/',
-    pageId: 5,
-    id: 70,
+    pageId: '00000000-0000-4000-8000-000000000005',
+    id: '00000000-0000-4000-8000-000000000046',
     dto: anAppearanceDTO(),
     body: { year: '2026', title: 'Panel', format: 'Panel', url: null },
     create: (r) => r.appearances.create(appearance),
-    update: (r) => r.appearances.update(70, appearance),
-    emptyUpdate: (r) => r.appearances.update(70, {}),
-    remove: (r) => r.appearances.remove(70),
+    update: (r) =>
+      r.appearances.update('00000000-0000-4000-8000-000000000046', appearance),
+    emptyUpdate: (r) =>
+      r.appearances.update('00000000-0000-4000-8000-000000000046', {}),
+    remove: (r) => r.appearances.remove('00000000-0000-4000-8000-000000000046'),
   },
   {
     name: 'chapters',
     path: '/api/bio-chapters/',
-    pageId: 6,
-    id: 80,
+    pageId: '00000000-0000-4000-8000-000000000006',
+    id: '00000000-0000-4000-8000-000000000050',
     dto: aChapterDTO(),
     body: { eyebrow: 'Early years', heading: 'Beginning', body: 'Story' },
     create: (r) => r.chapters.create(chapter),
-    update: (r) => r.chapters.update(80, chapter),
-    emptyUpdate: (r) => r.chapters.update(80, {}),
-    remove: (r) => r.chapters.remove(80),
+    update: (r) =>
+      r.chapters.update('00000000-0000-4000-8000-000000000050', chapter),
+    emptyUpdate: (r) =>
+      r.chapters.update('00000000-0000-4000-8000-000000000050', {}),
+    remove: (r) => r.chapters.remove('00000000-0000-4000-8000-000000000050'),
   },
   {
     name: 'current items',
     path: '/api/current-items/',
-    pageId: 6,
-    id: 90,
+    pageId: '00000000-0000-4000-8000-000000000006',
+    id: '00000000-0000-4000-8000-00000000005a',
     dto: aCurrentItemDTO(),
     body: {
       eyebrow: 'Music',
@@ -213,8 +244,11 @@ export const cases = [
       link: action,
     },
     create: (r) => r.currentItems.create(current),
-    update: (r) => r.currentItems.update(90, current),
-    emptyUpdate: (r) => r.currentItems.update(90, {}),
-    remove: (r) => r.currentItems.remove(90),
+    update: (r) =>
+      r.currentItems.update('00000000-0000-4000-8000-00000000005a', current),
+    emptyUpdate: (r) =>
+      r.currentItems.update('00000000-0000-4000-8000-00000000005a', {}),
+    remove: (r) =>
+      r.currentItems.remove('00000000-0000-4000-8000-00000000005a'),
   },
 ] as const satisfies readonly CollectionCase[];
