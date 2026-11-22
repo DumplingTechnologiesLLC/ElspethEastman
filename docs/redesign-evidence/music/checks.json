@@ -1,0 +1,414 @@
+{
+  "environment": "macOS, pinned Playwright Chromium",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1728,
+      "documentWidth": 1728,
+      "height": 1658,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "/assets/cello-V25Tdm4y.png",
+          "alt": "Elspeth practicing cello",
+          "naturalWidth": 2731,
+          "naturalHeight": 4096,
+          "renderedWidth": 502.609375,
+          "renderedHeight": 446.1875
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 341.765625,
+          "renderedHeight": 208
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 341.765625,
+          "renderedHeight": 208
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 341.765625,
+          "renderedHeight": 208
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 341.765625,
+          "renderedHeight": 208
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        }
+      ]
+    },
+    {
+      "name": "mobile",
+      "width": 400,
+      "documentWidth": 400,
+      "height": 2927,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "/assets/cello-V25Tdm4y.png",
+          "alt": "Elspeth practicing cello",
+          "naturalWidth": 2731,
+          "naturalHeight": 4096,
+          "renderedWidth": 358,
+          "renderedHeight": 300
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 358,
+          "renderedHeight": 220
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 358,
+          "renderedHeight": 220
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 358,
+          "renderedHeight": 220
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 358,
+          "renderedHeight": 220
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        }
+      ]
+    },
+    {
+      "name": "cms-mobile",
+      "width": 400,
+      "documentWidth": 400,
+      "height": 3080,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "/assets/cello-V25Tdm4y.png",
+          "alt": "Elspeth practicing cello",
+          "naturalWidth": 2731,
+          "naturalHeight": 4096,
+          "renderedWidth": 358,
+          "renderedHeight": 300
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 6,
+          "naturalHeight": 8,
+          "renderedWidth": 6,
+          "renderedHeight": 8
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 11,
+          "naturalHeight": 11,
+          "renderedWidth": 11.25,
+          "renderedHeight": 11.25
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 358,
+          "renderedHeight": 220
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 6,
+          "naturalHeight": 8,
+          "renderedWidth": 6,
+          "renderedHeight": 8
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 11,
+          "naturalHeight": 11,
+          "renderedWidth": 11.25,
+          "renderedHeight": 11.25
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 358,
+          "renderedHeight": 220
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 6,
+          "naturalHeight": 8,
+          "renderedWidth": 6,
+          "renderedHeight": 8
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 11,
+          "naturalHeight": 11,
+          "renderedWidth": 11.25,
+          "renderedHeight": 11.25
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 358,
+          "renderedHeight": 220
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 6,
+          "naturalHeight": 8,
+          "renderedWidth": 6,
+          "renderedHeight": 8
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 11,
+          "naturalHeight": 11,
+          "renderedWidth": 11.25,
+          "renderedHeight": 11.25
+        },
+        {
+          "source": "/assets/rib-qIcIkj8R.png",
+          "alt": "Ribbed amber abstract artwork",
+          "naturalWidth": 1024,
+          "naturalHeight": 1024,
+          "renderedWidth": 358,
+          "renderedHeight": 220
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 6,
+          "naturalHeight": 8,
+          "renderedWidth": 6,
+          "renderedHeight": 8
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 11,
+          "naturalHeight": 11,
+          "renderedWidth": 11.25,
+          "renderedHeight": 11.25
+        }
+      ]
+    }
+  ],
+  "pageErrors": []
+}
