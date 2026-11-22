@@ -27,7 +27,8 @@ function publicationInput(
   original: string | null,
 ): string | null {
   if (edited === publicationDisplay(original)) return original;
-  return edited === '' ? null : new Date(edited + 'Z').toISOString();
+  if (edited === '') return null;
+  return (edited.length === 16 ? edited + ':00' : edited) + 'Z';
 }
 
 export function entryPlan(
