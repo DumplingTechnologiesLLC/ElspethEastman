@@ -5,7 +5,7 @@ import { BrowserHttp } from '../frontend/src/platform/BrowserHttp';
 
 const homeId = aPageDTO('home').id;
 
-it.each(['save', 'page', 'site'] as const)(
+it.each(['save', 'page', 'site', 'upload'] as const)(
   'keeps a new login when an older %s request completes with 403',
   async (operation) => {
     const ports = fixturePorts();
@@ -27,6 +27,10 @@ it.each(['save', 'page', 'site'] as const)(
         if (path === '/api/v2/session/logout/') return Response.json({});
         if (path === '/api/v2/session/login/')
           return Response.json({ token: 'new-token' });
+        if (path === '/api/v2/media/assets/')
+          return intercept
+            ? oldResponse
+            : new Response('{"detail":"Expired"}', { status: 403 });
         if (path === '/api/v2/site/')
           return operation === 'site' && intercept
             ? oldResponse
@@ -52,16 +56,28 @@ it.each(['save', 'page', 'site'] as const)(
     const stop = services.session.start();
     const page = services.page(homeId);
     if (operation === 'save') await page.load();
+    const upload = () =>
+      services.media.upload({
+        file: new File(['image'], 'portrait.png', { type: 'image/png' }),
+        credit: '',
+        sourceUrl: '',
+      });
     const first =
-      operation === 'save'
-        ? page.metadata({ title: 'Pending save' })
-        : operation === 'page'
-          ? page.load()
-          : services.site.load();
+      operation === 'upload'
+        ? upload()
+        : operation === 'save'
+          ? page.metadata({ title: 'Pending save' })
+          : operation === 'page'
+            ? page.load()
+            : services.site.load();
     await vi.waitFor(() =>
       expect(fetcher).toHaveBeenCalledWith(
-        operation === 'site' ? '/api/v2/site/' : `/api/v2/pages/${homeId}/`,
-        operation === 'save'
+        operation === 'site'
+          ? '/api/v2/site/'
+          : operation === 'upload'
+            ? '/api/v2/media/assets/'
+            : `/api/v2/pages/${homeId}/`,
+        operation === 'save' || operation === 'upload'
           ? expect.objectContaining({
               headers: expect.objectContaining({
                 Authorization: 'Token old-token',
@@ -91,8 +107,9 @@ it.each(['save', 'page', 'site'] as const)(
     expect(services.session.getSnapshot().authenticated).toBe(true);
     expect(ports.navigation.location()).toBe('/cms');
     intercept = false;
-    if (operation === 'save') {
-      await page.metadata({ title: 'Current save' });
+    if (operation === 'save' || operation === 'upload') {
+      if (operation === 'upload') await upload();
+      else await page.metadata({ title: 'Current save' });
       expect(ports.tokens.read()).toBeNull();
       expect(ports.navigation.location()).toBe('/login?returnTo=%2Fcms');
     }

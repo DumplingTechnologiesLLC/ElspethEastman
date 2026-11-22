@@ -59,7 +59,7 @@ export interface PageController extends Readable<PageContentState> {
   practice: (
     input: Omit<MusicFeatureInput, 'pageId'>,
   ) => Promise<ContentResult<MusicFeature>>;
-  feature: (itemId: number | null) => Promise<ContentResult<FeaturedItem>>;
+  feature: (itemId: string | null) => Promise<ContentResult<FeaturedItem>>;
   reorder: (
     input: Omit<CollectionOrder, 'pageId'>,
   ) => Promise<ContentResult<CollectionOrder>>;
