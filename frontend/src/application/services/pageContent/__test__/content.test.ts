@@ -30,7 +30,7 @@ import {
   withoutEntry,
   withPractice,
 } from '../featured';
-import { orderCollection, withCollectionOrder } from '../order';
+import { collectionIds, orderCollection, withCollectionOrder } from '../order';
 import {
   upsertRecord,
   withCopy,
@@ -56,6 +56,83 @@ const music = toPageContent(aMusicDTO());
 const stream = toPageContent(aStreamingDTO());
 const press = toPageContent(aPressDTO());
 const bio = toPageContent(aBioDTO());
+it('reads complete reorder membership only for supported collections and copy sections', () => {
+  for (const [content, collection, expected] of [
+    [voice, PageCollection.Eyebrows, ['00000000-0000-4000-8000-000000000064']],
+    [voice, PageCollection.Trivia, ['00000000-0000-4000-8000-000000000065']],
+    [
+      voice,
+      PageCollection.ContentEntries,
+      [
+        '00000000-0000-4000-8000-000000000028',
+        '00000000-0000-4000-8000-00000000002a',
+      ],
+    ],
+    [music, PageCollection.Releases, ['00000000-0000-4000-8000-000000000032']],
+    [
+      stream,
+      PageCollection.StreamClips,
+      ['00000000-0000-4000-8000-00000000003c'],
+    ],
+    [
+      press,
+      PageCollection.Appearances,
+      ['00000000-0000-4000-8000-000000000046'],
+    ],
+    [bio, PageCollection.BioChapters, ['00000000-0000-4000-8000-000000000050']],
+    [
+      bio,
+      PageCollection.CurrentItems,
+      ['00000000-0000-4000-8000-00000000005a'],
+    ],
+  ] as const)
+    expect(collectionIds(content, { collection, section: null })).toEqual(
+      expected,
+    );
+  expect(
+    collectionIds(home, { collection: PageCollection.Trivia, section: null }),
+  ).toBeNull();
+  expect(
+    collectionIds(home, { collection: PageCollection.Copy, section: null }),
+  ).toBeNull();
+  expect(
+    collectionIds(home, {
+      collection: PageCollection.Copy,
+      section: 'missing',
+    }),
+  ).toBeNull();
+  expect(
+    collectionIds(home, { collection: PageCollection.Copy, section: 'intro' }),
+  ).toEqual(['00000000-0000-4000-8000-00000000001e']);
+  expect(
+    collectionIds(home, { collection: PageCollection.Copy, section: 'intro' }),
+  ).toEqual(
+    home.copy.filter((row) => row.section === 'intro').map((row) => row.id),
+  );
+  expect(
+    collectionIds(voice, {
+      collection: PageCollection.Eyebrows,
+      section: 'intro',
+    }),
+  ).toBeNull();
+  const otherCopy = {
+    ...home,
+    copy: [
+      ...home.copy,
+      {
+        ...home.copy[0]!,
+        id: '00000000-0000-4000-8000-000000000020',
+        section: 'other',
+      },
+    ],
+  };
+  expect(
+    collectionIds(otherCopy, {
+      collection: PageCollection.Copy,
+      section: 'intro',
+    }),
+  ).toEqual(['00000000-0000-4000-8000-00000000001e']);
+});
 
 it('reconciles an edited entry with its canonical hero flag and rejects invalid ownership', () => {
   const row = entryPolicy.rows(voice)![0]!;

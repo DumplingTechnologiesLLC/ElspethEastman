@@ -18,6 +18,35 @@ import {
   triviaPolicy,
 } from './collections';
 
+const readers = {
+  [PageCollection.Eyebrows]: eyebrowPolicy.rows,
+  [PageCollection.Trivia]: triviaPolicy.rows,
+  [PageCollection.ContentEntries]: entryPolicy.rows,
+  [PageCollection.Releases]: releasePolicy.rows,
+  [PageCollection.StreamClips]: clipPolicy.rows,
+  [PageCollection.Appearances]: appearancePolicy.rows,
+  [PageCollection.BioChapters]: chapterPolicy.rows,
+  [PageCollection.CurrentItems]: currentPolicy.rows,
+};
+export function collectionIds(
+  content: PageContent,
+  scope: Pick<CollectionOrder, 'collection' | 'section'>,
+): readonly string[] | null {
+  if (!PAGE_COLLECTIONS[content.kind].includes(scope.collection)) return null;
+  if (scope.collection === PageCollection.Copy) {
+    if (
+      scope.section === null ||
+      !COPY_SECTIONS[content.kind].includes(scope.section)
+    )
+      return null;
+    return content.copy
+      .filter((row) => row.section === scope.section)
+      .map((row) => row.id);
+  }
+  if (scope.section !== null) return null;
+  return readers[scope.collection](content)!.map((row) => row.id);
+}
+
 function ordered<T extends OrderedPageRecord>(
   rows: readonly T[],
   ids: readonly string[],

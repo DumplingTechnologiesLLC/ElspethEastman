@@ -4,6 +4,7 @@ import {
   aVoiceoverDTO,
   aMusicDTO,
   aBioDTO,
+  anEntryDTO,
 } from '../../../../../test/contentFixtures';
 import { image } from '../../../../../test/contentWriteCases';
 import { mockContentRepository } from '../../../../../test/mockContentRepository';
@@ -15,6 +16,103 @@ import { PageService } from '../PageService';
 
 const voice = toPageContent(aVoiceoverDTO());
 const music = toPageContent(aMusicDTO());
+it('moves a member before another member or to the end using the full current collection', async () => {
+  const content = toPageContent(
+    aVoiceoverDTO({
+      roles: [
+        anEntryDTO(),
+        anEntryDTO({ id: '00000000-0000-4000-8000-00000000002a' }),
+        anEntryDTO({ id: '00000000-0000-4000-8000-00000000002b' }),
+      ],
+    }),
+  );
+  const { service, repository } = await fixture(content);
+  repository.reorder.mockImplementation(async (input) => ({
+    ok: true,
+    value: input,
+  }));
+  const scope = { collection: PageCollection.ContentEntries, section: null };
+  expect(
+    (
+      await service.move({
+        ...scope,
+        itemId: '00000000-0000-4000-8000-00000000002b',
+        beforeId: '00000000-0000-4000-8000-000000000028',
+      })
+    ).ok,
+  ).toBe(true);
+  expect(repository.reorder).toHaveBeenLastCalledWith({
+    ...scope,
+    pageId: '00000000-0000-4000-8000-000000000002',
+    orderedIds: [
+      '00000000-0000-4000-8000-00000000002b',
+      '00000000-0000-4000-8000-000000000028',
+      '00000000-0000-4000-8000-00000000002a',
+    ],
+  });
+  expect(
+    (
+      await service.move({
+        ...scope,
+        itemId: '00000000-0000-4000-8000-00000000002b',
+        beforeId: null,
+      })
+    ).ok,
+  ).toBe(true);
+  expect(repository.reorder).toHaveBeenLastCalledWith({
+    ...scope,
+    pageId: '00000000-0000-4000-8000-000000000002',
+    orderedIds: [
+      '00000000-0000-4000-8000-000000000028',
+      '00000000-0000-4000-8000-00000000002a',
+      '00000000-0000-4000-8000-00000000002b',
+    ],
+  });
+  const rejected = await Promise.all(
+    [
+      {
+        itemId: '00000000-0000-4000-8000-0000000003e7',
+        beforeId: '00000000-0000-4000-8000-000000000028',
+      },
+      {
+        itemId: '00000000-0000-4000-8000-000000000028',
+        beforeId: '00000000-0000-4000-8000-0000000003e7',
+      },
+      {
+        itemId: '00000000-0000-4000-8000-000000000028',
+        beforeId: '00000000-0000-4000-8000-000000000028',
+      },
+    ].map((move) => service.move({ ...scope, ...move })),
+  );
+  expect(rejected.every((result) => !result.ok)).toBe(true);
+  expect(repository.reorder).toHaveBeenCalledTimes(2);
+  const unloaded = new PageService(
+    '00000000-0000-4000-8000-000000000002',
+    repository,
+    mockServices().notifications,
+    mockServices().site,
+    mockServices().session,
+  );
+  expect(
+    (
+      await unloaded.move({
+        ...scope,
+        itemId: '00000000-0000-4000-8000-000000000028',
+        beforeId: null,
+      })
+    ).ok,
+  ).toBe(false);
+  expect(
+    (
+      await service.move({
+        collection: PageCollection.Releases,
+        section: null,
+        itemId: '00000000-0000-4000-8000-000000000028',
+        beforeId: null,
+      })
+    ).ok,
+  ).toBe(false);
+});
 const practice = {
   eyebrow: 'Practice',
   title: 'Cello',
