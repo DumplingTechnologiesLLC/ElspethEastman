@@ -1,15 +1,17 @@
 from rest_framework.exceptions import ValidationError
 
-from portfolio.models import Appearance, BioChapter, ContentEntry, CurrentItem, Eyebrow, MusicRelease, PageCopy, PageKind, StreamClip, TriviaItem
+from portfolio.models import Appearance, BioChapter, ContentEntry, Eyebrow, MusicRelease, PageCopy, PageKind, TriviaItem
 from portfolio.services.content_entries import ENTRY_PAGE_KINDS
 from portfolio.serializers.copy_input import COPY_SECTIONS
 from portfolio.services.ownership import locked_page
 
 
 COLLECTION_MODELS = {"copy": PageCopy, "eyebrows": Eyebrow, "trivia": TriviaItem, "content_entries": ContentEntry, "releases": MusicRelease,
-                     "stream_clips": StreamClip, "appearances": Appearance, "bio_chapters": BioChapter, "current_items": CurrentItem}
+                     "stream_clips": ContentEntry, "appearances": Appearance, "bio_chapters": BioChapter, "current_items": ContentEntry}
 COLLECTION_PAGE_KINDS = {"content_entries": ENTRY_PAGE_KINDS, "releases": {PageKind.MUSIC}, "stream_clips": {PageKind.STREAMING},
                         "appearances": {PageKind.PRESS}, "bio_chapters": {PageKind.BIO}, "current_items": {PageKind.BIO}}
+
+ENTRY_COLLECTIONS = {"content_entries": "entries", "stream_clips": "stream_clips", "current_items": "current_items"}
 
 
 def reorder_collection(data):
@@ -21,7 +23,8 @@ def reorder_collection(data):
         kinds = COLLECTION_PAGE_KINDS.get(collection)
         if kinds is not None and page.kind not in kinds:
             raise ValidationError({"collection": "This page does not own that collection."})
-        queryset = model.objects.filter(page=page)
+        filters = {"collection": ENTRY_COLLECTIONS[collection]} if collection in ENTRY_COLLECTIONS else {}
+        queryset = model.objects.filter(page=page, **filters)
         if collection == "copy":
             if section not in COPY_SECTIONS[page.kind]:
                 raise ValidationError({"section": "Supply a supported copy section."})

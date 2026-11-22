@@ -20,9 +20,9 @@ PAGE_PREFETCHES = {
     PageKind.VOICEOVER: [Prefetch("entries", queryset=ContentEntry.objects.select_related("asset").prefetch_related("metadata"))],
     PageKind.MUSIC: [Prefetch("music_feature", queryset=MusicFeature.objects.select_related("asset").prefetch_related("facts")),
                      Prefetch("releases", queryset=MusicRelease.objects.select_related("asset"))],
-    PageKind.STREAMING: [Prefetch("entries", queryset=ContentEntry.objects.select_related("asset").prefetch_related("metadata")), "clips"],
+    PageKind.STREAMING: [Prefetch("entries", queryset=ContentEntry.objects.select_related("asset").prefetch_related("metadata"))],
     PageKind.PRESS: [Prefetch("entries", queryset=ContentEntry.objects.select_related("asset").prefetch_related("metadata")), "appearances"],
-    PageKind.BIO: ["chapters", "current_items"],
+    PageKind.BIO: ["chapters", "entries"],
 }
 
 

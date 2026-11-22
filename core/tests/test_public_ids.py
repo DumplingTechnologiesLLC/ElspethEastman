@@ -30,7 +30,7 @@ class PublicIdentityUpgradeTests(SimpleTestCase):
             routing.enable()
             try:
                 executor = MigrationExecutor(connection)
-                before = [('core', '0008_project_uuid'), ('portfolio', '0004_music_ownership')]
+                before = [('core', '0008_project_uuid'), ('portfolio', '0005_independent_page_collections')]
                 executor.migrate(before)
                 apps = executor.loader.project_state(before).apps
                 core = {
@@ -72,12 +72,20 @@ class PublicIdentityUpgradeTests(SimpleTestCase):
                     page_id=page.pk, asset_id=asset.pk, alt_text='Cover', format='Album', title='Preserved release',
                     description='Text', action_label='Listen', action_url='https://example.invalid/release', sort_order=8,
                 )
-                names = [('core', name) for name in core] + [('portfolio', name) for name in ['Page', 'MediaAsset', *shared, 'ContentEntry', 'ContentEntryMetadata', 'MusicFeature', 'MusicRelease', 'PracticeFact']]
+                collections = {
+                    'StreamClip': {'page_id': page.pk, 'eyebrow': 'Game', 'title': 'Preserved clip', 'category': 'Highlights', 'action_label': 'Play', 'action_url': 'https://example.invalid/clip', 'sort_order': 4},
+                    'CurrentItem': {'page_id': page.pk, 'eyebrow': 'Music', 'title': 'Preserved current work', 'description': 'Notes', 'link_label': None, 'link_url': None, 'sort_order': 5},
+                    'Appearance': {'page_id': page.pk, 'year': '2026', 'title': 'Preserved panel', 'format': 'Panel', 'sort_order': 2},
+                    'BioChapter': {'page_id': page.pk, 'eyebrow': 'Early years', 'heading': 'Preserved chapter', 'body': 'Story', 'sort_order': 3},
+                }
+                for name, values in collections.items():
+                    apps.get_model('portfolio', name).objects.using(alias).create(**values)
+                names = [('core', name) for name in core] + [('portfolio', name) for name in ['Page', 'MediaAsset', *shared, 'ContentEntry', 'ContentEntryMetadata', 'MusicFeature', 'MusicRelease', 'PracticeFact', *collections]]
                 snapshots = {
                     (app, name): list(apps.get_model(app, name).objects.using(alias).order_by('pk').values())
                     for app, name in names
                 }
-                after = [('core', '0009_public_identifiers'), ('portfolio', '0009_music_public_identifiers')]
+                after = [('core', '0009_public_identifiers'), ('portfolio', '0010_collection_public_identifiers')]
                 executor = MigrationExecutor(connection)
                 executor.migrate(after)
                 upgraded = executor.loader.project_state(after).apps
@@ -100,6 +108,28 @@ class PublicIdentityUpgradeTests(SimpleTestCase):
                     import_module(f'{app}.migrations.{migration}').assign_public_ids(upgraded, SimpleNamespace(connection=connection))
                 for (app, name), ids in identities.items():
                     self.assertEqual(list(upgraded.get_model(app, name).objects.using(alias).order_by('pk').values_list('public_id', flat=True)), ids)
+                generic_target = [('core', '0009_public_identifiers'), ('portfolio', '0011_generic_entry_collections')]
+                executor = MigrationExecutor(connection)
+                executor.migrate(generic_target)
+                generic_apps = executor.loader.project_state(generic_target).apps
+                generic = generic_apps.get_model('portfolio', 'ContentEntry')
+                for name, collection in (('StreamClip', 'stream_clips'), ('CurrentItem', 'current_items')):
+                    identity = identities[('portfolio', name)][0]
+                    row = generic.objects.using(alias).get(public_id=identity)
+                    self.assertEqual(row.collection, collection)
+                    values = collections[name]
+                    for key, value in values.items():
+                        field = {'link_label': 'action_label', 'link_url': 'action_url'}.get(key, key)
+                        self.assertEqual(getattr(row, field), value)
+                self.assertEqual(generic.objects.using(alias).filter(collection='entries').count(), 1)
+                executor = MigrationExecutor(connection)
+                executor.migrate(after)
+                restored = executor.loader.project_state(after).apps
+                for name in ('StreamClip', 'CurrentItem'):
+                    row = restored.get_model('portfolio', name).objects.using(alias).get(public_id=identities[('portfolio', name)][0])
+                    for key, value in collections[name].items():
+                        self.assertEqual(getattr(row, key), value)
+                self.assertEqual(restored.get_model('portfolio', 'ContentEntry').objects.using(alias).count(), 1)
             finally:
                 routing.disable()
                 connection.close()
