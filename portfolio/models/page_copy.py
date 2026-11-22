@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from .page import Page
 
@@ -10,6 +11,7 @@ class CopyKind(models.TextChoices):
 
 
 class PageCopy(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="copy")
     key = models.SlugField(max_length=100)
     section = models.SlugField(max_length=100)

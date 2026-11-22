@@ -9,7 +9,7 @@ from portfolio.views.reorder import ReorderAPIView
 app_name = "portfolio"
 urlpatterns = [
     path("site/", SiteAPIView.as_view(), name="site"),
-    path("pages/<int:page_id>/", PageDetailAPIView.as_view(), name="page-detail"),
+    path("pages/<uuid:page_id>/", PageDetailAPIView.as_view(), name="page-detail"),
     path("copy/", CopyAPIView.as_view(), name="copy"),
     path("page-images/", PageImageAPIView.as_view(), name="page-images"),
     path("eyebrows/", EyebrowAPIView.as_view(), name="eyebrows"),

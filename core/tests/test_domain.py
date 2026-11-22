@@ -89,11 +89,11 @@ class ApiContractTests(TestCase):
         project = response.json()['project']
         self.assertEqual(self.send('patch', '/api/projects/list/batch_update/', [{**project, 'title': ''}]).status_code, 400)
         self.assertEqual(self.send('patch', '/api/projects/list/batch_update/', [{**project, 'title': 'Updated'}]).status_code, 200)
-        self.assertEqual(Project.objects.get(id=project['id']).title, 'Updated')
+        self.assertEqual(Project.objects.get(public_id=project['id']).title, 'Updated')
         self.assertEqual(self.send('patch', f'/api/projects/list/{project["id"]}/', {'title': '', 'src': ''}).status_code, 400)
         self.assertEqual(self.send('patch', f'/api/projects/list/{project["id"]}/', {'title': 'Detail', 'src': 'new'}).status_code, 200)
         self.assertEqual(self.send('delete', f'/api/projects/list/{project["id"]}/').status_code, 200)
-        self.assertFalse(Project.objects.filter(id=project['id']).exists())
+        self.assertFalse(Project.objects.filter(public_id=project['id']).exists())
 
     def test_project_pagination_validates_query(self):
         response = self.client.get('/api/projects/paginated/')
@@ -112,7 +112,7 @@ class ApiContractTests(TestCase):
         self.assertEqual(self.send('patch', path, {'affiliation': ''}).status_code, 400)
         self.assertEqual(self.send('patch', path, {'affiliation': 'Edited studio', 'link': 'https://example.invalid'}).status_code, 200)
         self.assertEqual(self.send('delete', path).status_code, 200)
-        self.assertFalse(Affiliations.objects.filter(id=affiliation['id']).exists())
+        self.assertFalse(Affiliations.objects.filter(public_id=affiliation['id']).exists())
 
     def test_experience_crud_and_all_year_formats(self):
         data = {'category': Experience.VOICE_CREDITS, 'credit': 'Credit', 'year': None, 'link': '', 'tba': False}
@@ -128,13 +128,24 @@ class ApiContractTests(TestCase):
         response = self.send('patch', path, {**data, 'tba': True})
         self.assertEqual(response.json()['object']['year'], '(TBA)')
         self.assertEqual(self.send('delete', path).status_code, 200)
-        self.assertFalse(Experience.objects.filter(id=experience['id']).exists())
+        self.assertFalse(Experience.objects.filter(public_id=experience['id']).exists())
 
     def test_session_validation_and_missing_logout(self):
         self.assertTrue(self.send('post', '/api/session/').json()['isAuthenticated'])
         self.assertEqual(self.send('post', '/api/session/logout/').status_code, 200)
         self.assertFalse(self.send('post', '/api/session/').json()['isAuthenticated'])
         self.assertEqual(self.send('post', '/api/session/logout/').status_code, 400)
+
+    def test_v2_session_and_contact_preserve_their_public_write_boundary(self):
+        self.assertEqual(self.client.get('/api/v2/session/').status_code, 200)
+        self.assertTrue(self.send('post', '/api/v2/session/').json()['isAuthenticated'])
+        self.client.logout()
+        self.assertEqual(self.client.get('/api/v2/contact/').status_code, 405)
+        response = self.client.post('/api/v2/contact/', {
+            'name': 'Versioned visitor', 'email': 'visitor@example.invalid', 'message': 'Hello',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Contact.objects.filter(name='Versioned visitor', sent=True).exists())
 
     def test_contact_list_rejects_anonymous_and_serializes_a_provided_queryset(self):
         self.client.logout()
