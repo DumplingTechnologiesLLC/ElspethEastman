@@ -108,7 +108,7 @@ export const current = {
 export const cases = [
   {
     name: 'eyebrows',
-    path: '/api/eyebrows/',
+    path: '/api/v2/pages/eyebrows/',
     pageId: '00000000-0000-4000-8000-000000000002',
     id: '00000000-0000-4000-8000-000000000064',
     dto: {
@@ -127,7 +127,7 @@ export const cases = [
   },
   {
     name: 'trivia',
-    path: '/api/trivia/',
+    path: '/api/v2/pages/trivia/',
     pageId: '00000000-0000-4000-8000-000000000002',
     id: '00000000-0000-4000-8000-000000000065',
     dto: {
@@ -147,7 +147,7 @@ export const cases = [
   },
   {
     name: 'entries',
-    path: '/api/content-entries/',
+    path: '/api/v2/content/entries/',
     pageId: '00000000-0000-4000-8000-000000000002',
     id: '00000000-0000-4000-8000-000000000028',
     dto: anEntryDTO(),
@@ -170,7 +170,7 @@ export const cases = [
   },
   {
     name: 'releases',
-    path: '/api/music-releases/',
+    path: '/api/v2/music/releases/',
     pageId: '00000000-0000-4000-8000-000000000003',
     id: '00000000-0000-4000-8000-000000000032',
     dto: aReleaseDTO(),
@@ -192,7 +192,7 @@ export const cases = [
   },
   {
     name: 'clips',
-    path: '/api/stream-clips/',
+    path: '/api/v2/streaming/clips/',
     pageId: '00000000-0000-4000-8000-000000000004',
     id: '00000000-0000-4000-8000-00000000003c',
     dto: aClipDTO(),
@@ -205,7 +205,7 @@ export const cases = [
   },
   {
     name: 'appearances',
-    path: '/api/appearances/',
+    path: '/api/v2/press/appearances/',
     pageId: '00000000-0000-4000-8000-000000000005',
     id: '00000000-0000-4000-8000-000000000046',
     dto: anAppearanceDTO(),
@@ -219,7 +219,7 @@ export const cases = [
   },
   {
     name: 'chapters',
-    path: '/api/bio-chapters/',
+    path: '/api/v2/bio/chapters/',
     pageId: '00000000-0000-4000-8000-000000000006',
     id: '00000000-0000-4000-8000-000000000050',
     dto: aChapterDTO(),
@@ -233,7 +233,7 @@ export const cases = [
   },
   {
     name: 'current items',
-    path: '/api/current-items/',
+    path: '/api/v2/bio/current/',
     pageId: '00000000-0000-4000-8000-000000000006',
     id: '00000000-0000-4000-8000-00000000005a',
     dto: aCurrentItemDTO(),

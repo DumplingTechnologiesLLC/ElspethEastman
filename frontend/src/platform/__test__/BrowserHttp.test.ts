@@ -156,20 +156,44 @@ it('preserves content API statuses including created, empty success and malforme
     () => 'csrftoken=csrf',
     fixturePorts().tokens,
   );
-  expect(await http.request('/api/copy/', 'POST', {}, true, 'content')).toEqual(
-    { status: 201, data: { id: 42 } },
-  );
   expect(
-    await http.request('/api/copy/', 'DELETE', undefined, true, 'content'),
+    await http.request('/api/v2/pages/copy/', 'POST', {}, true, 'content'),
+  ).toEqual({ status: 201, data: { id: 42 } });
+  expect(
+    await http.request(
+      '/api/v2/pages/copy/',
+      'DELETE',
+      undefined,
+      true,
+      'content',
+    ),
   ).toEqual({ status: 204, data: null });
   expect(
-    await http.request('/api/pages/42/', 'GET', undefined, false, 'content'),
+    await http.request(
+      '/api/v2/pages/00000000-0000-4000-8000-00000000002a/',
+      'GET',
+      undefined,
+      false,
+      'content',
+    ),
   ).toEqual({ status: 404, data: { detail: 'Missing' } });
   expect(
-    await http.request('/api/pages/42/', 'GET', undefined, false, 'content'),
+    await http.request(
+      '/api/v2/pages/00000000-0000-4000-8000-00000000002a/',
+      'GET',
+      undefined,
+      false,
+      'content',
+    ),
   ).toEqual({ status: 502, data: null });
   expect(
-    await http.request('/api/pages/42/', 'GET', undefined, false, 'content'),
+    await http.request(
+      '/api/v2/pages/00000000-0000-4000-8000-00000000002a/',
+      'GET',
+      undefined,
+      false,
+      'content',
+    ),
   ).toEqual({ status: null, data: null });
 });
 
@@ -185,8 +209,8 @@ it('lets the browser set the multipart boundary while retaining auth and CSRF he
     'file',
     new File(['image'], 'portrait.png', { type: 'image/png' }),
   );
-  await http.request('/api/media-assets/', 'POST', body, true, 'content');
-  expect(fetcher).toHaveBeenCalledWith('/api/media-assets/', {
+  await http.request('/api/v2/media/assets/', 'POST', body, true, 'content');
+  expect(fetcher).toHaveBeenCalledWith('/api/v2/media/assets/', {
     method: 'POST',
     cache: 'no-cache',
     credentials: 'same-origin',
