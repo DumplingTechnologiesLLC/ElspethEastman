@@ -14,7 +14,10 @@ it('pins production build paths, unit coverage, and isolated Storybook stories',
   expect(viteConfig.server?.proxy).toMatchObject({
     '/api': { target: 'http://127.0.0.1:8000', changeOrigin: false },
     '/media': { target: 'http://127.0.0.1:8000', changeOrigin: false },
-    '/static/portfolio/': { target: 'http://127.0.0.1:8000', changeOrigin: false },
+    '/static/portfolio/': {
+      target: 'http://127.0.0.1:8000',
+      changeOrigin: false,
+    },
   });
   expect(vitestConfig.test?.coverage?.thresholds).toMatchObject({
     lines: 100,
