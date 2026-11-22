@@ -6,6 +6,10 @@ import deleteIcon from '../../assets/design/delete.svg';
 import gripIcon from '../../assets/design/grip.svg';
 import { tokens } from '../tokens.stylex';
 
+const appear = stylex.keyframes({
+  from: { opacity: 0, transform: 'translateY(2px)' },
+  to: { opacity: 1, transform: 'translateY(0)' },
+});
 const css = stylex.create({
   wrapper: {
     position: 'relative',
@@ -21,9 +25,18 @@ const css = stylex.create({
     justifyContent: 'flex-end',
     gap: 2,
     padding: 2,
-    position: 'relative',
+    position: 'absolute',
+    top: -26,
+    right: 0,
     zIndex: 2,
+    animationName: appear,
+    animationDuration: {
+      default: '.16s',
+      '@media (prefers-reduced-motion: reduce)': '0s',
+    },
+    animationTimingFunction: 'ease-out',
   },
+  inside: { top: 2, right: 2 },
   button: {
     display: 'inline-flex',
     alignItems: 'center',
@@ -49,7 +62,9 @@ const css = stylex.create({
     backgroundColor: tokens.accent,
     borderRadius: 3,
     cursor: 'grab',
-    marginRight: 'auto',
+    position: 'absolute',
+    left: 2,
+    bottom: 2,
   },
   feature: {
     width: 'auto',
@@ -64,10 +79,12 @@ export function Editable({
   actions,
   label,
   children,
+  placement = 'above',
 }: {
   readonly actions: EditableActions | null;
   readonly label: string;
   readonly children: ReactNode;
+  readonly placement?: 'above' | 'inside';
 }) {
   if (actions === null) return children;
   const { order, disabled } = actions;
@@ -97,16 +114,18 @@ export function Editable({
       }}
     >
       {children}
+      {order !== null && (
+        <span {...stylex.props(css.grip)} title="Drag to reorder">
+          <img src={gripIcon} alt="" />
+        </span>
+      )}
       <div
         role="group"
         aria-label={`${label} editor controls`}
-        {...stylex.props(css.tools)}
+        {...stylex.props(css.tools, placement === 'inside' && css.inside)}
       >
         {order !== null && (
           <>
-            <span {...stylex.props(css.grip)} title="Drag to reorder">
-              <img src={gripIcon} alt="" />
-            </span>
             <button
               type="button"
               {...stylex.props(css.button)}

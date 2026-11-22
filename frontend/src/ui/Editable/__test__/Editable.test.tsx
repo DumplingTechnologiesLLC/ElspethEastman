@@ -18,7 +18,7 @@ it('delegates editor controls, keyboard ordering, and scoped native drag/drop', 
     order: { ...editableView.order!, up, down, before },
   };
   const view = render(
-    <Editable actions={actions} label="role">
+    <Editable actions={actions} label="role" placement="inside">
       Role content
     </Editable>,
   );
