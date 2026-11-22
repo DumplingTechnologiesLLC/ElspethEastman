@@ -24,7 +24,7 @@ import type {
 } from '../frontend/src/application/dto/PageDTO';
 import type { StreamClipDTO } from '../frontend/src/application/dto/StreamClipDTO';
 
-const ids = { home: 1, voiceover: 2, music: 3, streaming: 4, press: 5, bio: 6 };
+const ids = { home: '00000000-0000-4000-8000-000000000001', voiceover: '00000000-0000-4000-8000-000000000002', music: '00000000-0000-4000-8000-000000000003', streaming: '00000000-0000-4000-8000-000000000004', press: '00000000-0000-4000-8000-000000000005', bio: '00000000-0000-4000-8000-000000000006' };
 export function aPageDTO<Kind extends PageKindDTO>(kind: Kind): PageDTO<Kind> {
   return {
     id: ids[kind],
@@ -74,7 +74,7 @@ export function aCopyDTO(overrides: Partial<PageCopyDTO> = {}): PageCopyDTO {
 export function anEntryDTO(
   overrides: Partial<ContentEntryDTO> = {},
 ): ContentEntryDTO {
-  const entryId = overrides.id ?? 40;
+  const entryId = overrides.id ?? "00000000-0000-4000-8000-000000000028";
   return {
     id: entryId,
     page_id: 2,
@@ -91,7 +91,7 @@ export function anEntryDTO(
     published_at: null,
     metadata: [
       {
-        id: entryId + 1,
+        id: entryId.slice(0, 24) + (parseInt(entryId.slice(-12), 16) + 1).toString(16).padStart(12, "0"),
         entry_id: entryId,
         key: 'details',
         label: 'Details',

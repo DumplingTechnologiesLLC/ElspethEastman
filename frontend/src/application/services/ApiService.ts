@@ -19,7 +19,7 @@ export class ApiService implements Api {
       path,
       method,
       body,
-      method !== 'GET' && path !== '/api/contact-me/',
+      method !== 'GET' && path !== '/api/v2/contact/',
     );
     const alert = getRequestAlert(reply.status);
     if (alert) {

@@ -37,19 +37,19 @@ it('preserves UI login through reload and navigation and revokes the token on lo
   );
   expect(token).toMatch(/^[a-f0-9]{40}$/);
   expect(
-    await actionResponse(page, 'POST', '/api/session/', () => page.reload()),
+    await actionResponse(page, 'POST', '/api/v2/session/', () => page.reload()),
   ).toEqual({ isAuthenticated: true });
   await expect(page.locator('textarea[name="Voice Acting"]')).toHaveValue(
     /Voice acting fixture/,
   );
   expect(
-    await actionResponse(page, 'POST', '/api/session/', () =>
+    await actionResponse(page, 'POST', '/api/v2/session/', () =>
       page.getByRole('link', { name: 'View Public Site' }).click(),
     ),
   ).toEqual({ isAuthenticated: true });
   await expect(page).toHaveURL(/\/$/);
   expect(
-    await actionResponse(page, 'POST', '/api/session/', () =>
+    await actionResponse(page, 'POST', '/api/v2/session/', () =>
       page.goto('/cms'),
     ),
   ).toEqual({ isAuthenticated: true });
@@ -60,7 +60,7 @@ it('preserves UI login through reload and navigation and revokes the token on lo
       sessionStorage.getItem('ElspethEastmanAuthToken'),
     ),
   ).toBeNull();
-  const validation = await page.request.get('/api/session/', {
+  const validation = await page.request.get('/api/v2/session/', {
     headers: { Authorization: `Token ${token}` },
   });
   expect(await validation.json()).toEqual({ isAuthenticated: false });
@@ -75,7 +75,7 @@ it('clears browser credentials after aborted validation and preserves the server
   const token = await page.evaluate(() =>
     sessionStorage.getItem('ElspethEastmanAuthToken'),
   );
-  await page.route('**/api/session/', (route) => route.abort('failed'));
+  await page.route('**/api/v2/session/', (route) => route.abort('failed'));
   await page.getByRole('link', { name: 'View Public Site' }).click();
   await expect(page).toHaveURL(/\/login$/);
   await expect(
@@ -86,7 +86,7 @@ it('clears browser credentials after aborted validation and preserves the server
       sessionStorage.getItem('ElspethEastmanAuthToken'),
     ),
   ).toBeNull();
-  const response = await page.request.get('/api/session/', {
+  const response = await page.request.get('/api/v2/session/', {
     headers: { Authorization: `Token ${token}` },
   });
   expect(await response.json()).toEqual({ isAuthenticated: true });
@@ -114,13 +114,15 @@ it('reports login network failures and allows a fresh retry', async ({
   await page.goto('/login');
   await page.locator('input[name="username"]').fill('e2e-editor');
   await page.locator('input[name="password"]').fill('e2e-only-password');
-  await page.route('**/api/session/login/', (route) => route.abort('failed'));
+  await page.route('**/api/v2/session/login/', (route) =>
+    route.abort('failed'),
+  );
   await page.getByRole('button', { name: 'Login', exact: true }).click();
   await expect(
     page.getByRole('alert').filter({ hasText: 'Network error' }),
   ).toBeVisible();
   await expect(page).toHaveURL(/\/login$/);
-  await page.unroute('**/api/session/login/');
+  await page.unroute('**/api/v2/session/login/');
   await login(page, true);
 });
 
@@ -131,7 +133,9 @@ it('clears browser credentials after aborted logout and retains the server token
   const token = await page.evaluate(() =>
     sessionStorage.getItem('ElspethEastmanAuthToken'),
   );
-  await page.route('**/api/session/logout/', (route) => route.abort('failed'));
+  await page.route('**/api/v2/session/logout/', (route) =>
+    route.abort('failed'),
+  );
   await page.getByRole('link', { name: 'Logout' }).click();
   await expect(page).toHaveURL(/\/login$/);
   await expect(
@@ -142,7 +146,7 @@ it('clears browser credentials after aborted logout and retains the server token
       sessionStorage.getItem('ElspethEastmanAuthToken'),
     ),
   ).toBeNull();
-  const response = await page.request.get('/api/session/', {
+  const response = await page.request.get('/api/v2/session/', {
     headers: { Authorization: `Token ${token}` },
   });
   expect(await response.json()).toEqual({ isAuthenticated: true });
