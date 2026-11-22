@@ -60,14 +60,17 @@ it('separates DTO objects and ordered nested metadata from domain ownership', ()
   expect(content.kind).toBe(PageKind.Voiceover);
   if (content.kind !== PageKind.Voiceover) throw new Error('Wrong fixture');
   expect(content.roles[0]!.metadata[0]).toEqual({
-    id: 41,
-    entryId: 40,
+    id: '00000000-0000-4000-8000-000000000029',
+    entryId: '00000000-0000-4000-8000-000000000028',
     key: 'details',
     label: 'Details',
     value: 'Character detail',
     sortOrder: 0,
   });
-  expect(content.feature).toEqual({ pageId: 2, itemId: null });
+  expect(content.feature).toEqual({
+    pageId: '00000000-0000-4000-8000-000000000002',
+    itemId: null,
+  });
   dto.roles[0]!.metadata[0]!.value = 'Changed outside the domain';
   dto.images[0]!.image.asset.credit = 'Changed credit';
   dto.copy.splice(0);
@@ -154,18 +157,26 @@ it('maps supported image formats and text treatments explicitly', () => {
 
 it('copies canonical collection order and rejects unknown wire discriminators', () => {
   const dto: CollectionOrderDTO = {
-    page_id: 2,
+    page_id: '00000000-0000-4000-8000-000000000002',
     collection: 'content_entries',
     section: null,
-    ordered_ids: [4, 2, 8],
+    ordered_ids: [
+      '00000000-0000-4000-8000-000000000004',
+      '00000000-0000-4000-8000-000000000002',
+      '00000000-0000-4000-8000-000000000008',
+    ],
   };
   const order = toCollectionOrder(dto);
   dto.ordered_ids.reverse();
   expect(order).toEqual({
-    pageId: 2,
+    pageId: '00000000-0000-4000-8000-000000000002',
     collection: PageCollection.ContentEntries,
     section: null,
-    orderedIds: [4, 2, 8],
+    orderedIds: [
+      '00000000-0000-4000-8000-000000000004',
+      '00000000-0000-4000-8000-000000000002',
+      '00000000-0000-4000-8000-000000000008',
+    ],
   });
   expect(() =>
     toPage({ ...aPageDTO('home'), kind: 'constructor' } as unknown as PageDTO),

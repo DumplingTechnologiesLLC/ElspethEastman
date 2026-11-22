@@ -20,6 +20,7 @@ import type { ServiceDependencies } from './ServiceDependencies';
 export function createServiceContainer({
   http,
   tokens,
+  identifiers,
   navigation,
   clock,
   confirm,
@@ -56,7 +57,7 @@ export function createServiceContainer({
       let editor = editors.get(pageId);
       if (editor === undefined) {
         editor = new ContentEditorService(
-          (target) => planForPage(pageFor(pageId), target),
+          (target) => planForPage(pageFor(pageId), target, identifiers),
           media,
           notifications,
         );

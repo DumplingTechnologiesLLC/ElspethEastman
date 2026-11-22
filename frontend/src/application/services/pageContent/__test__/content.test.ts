@@ -44,7 +44,11 @@ const voice = toPageContent(
   aVoiceoverDTO({
     roles: [
       anEntryDTO({ sort_order: 3 }),
-      anEntryDTO({ id: 42, title: 'Cadence', sort_order: 4 }),
+      anEntryDTO({
+        id: '00000000-0000-4000-8000-00000000002a',
+        title: 'Cadence',
+        sort_order: 4,
+      }),
     ],
   }),
 );
@@ -56,7 +60,12 @@ const bio = toPageContent(aBioDTO());
 it('reconciles an edited entry with its canonical hero flag and rejects invalid ownership', () => {
   const row = entryPolicy.rows(voice)![0]!;
   expect(withEntry(home, row)).toBe(home);
-  expect(withEntry(voice, { ...row, pageId: 999 })).toBe(voice);
+  expect(
+    withEntry(voice, {
+      ...row,
+      pageId: '00000000-0000-4000-8000-0000000003e7',
+    }),
+  ).toBe(voice);
   expect(withEntry(voice, { ...row, isFeatured: true, image: null })).toBe(
     voice,
   );
@@ -71,7 +80,10 @@ it('reconciles an edited entry with its canonical hero flag and rejects invalid 
     const demoted = withEntry(featured, { ...original, isFeatured: false });
     expect(demoted).toMatchObject({ feature: { itemId: null } });
   }
-  const featured = withFeaturedItem(voice, { pageId: 2, itemId: row.id });
+  const featured = withFeaturedItem(voice, {
+    pageId: '00000000-0000-4000-8000-000000000002',
+    itemId: row.id,
+  });
   const other = entryPolicy.rows(voice)![1]!;
   expect(withEntry(featured, { ...other, title: 'Other edit' })).toMatchObject({
     feature: { itemId: row.id },
@@ -82,44 +94,57 @@ it('keeps existing copy keys and sections immutable and rejects duplicate keyed 
   const block = home.copy[0]!;
   expect(withCopy(home, { ...block, key: 'moved' })).toBe(home);
   expect(withCopy(home, { ...block, section: 'moved' })).toBe(home);
-  expect(withCopy(home, { ...block, id: 999 })).toBe(home);
+  expect(
+    withCopy(home, { ...block, id: '00000000-0000-4000-8000-0000000003e7' }),
+  ).toBe(home);
 });
 
-it('upserts canonical records by identity, uses manual order with an ID tie-break, and preserves old snapshots', () => {
+it('preserves canonical membership order for opaque identity ties and keeps old snapshots', () => {
+  const first = 'ffffffff-ffff-4fff-8fff-fffffffffff1';
+  const second = '00000000-0000-4000-8000-000000000001';
+  const third = '00000000-0000-4000-8000-000000000003';
+  const pageId = '00000000-0000-4000-8000-000000000001';
   const rows = [
-    { id: 2, pageId: 1, sortOrder: 0, label: 'Two' },
-    { id: 1, pageId: 1, sortOrder: 0, label: 'One' },
+    { id: first, pageId, sortOrder: 0, label: 'First' },
+    { id: second, pageId, sortOrder: 0, label: 'Second' },
   ];
-  const updated = upsertRecord(rows, {
-    id: 1,
-    pageId: 1,
-    sortOrder: 0,
-    label: 'Canonical',
-  });
+  const updated = upsertRecord(rows, { ...rows[0]!, label: 'Canonical' });
   expect(updated.map((row) => [row.id, row.label])).toEqual([
-    [1, 'Canonical'],
-    [2, 'Two'],
+    [first, 'Canonical'],
+    [second, 'Second'],
   ]);
+  const added = upsertRecord(updated, {
+    id: third,
+    pageId,
+    sortOrder: 0,
+    label: 'Third',
+  });
+  expect(added.map((row) => row.id)).toEqual([first, second, third]);
   expect(
-    upsertRecord(updated, {
-      id: 3,
-      pageId: 1,
-      sortOrder: 2,
-      label: 'Three',
-    }).map((row) => row.id),
-  ).toEqual([1, 2, 3]);
-  expect(rows[1]!.label).toBe('One');
+    upsertRecord(added, { ...added[0]!, sortOrder: 2 }).map((row) => row.id),
+  ).toEqual([second, third, first]);
+  expect(rows[0]!.label).toBe('First');
 });
 
 it('updates metadata and keyed content within the existing page identity', () => {
   const metadata = withMetadata(home, { ...home.page, title: 'Welcome' });
   expect(metadata.page.title).toBe('Welcome');
   expect(home.page.title).toBe('home');
-  expect(withMetadata(home, { ...home.page, id: 999 })).toBe(home);
+  expect(
+    withMetadata(home, {
+      ...home.page,
+      id: '00000000-0000-4000-8000-0000000003e7',
+    }),
+  ).toBe(home);
   expect(withMetadata(home, { ...home.page, kind: PageKind.Bio })).toBe(home);
   const block = { ...home.copy[0]!, value: 'Canonical text' };
   expect(withCopy(home, block).copy[0]!.value).toBe('Canonical text');
-  expect(withCopy(home, { ...block, pageId: 999 })).toBe(home);
+  expect(
+    withCopy(home, {
+      ...block,
+      pageId: '00000000-0000-4000-8000-0000000003e7',
+    }),
+  ).toBe(home);
   expect(withoutCopy(home, block.key).copy).toEqual([]);
   expect(withoutCopy(home, 'missing')).toBe(home);
   const image = {
@@ -129,7 +154,12 @@ it('updates metadata and keyed content within the existing page identity', () =>
   expect(withPageImage(home, image).images[0]!.image.altText).toBe(
     'Canonical alt text',
   );
-  expect(withPageImage(home, { ...image, pageId: 999 })).toBe(home);
+  expect(
+    withPageImage(home, {
+      ...image,
+      pageId: '00000000-0000-4000-8000-0000000003e7',
+    }),
+  ).toBe(home);
   expect(withPageImage(home, { ...image, key: 'unseeded-slot' })).toBe(home);
   const multiple = {
     ...home,
@@ -184,36 +214,71 @@ it('retains separate release, clip, appearance, chapter, and current-work owners
 });
 
 it('promotes and demotes the same canonical records without changing positions', () => {
-  const featured = withFeaturedItem(voice, { pageId: 2, itemId: 42 });
+  const featured = withFeaturedItem(voice, {
+    pageId: '00000000-0000-4000-8000-000000000002',
+    itemId: '00000000-0000-4000-8000-00000000002a',
+  });
   if (featured.kind !== PageKind.Voiceover) throw new Error('Wrong fixture');
-  expect(featured.feature.itemId).toBe(42);
+  expect(featured.feature.itemId).toBe('00000000-0000-4000-8000-00000000002a');
   expect(
     featured.roles.map((row) => [row.id, row.sortOrder, row.isFeatured]),
   ).toEqual([
-    [40, 3, false],
-    [42, 4, true],
+    ['00000000-0000-4000-8000-000000000028', 3, false],
+    ['00000000-0000-4000-8000-00000000002a', 4, true],
   ]);
-  const demoted = withFeaturedItem(featured, { pageId: 2, itemId: null });
+  const demoted = withFeaturedItem(featured, {
+    pageId: '00000000-0000-4000-8000-000000000002',
+    itemId: null,
+  });
   if (demoted.kind !== PageKind.Voiceover) throw new Error('Wrong fixture');
   expect(demoted.roles.every((row) => !row.isFeatured)).toBe(true);
   expect(voice.kind === PageKind.Voiceover && voice.roles[1]!.isFeatured).toBe(
     false,
   );
-  expect(withFeaturedItem(home, { pageId: 1, itemId: null })).toBe(home);
-  expect(withFeaturedItem(voice, { pageId: 999, itemId: 40 })).toBe(voice);
-  expect(withFeaturedItem(voice, { pageId: 2, itemId: 999 })).toBe(voice);
+  expect(
+    withFeaturedItem(home, {
+      pageId: '00000000-0000-4000-8000-000000000001',
+      itemId: null,
+    }),
+  ).toBe(home);
+  expect(
+    withFeaturedItem(voice, {
+      pageId: '00000000-0000-4000-8000-0000000003e7',
+      itemId: '00000000-0000-4000-8000-000000000028',
+    }),
+  ).toBe(voice);
+  expect(
+    withFeaturedItem(voice, {
+      pageId: '00000000-0000-4000-8000-000000000002',
+      itemId: '00000000-0000-4000-8000-0000000003e7',
+    }),
+  ).toBe(voice);
   const imageless = toPageContent(
     aStreamingDTO({
-      feature: { page_id: 4, item_id: null },
-      entries: [anEntryDTO({ page_id: 4, image: null })],
+      feature: {
+        page_id: '00000000-0000-4000-8000-000000000004',
+        item_id: null,
+      },
+      entries: [
+        anEntryDTO({
+          page_id: '00000000-0000-4000-8000-000000000004',
+          image: null,
+        }),
+      ],
     }),
   );
-  expect(withFeaturedItem(imageless, { pageId: 4, itemId: 40 })).toBe(
-    imageless,
-  );
+  expect(
+    withFeaturedItem(imageless, {
+      pageId: '00000000-0000-4000-8000-000000000004',
+      itemId: '00000000-0000-4000-8000-000000000028',
+    }),
+  ).toBe(imageless);
   for (const page of [stream, press])
     expect(
-      withFeaturedItem(page, { pageId: page.page.id, itemId: 40 }),
+      withFeaturedItem(page, {
+        pageId: page.page.id,
+        itemId: '00000000-0000-4000-8000-000000000028',
+      }),
     ).not.toBe(page);
 });
 
@@ -221,9 +286,12 @@ it('clears a deleted hero while preserving other selections and keeps practice s
   for (const page of [voice, stream, press]) {
     const featured = withFeaturedItem(page, {
       pageId: page.page.id,
-      itemId: 40,
+      itemId: '00000000-0000-4000-8000-000000000028',
     });
-    const removed = withoutEntry(featured, 40);
+    const removed = withoutEntry(
+      featured,
+      '00000000-0000-4000-8000-000000000028',
+    );
     if (
       removed.kind === PageKind.Home ||
       removed.kind === PageKind.Music ||
@@ -231,33 +299,56 @@ it('clears a deleted hero while preserving other selections and keeps practice s
     )
       throw new Error('Wrong fixture');
     expect(removed.feature.itemId).toBeNull();
-    expect(entryPolicy.rows(removed)!.some((row) => row.id === 40)).toBe(false);
+    expect(
+      entryPolicy
+        .rows(removed)!
+        .some((row) => row.id === '00000000-0000-4000-8000-000000000028'),
+    ).toBe(false);
   }
-  const featured = withFeaturedItem(voice, { pageId: 2, itemId: 40 });
-  const otherRemoved = withoutEntry(featured, 42);
+  const featured = withFeaturedItem(voice, {
+    pageId: '00000000-0000-4000-8000-000000000002',
+    itemId: '00000000-0000-4000-8000-000000000028',
+  });
+  const otherRemoved = withoutEntry(
+    featured,
+    '00000000-0000-4000-8000-00000000002a',
+  );
   if (otherRemoved.kind !== PageKind.Voiceover)
     throw new Error('Wrong fixture');
-  expect(otherRemoved.feature.itemId).toBe(40);
-  expect(withoutEntry(home, 40)).toBe(home);
-  expect(withoutEntry(voice, 999)).toBe(voice);
+  expect(otherRemoved.feature.itemId).toBe(
+    '00000000-0000-4000-8000-000000000028',
+  );
+  expect(withoutEntry(home, '00000000-0000-4000-8000-000000000028')).toBe(home);
+  expect(withoutEntry(voice, '00000000-0000-4000-8000-0000000003e7')).toBe(
+    voice,
+  );
   if (music.kind !== PageKind.Music) throw new Error('Wrong fixture');
   const practice = { ...music.feature, title: 'New practice' };
   expect(withPractice(music, practice)).toMatchObject({
     feature: { title: 'New practice' },
   });
   expect(withPractice(home, practice)).toBe(home);
-  expect(withPractice(music, { ...practice, pageId: 999 })).toBe(music);
+  expect(
+    withPractice(music, {
+      ...practice,
+      pageId: '00000000-0000-4000-8000-0000000003e7',
+    }),
+  ).toBe(music);
 });
 
 it('applies full canonical order across each owned collection', () => {
   for (const [content, collection, id] of [
-    [voice, PageCollection.Eyebrows, 100],
-    [voice, PageCollection.Trivia, 101],
-    [music, PageCollection.Releases, 50],
-    [stream, PageCollection.StreamClips, 60],
-    [press, PageCollection.Appearances, 70],
-    [bio, PageCollection.BioChapters, 80],
-    [bio, PageCollection.CurrentItems, 90],
+    [voice, PageCollection.Eyebrows, '00000000-0000-4000-8000-000000000064'],
+    [voice, PageCollection.Trivia, '00000000-0000-4000-8000-000000000065'],
+    [music, PageCollection.Releases, '00000000-0000-4000-8000-000000000032'],
+    [
+      stream,
+      PageCollection.StreamClips,
+      '00000000-0000-4000-8000-00000000003c',
+    ],
+    [press, PageCollection.Appearances, '00000000-0000-4000-8000-000000000046'],
+    [bio, PageCollection.BioChapters, '00000000-0000-4000-8000-000000000050'],
+    [bio, PageCollection.CurrentItems, '00000000-0000-4000-8000-00000000005a'],
   ] as const) {
     expect(
       withCollectionOrder(content, {
@@ -268,35 +359,56 @@ it('applies full canonical order across each owned collection', () => {
       }),
     ).not.toBe(content);
   }
-  const featured = withFeaturedItem(voice, { pageId: 2, itemId: 40 });
+  const featured = withFeaturedItem(voice, {
+    pageId: '00000000-0000-4000-8000-000000000002',
+    itemId: '00000000-0000-4000-8000-000000000028',
+  });
   const ordered = withCollectionOrder(featured, {
-    pageId: 2,
+    pageId: '00000000-0000-4000-8000-000000000002',
     collection: PageCollection.ContentEntries,
     section: null,
-    orderedIds: [42, 40],
+    orderedIds: [
+      '00000000-0000-4000-8000-00000000002a',
+      '00000000-0000-4000-8000-000000000028',
+    ],
   });
   expect(
     entryPolicy.rows(ordered)!.map((row) => [row.id, row.sortOrder]),
   ).toEqual([
-    [42, 0],
-    [40, 1],
+    ['00000000-0000-4000-8000-00000000002a', 0],
+    ['00000000-0000-4000-8000-000000000028', 1],
   ]);
   if (ordered.kind !== PageKind.Voiceover) throw new Error('Wrong fixture');
-  expect(ordered.feature.itemId).toBe(40);
+  expect(ordered.feature.itemId).toBe('00000000-0000-4000-8000-000000000028');
 });
 
 it('rejects partial, duplicate, foreign, unsupported, or incorrectly scoped orders without changing content', () => {
   const order: CollectionOrder = {
-    pageId: 2,
+    pageId: '00000000-0000-4000-8000-000000000002',
     collection: PageCollection.ContentEntries,
     section: null,
-    orderedIds: [42, 40],
+    orderedIds: [
+      '00000000-0000-4000-8000-00000000002a',
+      '00000000-0000-4000-8000-000000000028',
+    ],
   };
   for (const input of [
-    { ...order, orderedIds: [40] },
-    { ...order, orderedIds: [40, 40] },
-    { ...order, orderedIds: [40, 999] },
-    { ...order, pageId: 999 },
+    { ...order, orderedIds: ['00000000-0000-4000-8000-000000000028'] },
+    {
+      ...order,
+      orderedIds: [
+        '00000000-0000-4000-8000-000000000028',
+        '00000000-0000-4000-8000-000000000028',
+      ],
+    },
+    {
+      ...order,
+      orderedIds: [
+        '00000000-0000-4000-8000-000000000028',
+        '00000000-0000-4000-8000-0000000003e7',
+      ],
+    },
+    { ...order, pageId: '00000000-0000-4000-8000-0000000003e7' },
     { ...order, section: 'intro' },
     { ...order, collection: PageCollection.Releases },
     { ...order, collection: '__proto__' as PageCollection },
@@ -308,9 +420,12 @@ it('rejects partial, duplicate, foreign, unsupported, or incorrectly scoped orde
       collection: PageCollection.Releases,
     }),
   ).toBe(voice);
-  expect(orderCollection(entryPolicy, voice, { ...order, pageId: 999 })).toBe(
-    voice,
-  );
+  expect(
+    orderCollection(entryPolicy, voice, {
+      ...order,
+      pageId: '00000000-0000-4000-8000-0000000003e7',
+    }),
+  ).toBe(voice);
   expect(
     orderCollection(entryPolicy, voice, {
       ...order,
@@ -323,11 +438,16 @@ it('orders copy only within its section and leaves unrelated positions intact', 
   const content = toPageContent(
     aVoiceoverDTO({
       copy: [
-        aCopyDTO({ page_id: 2 }),
-        aCopyDTO({ id: 31, page_id: 2, key: 'second', sort_order: 1 }),
+        aCopyDTO({ page_id: '00000000-0000-4000-8000-000000000002' }),
         aCopyDTO({
-          id: 32,
-          page_id: 2,
+          id: '00000000-0000-4000-8000-00000000001f',
+          page_id: '00000000-0000-4000-8000-000000000002',
+          key: 'second',
+          sort_order: 1,
+        }),
+        aCopyDTO({
+          id: '00000000-0000-4000-8000-000000000020',
+          page_id: '00000000-0000-4000-8000-000000000002',
           key: 'roles-title',
           section: 'roles',
           kind: 'section_label',
@@ -337,10 +457,13 @@ it('orders copy only within its section and leaves unrelated positions intact', 
     }),
   );
   const input: CollectionOrder = {
-    pageId: 2,
+    pageId: '00000000-0000-4000-8000-000000000002',
     collection: PageCollection.Copy,
     section: 'intro',
-    orderedIds: [31, 30],
+    orderedIds: [
+      '00000000-0000-4000-8000-00000000001f',
+      '00000000-0000-4000-8000-00000000001e',
+    ],
   };
   const result = withCollectionOrder(content, input);
   expect(
@@ -348,34 +471,39 @@ it('orders copy only within its section and leaves unrelated positions intact', 
       .filter((row) => row.section === 'intro')
       .map((row) => [row.id, row.sortOrder]),
   ).toEqual([
-    [31, 0],
-    [30, 1],
+    ['00000000-0000-4000-8000-00000000001f', 0],
+    ['00000000-0000-4000-8000-00000000001e', 1],
   ]);
   expect(result.copy.find((row) => row.section === 'roles')!.sortOrder).toBe(7);
   for (const invalid of [
     { ...input, section: null },
     { ...input, section: 'unknown' },
-    { ...input, orderedIds: [30] },
+    { ...input, orderedIds: ['00000000-0000-4000-8000-00000000001e'] },
   ])
     expect(withCollectionOrder(content, invalid)).toBe(content);
   expect(
     withCollectionOrder(home, {
-      pageId: 1,
+      pageId: '00000000-0000-4000-8000-000000000001',
       collection: PageCollection.Copy,
       section: 'intro',
-      orderedIds: [30],
+      orderedIds: ['00000000-0000-4000-8000-00000000001e'],
     }),
   ).not.toBe(home);
   const empty = { ...home, copy: [] };
   expect(
     withCollectionOrder(empty, {
-      pageId: 1,
+      pageId: '00000000-0000-4000-8000-000000000001',
       collection: PageCollection.Copy,
       section: 'intro',
       orderedIds: [],
     }),
   ).toMatchObject({ copy: [] });
   expect(
-    withCopy(home, toPageCopy(aCopyDTO({ id: 31, key: 'new' }))).copy,
+    withCopy(
+      home,
+      toPageCopy(
+        aCopyDTO({ id: '00000000-0000-4000-8000-00000000001f', key: 'new' }),
+      ),
+    ).copy,
   ).toHaveLength(2);
 });
