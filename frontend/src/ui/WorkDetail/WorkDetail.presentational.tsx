@@ -71,9 +71,12 @@ const css = stylex.create({
   },
   metadata: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))',
+    gridTemplateColumns: {
+      default: 'repeat(auto-fit,minmax(150px,1fr))',
+      '@media (max-width: 760px)': 'minmax(0,1.05fr) minmax(0,1fr)',
+    },
     alignItems: 'start',
-    gap: 20,
+    gap: { default: 20, '@media (max-width: 760px)': 16 },
   },
   fact: {
     margin: 0,
@@ -84,7 +87,7 @@ const css = stylex.create({
   },
   label: {
     fontFamily: tokens.sans,
-    fontSize: 10,
+    fontSize: { default: 10, '@media (max-width: 760px)': 8.6 },
     letterSpacing: '1px',
     textTransform: 'uppercase',
     color: tokens.secondary,
@@ -92,8 +95,8 @@ const css = stylex.create({
   },
   value: {
     fontFamily: tokens.sans,
-    fontSize: 13,
-    lineHeight: 1.45,
+    fontSize: { default: 13, '@media (max-width: 760px)': 11.8 },
+    lineHeight: { default: 1.45, '@media (max-width: 760px)': '16px' },
     color: tokens.foreground,
     margin: 0,
   },
