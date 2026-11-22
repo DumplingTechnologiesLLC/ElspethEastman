@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 
@@ -8,6 +9,7 @@ class MediaMime(models.TextChoices):
 
 
 class MediaAsset(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     file = models.FileField(upload_to="uploads/", max_length=300)
     width = models.PositiveIntegerField()
     height = models.PositiveIntegerField()

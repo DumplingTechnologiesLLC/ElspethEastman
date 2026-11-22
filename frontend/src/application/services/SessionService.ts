@@ -59,30 +59,32 @@ export class SessionService extends Store<SessionState> implements Session {
   };
   private async validate() {
     const validation = ++this.validation;
+    const revision = this.revision();
     const reply = await this.http.request<{ isAuthenticated: boolean }>(
-      '/api/session/',
+      '/api/v2/session/',
       'POST',
       undefined,
       true,
     );
-    if (validation !== this.validation) return;
+    if (validation !== this.validation || revision !== this.revision()) return;
     const valid = reply.status === 200 && reply.data?.isAuthenticated === true;
     const wasAuthenticated = this.getSnapshot().authenticated;
-    this.patch({ authenticated: valid });
     if (wasAuthenticated && !valid) {
-      this.notifications.show({
-        title: 'Session has expired',
-        content: 'Please re-log in.',
-        flavor: 'error',
-      });
-      this.tokens.write(null);
-      this.navigate('/login');
-    } else if (!valid && this.getSnapshot().path.startsWith('/cms'))
-      this.navigate('/login');
+      this.expire(this.getSnapshot().path);
+      return;
+    }
+    this.patch({ authenticated: valid });
+    if (!valid && this.getSnapshot().path.startsWith('/cms'))
+      this.replace(
+        `/login?returnTo=${encodeURIComponent(cmsReturnTo(this.getSnapshot().path))}`,
+      );
   }
+
   navigate = (path: string) => this.navigation.go(path);
   replace = (path: string) => this.navigation.replace(path);
-  expire = (returnTo: string) => {
+  revision = () => this.tokens.revision();
+  expire = (returnTo: string, revision = this.revision()) => {
+    if (revision !== this.revision()) return;
     const state = this.getSnapshot();
     if (!state.authenticated && state.path.startsWith('/login')) return;
     this.validation++;
@@ -123,7 +125,7 @@ export class SessionService extends Store<SessionState> implements Session {
     }
     this.patch({ submitting: true });
     const reply = await this.http.request<{ token?: string; detail?: string }>(
-      '/api/session/login/',
+      '/api/v2/session/login/',
       'POST',
       { username, password },
       true,
@@ -162,13 +164,15 @@ export class SessionService extends Store<SessionState> implements Session {
     }
   };
   logout = async () => {
+    const revision = this.revision();
     const reply = await this.http.request(
-      '/api/session/logout/',
+      '/api/v2/session/logout/',
       'POST',
       undefined,
       true,
       'status',
     );
+    if (revision !== this.revision()) return;
     if (reply.status === null) this.notifications.show(getRequestAlert(null)!);
     // Preserve the legacy browser logout when the request fails in transport.
     if (reply.status === 200 || reply.status === null) {
