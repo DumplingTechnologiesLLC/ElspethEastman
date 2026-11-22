@@ -18,5 +18,5 @@ export interface ExperienceController extends Readable<ExperienceState> {
   ) => void;
   reset: () => void;
   save: () => Promise<void>;
-  remove: (category: Category, id: number) => Promise<void>;
+  remove: (category: Category, id: string) => Promise<void>;
 }

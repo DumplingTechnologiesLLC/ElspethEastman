@@ -17,10 +17,13 @@ function selectionParameter(kind: PageKind): 'role' | 'entry' | null {
       : null;
 }
 
-function selectedId(value: string | null): number | null {
-  if (value === null || !/^\d+$/.test(value)) return null;
-  const id = Number(value);
-  return Number.isSafeInteger(id) && id > 0 ? id : null;
+function selectedId(value: string | null): string | null {
+  return value !== null &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      value,
+    )
+    ? value.toLowerCase()
+    : null;
 }
 
 export function resolvePageRoute(
@@ -49,7 +52,7 @@ export function resolvePageRoute(
 export function withSelection(
   path: string,
   kind: PageKind,
-  id: number | null,
+  id: string | null,
 ): string {
   const parameter = selectionParameter(kind);
   if (parameter === null) return path;

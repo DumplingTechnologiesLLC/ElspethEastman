@@ -1,9 +1,11 @@
+import uuid
 from django.db import models
 from .page import Page
 from .media_asset import MediaAsset
 
 
 class PageImage(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="images")
     key = models.SlugField(max_length=100)
     asset = models.ForeignKey(MediaAsset, on_delete=models.PROTECT, related_name="page_uses")

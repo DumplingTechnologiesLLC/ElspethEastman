@@ -91,24 +91,29 @@ it('maps public registry and aggregate reads without attaching editor credential
   expect(await repository.site()).toMatchObject({
     ok: true,
     value: [
-      { id: 1, kind: PageKind.Home },
-      { id: 2, kind: PageKind.Voiceover },
+      { id: '00000000-0000-4000-8000-000000000001', kind: PageKind.Home },
+      { id: '00000000-0000-4000-8000-000000000002', kind: PageKind.Voiceover },
     ],
   });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/site/',
+    '/api/v2/site/',
     'GET',
     undefined,
     false,
     'content',
   );
   request.mockResolvedValueOnce({ status: 200, data: aBioDTO() });
-  expect(await repository.page(6)).toMatchObject({
+  expect(
+    await repository.page('00000000-0000-4000-8000-000000000006'),
+  ).toMatchObject({
     ok: true,
-    value: { kind: PageKind.Bio, currentItems: [{ id: 90 }] },
+    value: {
+      kind: PageKind.Bio,
+      currentItems: [{ id: '00000000-0000-4000-8000-00000000005a' }],
+    },
   });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/pages/6/',
+    '/api/v2/pages/00000000-0000-4000-8000-000000000006/',
     'GET',
     undefined,
     false,
@@ -119,29 +124,31 @@ it('maps public registry and aggregate reads without attaching editor credential
 it('keeps metadata omission and explicit CTA clearing distinct', async () => {
   const { request, repository } = fixture();
   request.mockResolvedValue({ status: 200, data: aPageDTO('voiceover') });
-  await repository.metadata(2, {
+  await repository.metadata('00000000-0000-4000-8000-000000000002', {
     title: 'Characters',
     slug: 'characters',
     primaryAction: action,
   });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/pages/2/',
+    '/api/v2/pages/00000000-0000-4000-8000-000000000002/',
     'PATCH',
     { title: 'Characters', slug: 'characters', primary_action: action },
     true,
     'content',
   );
-  await repository.metadata(2, { primaryAction: null });
+  await repository.metadata('00000000-0000-4000-8000-000000000002', {
+    primaryAction: null,
+  });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/pages/2/',
+    '/api/v2/pages/00000000-0000-4000-8000-000000000002/',
     'PATCH',
     { primary_action: null },
     true,
     'content',
   );
-  await repository.metadata(2, {});
+  await repository.metadata('00000000-0000-4000-8000-000000000002', {});
   expect(request).toHaveBeenLastCalledWith(
-    '/api/pages/2/',
+    '/api/v2/pages/00000000-0000-4000-8000-000000000002/',
     'PATCH',
     {},
     true,
@@ -153,55 +160,80 @@ it('uses stable keyed copy/image addresses and encodes delete queries', async ()
   const { request, repository } = fixture();
   request.mockResolvedValue({ status: 200, data: aCopyDTO() });
   const input = {
-    pageId: 1,
+    pageId: '00000000-0000-4000-8000-000000000001',
     key: 'intro',
     section: 'intro',
     kind: CopyKind.Body,
     value: 'Text',
-    id: 30,
+    id: '00000000-0000-4000-8000-00000000001e',
     sortOrder: 4,
   };
   await repository.copy.create(input);
   expect(request).toHaveBeenLastCalledWith(
-    '/api/copy/',
+    '/api/v2/pages/copy/',
     'POST',
-    { page_id: 1, key: 'intro', section: 'intro', kind: 'body', value: 'Text' },
+    {
+      page_id: '00000000-0000-4000-8000-000000000001',
+      key: 'intro',
+      section: 'intro',
+      kind: 'body',
+      value: 'Text',
+    },
     true,
     'content',
   );
   await repository.copy.update(input);
   expect(request).toHaveBeenLastCalledWith(
-    '/api/copy/',
+    '/api/v2/pages/copy/',
     'PATCH',
-    { page_id: 1, key: 'intro', kind: 'body', value: 'Text' },
+    {
+      page_id: '00000000-0000-4000-8000-000000000001',
+      key: 'intro',
+      kind: 'body',
+      value: 'Text',
+    },
     true,
     'content',
   );
-  await repository.copy.update({ pageId: 1, key: 'intro' });
+  await repository.copy.update({
+    pageId: '00000000-0000-4000-8000-000000000001',
+    key: 'intro',
+  });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/copy/',
+    '/api/v2/pages/copy/',
     'PATCH',
-    { page_id: 1, key: 'intro' },
+    { page_id: '00000000-0000-4000-8000-000000000001', key: 'intro' },
     true,
     'content',
   );
   request.mockResolvedValueOnce({ status: 204, data: null });
   expect(
-    await repository.copy.remove({ pageId: 1, key: 'intro & more' }),
+    await repository.copy.remove({
+      pageId: '00000000-0000-4000-8000-000000000001',
+      key: 'intro & more',
+    }),
   ).toEqual({ ok: true, value: undefined });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/copy/?page_id=1&key=intro+%26+more',
+    '/api/v2/pages/copy/?page_id=00000000-0000-4000-8000-000000000001&key=intro+%26+more',
     'DELETE',
     undefined,
     true,
     'content',
   );
   request.mockResolvedValueOnce({ status: 200, data: aHomeDTO().images[0] });
-  await repository.image({ pageId: 1, key: 'hero', image });
+  await repository.image({
+    pageId: '00000000-0000-4000-8000-000000000001',
+    key: 'hero',
+    image,
+  });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/page-images/',
+    '/api/v2/pages/images/',
     'PATCH',
-    { page_id: 1, key: 'hero', image: imageDTO },
+    {
+      page_id: '00000000-0000-4000-8000-000000000001',
+      key: 'hero',
+      image: imageDTO,
+    },
     true,
     'content',
   );
@@ -213,7 +245,7 @@ it('retains explicit null values in entry and current-work updates', async () =>
     status: 200,
     data: anEntryDTO({ image: null, action: null }),
   });
-  await repository.entries.update(40, {
+  await repository.entries.update('00000000-0000-4000-8000-000000000028', {
     image: null,
     action: null,
     metadata: [],
@@ -221,7 +253,7 @@ it('retains explicit null values in entry and current-work updates', async () =>
     publishedAt: '2026-10-01T14:30:00Z',
   });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/content-entries/40/',
+    '/api/v2/content/entries/00000000-0000-4000-8000-000000000028/',
     'PATCH',
     {
       image: null,
@@ -234,9 +266,11 @@ it('retains explicit null values in entry and current-work updates', async () =>
     'content',
   );
   request.mockResolvedValueOnce({ status: 200, data: aCurrentItemDTO() });
-  await repository.currentItems.update(90, { link: null });
+  await repository.currentItems.update('00000000-0000-4000-8000-00000000005a', {
+    link: null,
+  });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/current-items/90/',
+    '/api/v2/bio/current/00000000-0000-4000-8000-00000000005a/',
     'PATCH',
     { link: null },
     true,
@@ -248,7 +282,7 @@ it('uses the complete practice input and canonical reorder and feature responses
   const { request, repository } = fixture();
   request.mockResolvedValueOnce({ status: 200, data: aMusicFeatureDTO() });
   await repository.practice({
-    pageId: 3,
+    pageId: '00000000-0000-4000-8000-000000000003',
     eyebrow: 'Practice',
     title: 'Cello',
     description: 'Notes',
@@ -257,10 +291,10 @@ it('uses the complete practice input and canonical reorder and feature responses
     action,
   });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/music-features/',
+    '/api/v2/music/features/',
     'PATCH',
     {
-      page_id: 3,
+      page_id: '00000000-0000-4000-8000-000000000003',
       eyebrow: 'Practice',
       title: 'Cello',
       description: 'Notes',
@@ -274,52 +308,69 @@ it('uses the complete practice input and canonical reorder and feature responses
   request.mockResolvedValueOnce({
     status: 200,
     data: {
-      page_id: 2,
+      page_id: '00000000-0000-4000-8000-000000000002',
       collection: 'content_entries',
       section: null,
-      ordered_ids: [41, 40],
+      ordered_ids: [
+        '00000000-0000-4000-8000-000000000029',
+        '00000000-0000-4000-8000-000000000028',
+      ],
     },
   });
   expect(
     await repository.reorder({
-      pageId: 2,
+      pageId: '00000000-0000-4000-8000-000000000002',
       collection: PageCollection.ContentEntries,
       section: null,
-      orderedIds: [41, 40],
+      orderedIds: [
+        '00000000-0000-4000-8000-000000000029',
+        '00000000-0000-4000-8000-000000000028',
+      ],
     }),
   ).toEqual({
     ok: true,
     value: {
-      pageId: 2,
+      pageId: '00000000-0000-4000-8000-000000000002',
       collection: PageCollection.ContentEntries,
       section: null,
-      orderedIds: [41, 40],
+      orderedIds: [
+        '00000000-0000-4000-8000-000000000029',
+        '00000000-0000-4000-8000-000000000028',
+      ],
     },
   });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/collections/reorder/',
+    '/api/v2/collections/reorder/',
     'PATCH',
     {
-      page_id: 2,
+      page_id: '00000000-0000-4000-8000-000000000002',
       collection: 'content_entries',
       section: null,
-      ordered_ids: [41, 40],
+      ordered_ids: [
+        '00000000-0000-4000-8000-000000000029',
+        '00000000-0000-4000-8000-000000000028',
+      ],
     },
     true,
     'content',
   );
   request.mockResolvedValueOnce({
     status: 200,
-    data: { page_id: 2, item_id: null },
+    data: { page_id: '00000000-0000-4000-8000-000000000002', item_id: null },
   });
-  expect(await repository.feature({ pageId: 2, itemId: null })).toEqual({
+  expect(
+    await repository.feature({
+      pageId: '00000000-0000-4000-8000-000000000002',
+      itemId: null,
+    }),
+  ).toEqual({
     ok: true,
-    value: { pageId: 2, itemId: null },
+    value: { pageId: '00000000-0000-4000-8000-000000000002', itemId: null },
   });
   expect(request).toHaveBeenLastCalledWith(
-    '/api/featured-items/',
+    '/api/v2/content/features/',
     'PATCH',
-    { page_id: 2, item_id: null },
+    { page_id: '00000000-0000-4000-8000-000000000002', item_id: null },
     true,
     'content',
   );
@@ -335,7 +386,13 @@ it('sends uploaded binaries as multipart data and returns the verified asset', a
       credit: 'Photographer',
       sourceUrl: 'https://example.invalid/source',
     }),
-  ).toMatchObject({ ok: true, value: { id: 20, mimeType: 'image/png' } });
+  ).toMatchObject({
+    ok: true,
+    value: {
+      id: '00000000-0000-4000-8000-000000000014',
+      mimeType: 'image/png',
+    },
+  });
   const body = request.mock.lastCall![2];
   expect(body).toBeInstanceOf(FormData);
   if (!(body instanceof FormData)) throw new Error('Expected multipart data');
@@ -343,7 +400,7 @@ it('sends uploaded binaries as multipart data and returns the verified asset', a
   expect(body.get('credit')).toBe('Photographer');
   expect(body.get('source_url')).toBe('https://example.invalid/source');
   expect(request).toHaveBeenLastCalledWith(
-    '/api/media-assets/',
+    '/api/v2/media/assets/',
     'POST',
     body,
     true,
@@ -362,7 +419,9 @@ it.each([null, 100, 304, 400, 403, 404, 500])(
         fields: { 'image.alt_text': ['Required'] },
       },
     });
-    expect(await repository.page(1)).toEqual({
+    expect(
+      await repository.page('00000000-0000-4000-8000-000000000001'),
+    ).toEqual({
       ok: false,
       error: {
         status,
@@ -391,7 +450,9 @@ it('normalizes rejected transport and unreadable success bodies without losing a
     error: { status: 200, detail: expect.stringContaining('could not read') },
   });
   request.mockResolvedValueOnce({ status: 403, data: { detail: 'Forbidden' } });
-  expect(await repository.eyebrows.remove(100)).toEqual({
+  expect(
+    await repository.eyebrows.remove('00000000-0000-4000-8000-000000000064'),
+  ).toEqual({
     ok: false,
     error: { status: 403, detail: 'Forbidden', fields: {} },
   });
