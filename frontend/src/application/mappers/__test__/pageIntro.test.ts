@@ -79,15 +79,21 @@ it('projects all ordered intro records and typed editor intents, with a title fa
     { type: 'copy', section: 'intro', key: null },
     { type: 'eyebrows', id: null },
     { type: 'trivia', id: null },
-    { type: 'trivia', id: "00000000-0000-4000-8000-000000000065" },
+    { type: 'trivia', id: '00000000-0000-4000-8000-000000000065' },
   ]);
   const full = toPageContent(
     aVoiceoverDTO({
-      copy: [aCopyDTO({ page_id: "00000000-0000-4000-8000-000000000002", kind: 'headline', value: 'Voiceover' })],
+      copy: [
+        aCopyDTO({
+          page_id: '00000000-0000-4000-8000-000000000002',
+          kind: 'headline',
+          value: 'Voiceover',
+        }),
+      ],
       trivia: [
         content.trivia[0]!,
-        { ...content.trivia[0]!, id: "00000000-0000-4000-8000-000000000066" },
-        { ...content.trivia[0]!, id: "00000000-0000-4000-8000-000000000067" },
+        { ...content.trivia[0]!, id: '00000000-0000-4000-8000-000000000066' },
+        { ...content.trivia[0]!, id: '00000000-0000-4000-8000-000000000067' },
       ].map((row) => ({
         id: row.id,
         page_id: row.pageId,
