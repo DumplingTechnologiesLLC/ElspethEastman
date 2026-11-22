@@ -14,12 +14,12 @@ class ContentReadTests(TestCase):
         self.voiceover.primary_action_url = "https://example.invalid/reel"
         self.voiceover.save()
         with self.assertNumQueries(1):
-            response = self.client.get("/api/site/")
+            response = self.client.get("/api/v2/site/")
         self.assertEqual(response.status_code, 200)
         records = response.json()["pages"]
         self.assertEqual(len(records), 6)
         record = next(row for row in records if row["id"] == self.voiceover.pk)
-        self.assertEqual(record, {"id": self.voiceover.pk, "kind": "voiceover", "title": "Characters",
+        self.assertEqual(record, {"id": str(self.voiceover.public_id), "kind": "voiceover", "title": "Characters",
                                   "slug": "characters", "primary_action": {"label": "Play reel",
                                   "href": "https://example.invalid/reel", "is_external": True}})
         self.assertIsNone(next(row for row in records if row["kind"] == "home")["primary_action"])
@@ -32,20 +32,20 @@ class ContentReadTests(TestCase):
         asset = MediaAsset.objects.create(file="seed/home.png", width=800, height=900, mime_type="image/png", credit="Photographer")
         PageImage.objects.create(page=self.home, key="hero", asset=asset, alt_text="Elspeth smiling", caption="Portrait")
         with self.assertNumQueries(5):
-            response = self.client.get(f"/api/pages/{self.home.pk}/")
+            response = self.client.get(f"/api/v2/pages/{self.home.public_id}/")
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(set(data), {"page", "copy", "images", "eyebrows", "trivia"})
-        self.assertEqual(data["page"]["id"], self.home.pk)
+        self.assertEqual(data["page"]["id"], str(self.home.public_id))
         self.assertEqual([row["id"] for row in data["copy"]], [first.pk, later.pk])
-        self.assertEqual(data["copy"][0], {"id": first.pk, "page_id": self.home.pk, "key": "first", "section": "intro",
+        self.assertEqual(data["copy"][0], {"id": str(first.public_id), "page_id": str(self.home.public_id), "key": "first", "section": "intro",
                                           "kind": "headline", "value": "First", "sort_order": 0})
-        self.assertEqual(data["eyebrows"], [{"id": label.pk, "page_id": self.home.pk, "label": "Voice actor", "sort_order": 0}])
-        self.assertEqual(data["trivia"], [{"id": fact.pk, "page_id": self.home.pk, "label": "Since", "value": "2012", "sort_order": 0}])
+        self.assertEqual(data["eyebrows"], [{"id": str(label.public_id), "page_id": str(self.home.public_id), "label": "Voice actor", "sort_order": 0}])
+        self.assertEqual(data["trivia"], [{"id": str(fact.public_id), "page_id": str(self.home.public_id), "label": "Since", "value": "2012", "sort_order": 0}])
         image = data["images"][0]
         self.assertEqual(set(image), {"page_id", "key", "image"})
         self.assertEqual(image["image"]["alt_text"], "Elspeth smiling")
-        self.assertEqual(image["image"]["asset"]["url"], "/static/redesign/home.png")
+        self.assertEqual(image["image"]["asset"]["url"], "/static/portfolio/home.png")
         self.assertEqual(image["image"]["asset"]["credit"], "Photographer")
         self.assertEqual(set(image["image"]["asset"]), {"id", "url", "width", "height", "mime_type", "credit", "source_url", "created_at"})
 
@@ -54,20 +54,20 @@ class ContentReadTests(TestCase):
             asset = MediaAsset.objects.create(file=f"uploads/{key}.webp", width=100, height=200, mime_type="image/webp")
             PageImage.objects.create(page=self.home, key=key, asset=asset, alt_text=key)
         with self.assertNumQueries(5):
-            response = self.client.get(f"/api/pages/{self.home.pk}/")
+            response = self.client.get(f"/api/v2/pages/{self.home.public_id}/")
         self.assertEqual([row["image"]["asset"]["url"] for row in response.json()["images"]],
                          ["/media/uploads/portrait.webp", "/media/uploads/detail.webp"])
 
     def test_unknown_and_not_yet_implemented_pages_return_explicit_missing_responses(self):
         for page_id in (999999, Page.objects.get(kind=PageKind.MUSIC).pk):
             with self.subTest(page_id=page_id):
-                response = self.client.get(f"/api/pages/{page_id}/")
+                response = self.client.get(f"/api/v2/pages/{page_id}/")
                 self.assertEqual(response.status_code, 404)
                 self.assertIn("detail", response.json())
 
     def test_read_only_surfaces_cannot_be_changed_anonymously(self):
         before = list(Page.objects.values())
-        for url in ("/api/site/", f"/api/pages/{self.home.pk}/"):
+        for url in ("/api/v2/site/", f"/api/v2/pages/{self.home.public_id}/"):
             with self.subTest(url=url):
                 response = self.client.patch(url, data={"title": "Forbidden"}, content_type="application/json")
                 self.assertEqual(response.status_code, 403)

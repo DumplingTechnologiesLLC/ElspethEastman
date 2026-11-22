@@ -1,7 +1,7 @@
 /** The project's JSON representation at the Django API boundary. */
 export interface ProjectDTO {
-  id: number;
+  id: string;
   src: string;
   title: string;
-  uuid: number | null;
+  uuid: string | null;
 }
