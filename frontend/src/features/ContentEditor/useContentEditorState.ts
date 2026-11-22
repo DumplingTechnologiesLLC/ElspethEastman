@@ -1,4 +1,5 @@
-import { useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
+import { EditorFieldKey } from '../../domain/models/ContentEditor';
 import type { ServiceContainer } from '../../composition/ServiceContainer';
 import type { PageId } from '../../domain/models/Page';
 import { useContentEditorService } from '../../hooks/useContentEditorService';
@@ -8,12 +9,20 @@ export interface ContentEditorWiring {
 }
 export function useContentEditorState(props: ContentEditorWiring) {
   const controller = useContentEditorService(props);
+  useEffect(() => () => controller.cancel(), [controller]);
   const state = useSyncExternalStore(
     controller.subscribe,
     controller.getSnapshot,
     controller.getSnapshot,
   );
-  const { draft, saving, uploading, confirmingDelete, error } = state;
+  const {
+    draft,
+    saving,
+    uploading,
+    attributionLocked,
+    confirmingDelete,
+    error,
+  } = state;
   return {
     form:
       draft === null
@@ -23,6 +32,10 @@ export function useContentEditorState(props: ContentEditorWiring) {
             canDelete: draft.canDelete,
             fields: draft.fields.map((item) => ({
               ...item,
+              disabled:
+                (item.key === EditorFieldKey.Credit ||
+                  item.key === EditorFieldKey.SourceUrl) &&
+                (uploading || attributionLocked),
               error: error?.fields[item.key]?.join(' ') ?? '',
             })),
             image:
@@ -48,6 +61,7 @@ export function useContentEditorState(props: ContentEditorWiring) {
           },
     saving,
     uploading,
+    attributionLocked,
     confirmingDelete,
     errors:
       error === null
