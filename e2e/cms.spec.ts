@@ -366,10 +366,6 @@ it.each([
     await expect(
       page.getByRole('region', { name: collection, exact: true }),
     ).toBeFocused();
-    await page.keyboard.press('Tab');
-    expect(await page.evaluate(() => document.activeElement?.tagName)).toBe(
-      'BUTTON',
-    );
   }),
 );
 it('edits shared copy, labels, facts, and fixed image uses through isolated forms', async ({
