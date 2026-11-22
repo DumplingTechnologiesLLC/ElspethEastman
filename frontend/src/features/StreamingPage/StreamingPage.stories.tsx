@@ -41,14 +41,29 @@ export const streamingPageView = {
       },
     ],
     identities: ['Partner', 'Ambassador', 'Variety'].map((label, id) => ({
-      id,
+      id: `00000000-0000-4000-8000-${id.toString(16).padStart(12, '0')}`,
       label,
       actions: null,
     })),
     trivia: [
-      { id: 1, label: 'Status', value: 'Partner · Ambassador', actions: null },
-      { id: 2, label: 'Streaming since', value: '2014', actions: null },
-      { id: 3, label: 'Audience', value: '181K+ followers', actions: null },
+      {
+        id: '00000000-0000-4000-8000-000000000001',
+        label: 'Status',
+        value: 'Partner · Ambassador',
+        actions: null,
+      },
+      {
+        id: '00000000-0000-4000-8000-000000000002',
+        label: 'Streaming since',
+        value: '2014',
+        actions: null,
+      },
+      {
+        id: '00000000-0000-4000-8000-000000000003',
+        label: 'Audience',
+        value: '181K+ followers',
+        actions: null,
+      },
     ],
     action: {
       label: 'Watch on Twitch',
@@ -70,7 +85,7 @@ export const streamingPageView = {
   ],
   featured: {
     ...tristanaView,
-    id: 1,
+    id: '00000000-0000-4000-8000-000000000001',
     title: 'Collab with @TheNormiesTV',
     eyebrow: 'Latest stream · Collaboration',
     description: 'Joining the push toward one million subscribers.',
@@ -84,19 +99,19 @@ export const streamingPageView = {
   },
   rows: [
     {
-      id: 2,
+      id: '00000000-0000-4000-8000-000000000002',
       title: 'gonna find what was tryna eat me today',
       eyebrow: 'Subnautica 2',
       category: 'Recent stream',
     },
     {
-      id: 3,
+      id: '00000000-0000-4000-8000-000000000003',
       title: 'Meccha Chameleon with pals',
       eyebrow: 'Meccha Chameleon',
       category: 'Recent stream',
     },
     {
-      id: 4,
+      id: '00000000-0000-4000-8000-000000000004',
       title: 'Hookworm Sally',
       eyebrow: 'Wayward RP · Red Dead Redemption II',
       category: 'Roleplay',
@@ -109,8 +124,14 @@ export const streamingPageView = {
     actions: null,
   })),
   clips: [
-    { id: 5, title: 'Elspeth finds the no-no Square' },
-    { id: 6, title: 'Elspeth puts a rude viewer in their place' },
+    {
+      id: '00000000-0000-4000-8000-000000000005',
+      title: 'Elspeth finds the no-no Square',
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000006',
+      title: 'Elspeth puts a rude viewer in their place',
+    },
   ].map((row) => ({
     ...row,
     eyebrow: 'Clip',
@@ -127,7 +148,7 @@ export function StreamingPreview(props: Parameters<typeof StreamingPage>[0]) {
     <Portfolio
       {...portfolioView}
       title="Streaming · Elspeth Eastman"
-      pageId={4}
+      pageId={'00000000-0000-4000-8000-000000000004'}
       pageKind={PageKind.Streaming}
       editor={props.controls !== null}
       authenticated={props.controls !== null}

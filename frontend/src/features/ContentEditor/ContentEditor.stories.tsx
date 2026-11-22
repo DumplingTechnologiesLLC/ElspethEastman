@@ -16,6 +16,7 @@ export const editorView = {
         required: true,
         options: [],
         error: '',
+        disabled: false,
       },
       {
         key: Key.Description,
@@ -25,6 +26,7 @@ export const editorView = {
         required: true,
         options: [],
         error: '',
+        disabled: false,
       },
     ],
     image: { url: streamImage, required: true },
@@ -53,6 +55,7 @@ export const editorView = {
   },
   saving: false,
   uploading: false,
+  attributionLocked: false,
   confirmingDelete: false,
   errors: [],
   change: noop,

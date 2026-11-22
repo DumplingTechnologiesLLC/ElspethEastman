@@ -20,24 +20,52 @@ it('creates independent request-scoped domain aggregates with interface-based ac
   expect(useSiteService(first)).toBe(first.site);
   expect(useMediaService(first)).toBe(first.media);
   expect(first.media).not.toBe(second.media);
-  expect(first.page(1)).not.toBe(second.page(1));
-  expect(first.page(1)).not.toBe(first.page(2));
-  expect(first.editor(1)).not.toBe(second.editor(1));
-  expect(first.editor(1)).not.toBe(first.editor(2));
-  first.editor(1).open({ type: 'settings' });
-  expect(first.editor(1).getSnapshot().draft).toBeNull();
+  expect(first.page('00000000-0000-4000-8000-000000000001')).not.toBe(
+    second.page('00000000-0000-4000-8000-000000000001'),
+  );
+  expect(first.page('00000000-0000-4000-8000-000000000001')).not.toBe(
+    first.page('00000000-0000-4000-8000-000000000002'),
+  );
+  expect(first.editor('00000000-0000-4000-8000-000000000001')).not.toBe(
+    second.editor('00000000-0000-4000-8000-000000000001'),
+  );
+  expect(first.editor('00000000-0000-4000-8000-000000000001')).not.toBe(
+    first.editor('00000000-0000-4000-8000-000000000002'),
+  );
+  first
+    .editor('00000000-0000-4000-8000-000000000001')
+    .open({ type: 'settings' });
+  expect(
+    first.editor('00000000-0000-4000-8000-000000000001').getSnapshot().draft,
+  ).toBeNull();
   const editor = renderHook(useContentEditorService, {
-    initialProps: { services: first, pageId: 1 },
+    initialProps: {
+      services: first,
+      pageId: '00000000-0000-4000-8000-000000000001',
+    },
   });
-  expect(editor.result.current).toBe(first.editor(1));
-  editor.rerender({ services: first, pageId: 1 });
+  expect(editor.result.current).toBe(
+    first.editor('00000000-0000-4000-8000-000000000001'),
+  );
+  editor.rerender({
+    services: first,
+    pageId: '00000000-0000-4000-8000-000000000001',
+  });
   const page = renderHook(usePageService, {
-    initialProps: { services: first, pageId: 1 },
+    initialProps: {
+      services: first,
+      pageId: '00000000-0000-4000-8000-000000000001',
+    },
   });
-  expect(page.result.current).toBe(first.page(1));
-  page.rerender({ services: first, pageId: 1 });
+  expect(page.result.current).toBe(
+    first.page('00000000-0000-4000-8000-000000000001'),
+  );
+  page.rerender({
+    services: first,
+    pageId: '00000000-0000-4000-8000-000000000001',
+  });
   expect(page.result.current.getSnapshot()).toMatchObject({
-    pageId: 1,
+    pageId: '00000000-0000-4000-8000-000000000001',
     status: 'idle',
   });
   expect(useSessionService(first)).toBe(first.session);
@@ -74,16 +102,30 @@ it('binds navigation, token storage and timers to its owning window', async () =
   expect(window.sessionStorage.getItem(tokenKey)).toBe('abc');
   services.session.navigate('/voiceover');
   expect(services.session.getSnapshot().path).toBe('/voiceover');
-  services.session.navigate('/voiceover?role=4#roles');
-  expect(services.session.getSnapshot().path).toBe('/voiceover?role=4#roles');
+  services.session.navigate(
+    '/voiceover?role=00000000-0000-4000-8000-000000000004#roles',
+  );
+  expect(services.session.getSnapshot().path).toBe(
+    '/voiceover?role=00000000-0000-4000-8000-000000000004#roles',
+  );
   const historyLength = window.history.length;
-  services.session.replace('/voiceover?role=5#roles');
+  services.session.replace(
+    '/voiceover?role=00000000-0000-4000-8000-000000000005#roles',
+  );
   expect(window.history.length).toBe(historyLength);
-  expect(services.session.getSnapshot().path).toBe('/voiceover?role=5#roles');
+  expect(services.session.getSnapshot().path).toBe(
+    '/voiceover?role=00000000-0000-4000-8000-000000000005#roles',
+  );
   window.dispatchEvent(new PopStateEvent('popstate'));
-  window.history.replaceState(null, '', '/voiceover?role=5#changed');
+  window.history.replaceState(
+    null,
+    '',
+    '/voiceover?role=00000000-0000-4000-8000-000000000005#changed',
+  );
   window.dispatchEvent(new HashChangeEvent('hashchange'));
-  expect(services.session.getSnapshot().path).toBe('/voiceover?role=5#changed');
+  expect(services.session.getSnapshot().path).toBe(
+    '/voiceover?role=00000000-0000-4000-8000-000000000005#changed',
+  );
   window.dispatchEvent(new StorageEvent('storage'));
   await Promise.resolve();
   fetcher.mockImplementation(async () => new Response('{}', { status: 200 }));

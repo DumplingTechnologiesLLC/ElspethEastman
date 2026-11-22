@@ -63,6 +63,7 @@ export function ContentEditor({
   form,
   saving,
   uploading,
+  attributionLocked,
   confirmingDelete,
   errors,
   change,
@@ -155,6 +156,12 @@ export function ContentEditor({
                   />
                 </label>
                 {uploading && <span role="status">Uploading image…</span>}
+                {attributionLocked && (
+                  <p {...stylex.props(css.hint)}>
+                    Credit and source were saved with this upload. Remove the
+                    image to change its attribution.
+                  </p>
+                )}
                 {form.image.url !== null && (
                   <Button
                     variant="secondary"
@@ -174,7 +181,7 @@ export function ContentEditor({
                 kind={item.kind}
                 options={item.options}
                 required={item.required}
-                disabled={saving}
+                disabled={saving || item.disabled}
                 error={item.error}
                 onChange={(next) => change(item.key, next)}
               />

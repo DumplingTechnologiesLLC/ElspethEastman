@@ -1,0 +1,20 @@
+import { expect, it } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { fixturePorts } from '../../../../../test/fakes';
+import { ContactFormWired } from '../ContactForm.wired';
+it('keeps focus in the name field while correcting an empty submitted wired form', async () => {
+  const user = userEvent.setup();
+  const services = fixturePorts().services();
+  render(<ContactFormWired services={services} />);
+  await user.click(screen.getByRole('button', { name: 'Send message' }));
+  const name = screen.getByLabelText('Name');
+  expect(name).toHaveFocus();
+  await user.type(name, 'Alex Visitor');
+  expect(name).toHaveFocus();
+  expect(name).toHaveValue('Alex Visitor');
+  expect(screen.getByLabelText('Email')).toHaveValue('');
+  await user.click(screen.getByRole('button', { name: 'Send message' }));
+  expect(screen.getByLabelText('Email')).toHaveFocus();
+  services.dispose();
+});

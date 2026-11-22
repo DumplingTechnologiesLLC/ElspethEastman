@@ -11,7 +11,7 @@ interface DatabaseSnapshot {
   skills: readonly unknown[];
   affiliations: readonly unknown[];
   contacts: (ContactDraft & { sent: boolean })[];
-  experience: { id: number; credit: string }[];
+  experience: { id: string; credit: string }[];
 }
 
 function database(
@@ -53,7 +53,7 @@ async function login(page: Page, ui = false, path = '/cms') {
     await page.getByLabel(/^Password/).fill('e2e-only-password');
     await page.getByRole('button', { name: 'Login', exact: true }).click();
   } else {
-    const response = await page.request.post('/api/session/login/', {
+    const response = await page.request.post('/api/v2/session/login/', {
       data: { username: 'e2e-editor', password: 'e2e-only-password' },
     });
     expect(response.status()).toBe(200);
@@ -70,11 +70,13 @@ async function login(page: Page, ui = false, path = '/cms') {
   await stablePage(page);
 }
 async function aggregate(page: Page, kind: string): Promise<PageContentDTO> {
-  const site = await page.request.get('/api/site/');
+  const site = await page.request.get('/api/v2/site/');
   expect(site.status()).toBe(200);
   const registry = (await site.json()) as { pages: PageDTO[] };
   const descriptor = registry.pages.find((row) => row.kind === kind)!;
-  const response = await page.request.get('/api/pages/' + descriptor.id + '/');
+  const response = await page.request.get(
+    '/api/v2/pages/' + descriptor.id + '/',
+  );
   expect(response.status()).toBe(200);
   return response.json() as Promise<PageContentDTO>;
 }

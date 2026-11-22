@@ -38,10 +38,10 @@ it('persists anonymous contact through Django and clears after success', async (
   await fillContact(dialog);
   const sent = page.waitForRequest(
     (request) =>
-      new URL(request.url()).pathname === '/api/contact-me/' &&
+      new URL(request.url()).pathname === '/api/v2/contact/' &&
       request.method() === 'POST',
   );
-  const result = await actionResponse(page, 'POST', '/api/contact-me/', () =>
+  const result = await actionResponse(page, 'POST', '/api/v2/contact/', () =>
     dialog.getByRole('button', { name: 'Send message' }).click(),
   );
   expect((await sent).headers()).not.toHaveProperty('authorization');
@@ -64,6 +64,32 @@ it('persists anonymous contact through Django and clears after success', async (
   ]);
 });
 
+it('keeps typing in each contact field after required-field validation', async ({
+  page,
+}) => {
+  const form = await contact(page);
+  const name = form.getByLabel(/^Name/);
+  const email = form.getByLabel(/^Email/);
+  const message = form.getByLabel(/^Message/);
+  const submit = form.getByRole('button', { name: 'Send message' });
+  await submit.click();
+  await expect(name).toBeFocused();
+  await name.pressSequentially('Alex Visitor');
+  await expect(name).toHaveValue('Alex Visitor');
+  await expect(name).toBeFocused();
+  await expect(message).toHaveValue('');
+  await submit.click();
+  await expect(email).toBeFocused();
+  await email.pressSequentially('alex@example.invalid');
+  await expect(email).toHaveValue('alex@example.invalid');
+  await expect(email).toBeFocused();
+  await message.click();
+  await message.pressSequentially('A complete message.');
+  await expect(message).toHaveValue('A complete message.');
+  await expect(message).toBeFocused();
+  expect(database().contacts).toEqual([]);
+});
+
 it('disables contact submission while its real request is pending', async ({
   page,
 }) => {
@@ -73,13 +99,13 @@ it('disables contact submission while its real request is pending', async ({
   const pending = new Promise<void>((resolve) => {
     release = resolve;
   });
-  await page.route('**/api/contact-me/', async (route) => {
+  await page.route('**/api/v2/contact/', async (route) => {
     await pending;
     await route.continue();
   });
   const response = page.waitForResponse(
     (pendingResponse) =>
-      new URL(pendingResponse.url()).pathname === '/api/contact-me/',
+      new URL(pendingResponse.url()).pathname === '/api/v2/contact/',
   );
   const submit = dialog.getByRole('button', { name: 'Send message' });
   try {
@@ -104,7 +130,7 @@ it('retains the draft and returns Django validation for invalid email', async ({
   await actionResponse(
     page,
     'POST',
-    '/api/contact-me/',
+    '/api/v2/contact/',
     () => dialog.getByRole('button', { name: 'Send message' }).click(),
     400,
   );
@@ -126,7 +152,7 @@ it.each(['server', 'network'] as const)((failure) =>
             body: '{}',
           })
         : route.abort('failed');
-    await page.route('**/api/contact-me/', fail);
+    await page.route('**/api/v2/contact/', fail);
     await fillContact(dialog);
     await dialog.getByRole('button', { name: 'Send message' }).click();
     await expect(
@@ -139,8 +165,8 @@ it.each(['server', 'network'] as const)((failure) =>
       'An isolated integration test message.',
     );
     expect(database().contacts).toEqual([]);
-    await page.unroute('**/api/contact-me/', fail);
-    await actionResponse(page, 'POST', '/api/contact-me/', () =>
+    await page.unroute('**/api/v2/contact/', fail);
+    await actionResponse(page, 'POST', '/api/v2/contact/', () =>
       dialog.getByRole('button', { name: 'Send message' }).click(),
     );
     expect(database().contacts).toHaveLength(1);

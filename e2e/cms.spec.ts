@@ -6,7 +6,7 @@ const cases = [
     kind: 'voiceover',
     add: 'Add role',
     name: 'Character',
-    endpoint: 'content-entries',
+    endpoint: 'content/entries',
     image: true,
     fields: {
       Character: 'New role',
@@ -18,7 +18,7 @@ const cases = [
     kind: 'music',
     add: 'Add release',
     name: 'Title',
-    endpoint: 'music-releases',
+    endpoint: 'music/releases',
     image: true,
     fields: {
       Year: '2026',
@@ -33,7 +33,7 @@ const cases = [
     kind: 'streaming',
     add: 'Add stream',
     name: 'Title',
-    endpoint: 'content-entries',
+    endpoint: 'content/entries',
     image: false,
     fields: {
       Title: 'New stream',
@@ -47,7 +47,7 @@ const cases = [
     kind: 'streaming',
     add: 'Add clip',
     name: 'Title',
-    endpoint: 'stream-clips',
+    endpoint: 'streaming/clips',
     image: false,
     fields: {
       Title: 'New clip',
@@ -61,7 +61,7 @@ const cases = [
     kind: 'press',
     add: 'Add coverage',
     name: 'Title',
-    endpoint: 'content-entries',
+    endpoint: 'content/entries',
     image: true,
     fields: {
       Title: 'New coverage',
@@ -76,7 +76,7 @@ const cases = [
     kind: 'press',
     add: 'Add appearance',
     name: 'Title',
-    endpoint: 'appearances',
+    endpoint: 'press/appearances',
     image: false,
     fields: { Year: '2026', Title: 'New appearance', Format: 'Panel' },
   },
@@ -84,7 +84,7 @@ const cases = [
     kind: 'bio',
     add: 'Add chapter',
     name: 'Heading',
-    endpoint: 'bio-chapters',
+    endpoint: 'bio/chapters',
     image: false,
     fields: {
       Eyebrow: 'New chapter',
@@ -96,7 +96,7 @@ const cases = [
     kind: 'bio',
     add: 'Add current work',
     name: 'Title',
-    endpoint: 'current-items',
+    endpoint: 'bio/current',
     image: false,
     fields: {
       Eyebrow: 'Activity',
@@ -116,7 +116,7 @@ async function publish(
   path: string,
   status = 200,
 ) {
-  const result = await actionResponse<{ id: number }>(
+  const result = await actionResponse<{ id: string }>(
     page,
     method,
     path,
@@ -158,7 +158,7 @@ it.each(cases)((item) =>
     if (item.image) {
       await dialog
         .getByLabel('Choose image')
-        .setInputFiles('portfolio/static/redesign/v1/tristana.jpg');
+        .setInputFiles('portfolio/static/portfolio/v1/tristana.jpg');
       await expect(
         dialog.getByRole('img', { name: 'Current image preview' }),
       ).toBeVisible();
@@ -170,7 +170,7 @@ it.each(cases)((item) =>
       page,
       dialog,
       'POST',
-      '/api/' + item.endpoint + '/',
+      '/api/v2/' + item.endpoint + '/',
       201,
     );
     const fields: Readonly<Record<string, string>> = item.fields;
@@ -187,7 +187,7 @@ it.each(cases)((item) =>
       page,
       page.getByRole('dialog'),
       'PATCH',
-      '/api/' + item.endpoint + '/' + created.id + '/',
+      '/api/v2/' + item.endpoint + '/' + created.id + '/',
     );
     expect(saved.id).toBe(created.id);
     await page.reload();
@@ -197,7 +197,7 @@ it.each(cases)((item) =>
     await remove(
       page,
       updated,
-      '/api/' + item.endpoint + '/' + created.id + '/',
+      '/api/v2/' + item.endpoint + '/' + created.id + '/',
     );
   }),
 );
@@ -220,7 +220,12 @@ it('edits page metadata without losing identity, selection, or query state', asy
     'Action label': 'Reel',
     'Action URL': 'https://example.invalid/reel-updated',
   });
-  await publish(page, dialog, 'PATCH', '/api/pages/' + content.page.id + '/');
+  await publish(
+    page,
+    dialog,
+    'PATCH',
+    '/api/v2/pages/' + content.page.id + '/',
+  );
   await expect(page).toHaveURL('/cms/characters?role=' + id + '#roles');
   await expect(
     page
@@ -245,7 +250,9 @@ it('reconciles promotion and complete ordering without refetching, then closes d
   let reads = 0;
   page.on('request', (request) => {
     if (
-      /^\/api\/pages\/\d+\/$/.test(new URL(request.url()).pathname) &&
+      /^\/api\/v2\/pages\/[0-9a-f-]{36}\/$/i.test(
+        new URL(request.url()).pathname,
+      ) &&
       request.method() === 'GET'
     )
       reads++;
@@ -257,13 +264,13 @@ it('reconciles promotion and complete ordering without refetching, then closes d
     name: 'Cadence editor controls',
     exact: true,
   });
-  await actionResponse(page, 'PATCH', '/api/featured-items/', () =>
+  await actionResponse(page, 'PATCH', '/api/v2/content/features/', () =>
     group.getByRole('button', { name: 'Feature', exact: true }).click(),
   );
   await expect(page.getByRole('button', { name: 'Open Cadence' })).toHaveCount(
     2,
   );
-  await actionResponse(page, 'PATCH', '/api/collections/reorder/', () =>
+  await actionResponse(page, 'PATCH', '/api/v2/collections/reorder/', () =>
     page
       .getByRole('group', { name: 'Cadence editor controls', exact: true })
       .last()
@@ -274,7 +281,7 @@ it('reconciles promotion and complete ordering without refetching, then closes d
   expect('roles' in saved ? saved.roles[0]!.id : 0).toBe(target.id);
   expect(reads).toBe(0);
   await page.getByRole('button', { name: 'Open Cadence' }).first().click();
-  await remove(page, 'Cadence', '/api/content-entries/' + target.id + '/');
+  await remove(page, 'Cadence', '/api/v2/content/entries/' + target.id + '/');
   await expect(page.getByRole('button', { name: 'Close detail' })).toHaveCount(
     0,
   );
@@ -304,7 +311,7 @@ it('edits the music singleton without changing release membership', async ({
   await expect(
     dialog.getByRole('button', { name: 'Add row', exact: true }),
   ).toBeDisabled();
-  await publish(page, dialog, 'PATCH', '/api/music-features/');
+  await publish(page, dialog, 'PATCH', '/api/v2/music/features/');
   const after = await aggregate(page, 'music');
   expect(
     'releases' in after && 'releases' in before ? after.releases : [],
@@ -313,6 +320,54 @@ it('edits the music singleton without changing release membership', async ({
     'feature' in after && 'title' in after.feature ? after.feature.title : '',
   ).toBe('Piano practice');
 });
+
+it.each([
+  ['voiceover', 'role', 'Tristana', 'Roles'],
+  ['press', 'entry', 'Finding her voice again', 'Coverage'],
+] as const)(([kind, parameter, title, collection]) =>
+  it(`restores ${kind} collection focus after deleting the selected entry through a native modal`, async ({
+    page,
+  }) => {
+    await login(page, false, '/cms/' + kind);
+    const content = await aggregate(page, kind);
+    const entries =
+      'roles' in content
+        ? content.roles
+        : 'entries' in content
+          ? content.entries
+          : [];
+    const selected = entries.find((entry) => entry.title === title)!;
+    await page
+      .getByRole('button', { name: 'Open ' + title, exact: true })
+      .click();
+    await expect(page).toHaveURL(
+      '/cms/' + kind + '?' + parameter + '=' + selected.id,
+    );
+    const detail = page.getByRole('region', { name: title, exact: true });
+    await expect(detail).toBeFocused();
+    await detail
+      .getByRole('button', { name: 'Delete ' + title, exact: true })
+      .click();
+    const dialog = page.locator('dialog[open]');
+    await expect(dialog).toBeVisible();
+    expect(await dialog.evaluate((element) => element.matches(':modal'))).toBe(
+      true,
+    );
+    await actionResponse(
+      page,
+      'DELETE',
+      '/api/v2/content/entries/' + selected.id + '/',
+      () => dialog.getByRole('button', { name: 'Delete permanently' }).click(),
+      204,
+    );
+    await expect(dialog).toHaveCount(0);
+    await expect(detail).toHaveCount(0);
+    await expect(page).toHaveURL('/cms/' + kind);
+    await expect(
+      page.getByRole('region', { name: collection, exact: true }),
+    ).toBeFocused();
+  }),
+);
 it('edits shared copy, labels, facts, and fixed image uses through isolated forms', async ({
   page,
 }) => {
@@ -321,7 +376,7 @@ it('edits shared copy, labels, facts, and fixed image uses through isolated form
   let dialog = page.getByRole('dialog');
   await dialog.getByLabel(/^Text treatment/).selectOption('body');
   await dialog.getByLabel(/^Text \*/).fill('New home paragraph');
-  await publish(page, dialog, 'POST', '/api/copy/', 201);
+  await publish(page, dialog, 'POST', '/api/v2/pages/copy/', 201);
   await expect(
     page.getByText('New home paragraph', { exact: true }),
   ).toBeVisible();
@@ -330,14 +385,25 @@ it('edits shared copy, labels, facts, and fixed image uses through isolated form
     .click();
   dialog = page.getByRole('dialog');
   await fill(dialog, { Label: 'Creator' });
-  const label = await publish(page, dialog, 'POST', '/api/eyebrows/', 201);
+  const label = await publish(
+    page,
+    dialog,
+    'POST',
+    '/api/v2/pages/eyebrows/',
+    201,
+  );
   await page
     .getByRole('button', { name: 'Edit identity label' })
     .last()
     .click();
   dialog = page.getByRole('dialog');
   await fill(dialog, { Label: 'Performer' });
-  await publish(page, dialog, 'PATCH', '/api/eyebrows/' + label.id + '/');
+  await publish(
+    page,
+    dialog,
+    'PATCH',
+    '/api/v2/pages/eyebrows/' + label.id + '/',
+  );
   await page
     .getByRole('button', { name: 'Edit hero image', exact: true })
     .click();
@@ -346,7 +412,7 @@ it('edits shared copy, labels, facts, and fixed image uses through isolated form
     'Image alt text': 'Updated portrait alt',
     'Image caption': 'Portrait caption',
   });
-  await publish(page, dialog, 'PATCH', '/api/page-images/');
+  await publish(page, dialog, 'PATCH', '/api/v2/pages/images/');
   await expect(
     page.getByRole('img', { name: 'Updated portrait alt' }),
   ).toBeVisible();
@@ -354,7 +420,7 @@ it('edits shared copy, labels, facts, and fixed image uses through isolated form
   await page.getByRole('button', { name: 'Add fact', exact: true }).click();
   dialog = page.getByRole('dialog');
   await fill(dialog, { Label: 'Instrument', Value: 'Cello' });
-  await publish(page, dialog, 'POST', '/api/trivia/', 201);
+  await publish(page, dialog, 'POST', '/api/v2/pages/trivia/', 201);
   await expect(page.getByText('Instrument', { exact: true })).toBeVisible();
 });
 it('retains failed drafts and canonical data, disables duplicate writes, and traps modal focus', async ({
@@ -366,7 +432,7 @@ it('retains failed drafts and canonical data, disables duplicate writes, and tra
     .click();
   const dialog = page.getByRole('dialog');
   await fill(dialog, { Character: 'Retained draft' });
-  await page.route('**/api/content-entries/*/', (route) =>
+  await page.route('**/api/v2/content/entries/*/', (route) =>
     route.request().method() === 'PATCH'
       ? route.fulfill({
           status: 400,
@@ -383,7 +449,7 @@ it('retains failed drafts and canonical data, disables duplicate writes, and tra
   ).toBeVisible();
   await expect(dialog.getByLabel(/^Character/)).toHaveValue('Retained draft');
   await expect(dialog.getByLabel(/^Character/)).toBeFocused();
-  await page.unroute('**/api/content-entries/*/');
+  await page.unroute('**/api/v2/content/entries/*/');
   for (let index = 0; index < 24; index++) {
     await page.keyboard.press('Tab');
     expect(
@@ -397,7 +463,7 @@ it('retains failed drafts and canonical data, disables duplicate writes, and tra
     release = resolve;
   });
   let writes = 0;
-  await page.route('**/api/content-entries/*/', async (route) => {
+  await page.route('**/api/v2/content/entries/*/', async (route) => {
     if (route.request().method() === 'PATCH') {
       writes++;
       await pending;
@@ -407,7 +473,7 @@ it('retains failed drafts and canonical data, disables duplicate writes, and tra
   const response = page.waitForResponse(
     (pendingResponse) =>
       pendingResponse.request().method() === 'PATCH' &&
-      pendingResponse.url().includes('/api/content-entries/'),
+      pendingResponse.url().includes('/api/v2/content/entries/'),
   );
   await dialog.getByRole('button', { name: 'Publish changes' }).click();
   await expect(
@@ -447,7 +513,7 @@ it.each(['server', 'network'] as const)((failure) =>
       .click();
     const dialog = page.getByRole('dialog');
     await fill(dialog, { Character: 'Retry draft' });
-    await page.route('**/api/content-entries/*/', (route) =>
+    await page.route('**/api/v2/content/entries/*/', (route) =>
       route.request().method() !== 'PATCH'
         ? route.continue()
         : failure === 'server'
@@ -462,9 +528,9 @@ it.each(['server', 'network'] as const)((failure) =>
     await expect(dialog.getByLabel(/^Character/)).toHaveValue('Retry draft');
     const current = await aggregate(page, 'voiceover');
     expect('roles' in current ? current.roles[0]!.title : '').toBe('Tristana');
-    await page.unroute('**/api/content-entries/*/');
+    await page.unroute('**/api/v2/content/entries/*/');
     const id = 'roles' in current ? current.roles[0]!.id : 0;
-    await publish(page, dialog, 'PATCH', '/api/content-entries/' + id + '/');
+    await publish(page, dialog, 'PATCH', '/api/v2/content/entries/' + id + '/');
     await expect(
       page.getByRole('button', { name: 'Edit Retry draft', exact: true }),
     ).toBeVisible();
@@ -484,7 +550,7 @@ it('rejects corrupt media without replacing the current image, then associates a
   await actionResponse(
     page,
     'POST',
-    '/api/media-assets/',
+    '/api/v2/media/assets/',
     () =>
       dialog.getByLabel('Choose image').setInputFiles({
         name: 'invalid.jpg',
@@ -499,7 +565,7 @@ it('rejects corrupt media without replacing the current image, then associates a
   ).toHaveAttribute('src', entry!.image!.asset.url);
   await dialog
     .getByLabel('Choose image')
-    .setInputFiles('portfolio/static/redesign/v1/tristana.jpg');
+    .setInputFiles('portfolio/static/portfolio/v1/tristana.jpg');
   await expect(
     dialog.getByRole('img', { name: 'Current image preview' }),
   ).toHaveAttribute('src', /\/media\/uploads\//);
@@ -507,10 +573,60 @@ it('rejects corrupt media without replacing the current image, then associates a
     page,
     dialog,
     'PATCH',
-    '/api/content-entries/' + entry!.id + '/',
+    '/api/v2/content/entries/' + entry!.id + '/',
   );
   const after = await aggregate(page, 'voiceover');
   expect('roles' in after ? after.roles[0]!.image!.asset.id : 0).not.toBe(
     entry!.image!.asset.id,
   );
 });
+
+it.each(['123456', '123000'] as const)((fraction) =>
+  it(`preserves a persisted publication timestamp with .${fraction} when editing another field`, async ({
+    page,
+  }) => {
+    await login(page, false, '/cms/press');
+    const before = await aggregate(page, 'press');
+    const entry =
+      'entries' in before
+        ? before.entries.find((row) => row.title === 'Finding her voice again')!
+        : null;
+    expect(entry).not.toBeNull();
+    const token = await page.evaluate(() =>
+      sessionStorage.getItem('ElspethEastmanAuthToken'),
+    );
+    const timestamp = `2026-04-04T12:00:00.${fraction}Z`;
+    const response = await page.request.patch(
+      '/api/v2/content/entries/' + entry!.id + '/',
+      {
+        headers: { Authorization: `Token ${token}` },
+        data: { published_at: timestamp },
+      },
+    );
+    expect(response.status()).toBe(200);
+    await page.reload();
+    await page
+      .getByRole('button', {
+        name: 'Edit Finding her voice again',
+        exact: true,
+      })
+      .click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog.getByLabel(/^Published at/)).toHaveValue(
+      '2026-04-04T12:00:00.123',
+    );
+    await dialog.getByLabel(/^Title/).fill('Same publication, updated title');
+    await publish(
+      page,
+      dialog,
+      'PATCH',
+      '/api/v2/content/entries/' + entry!.id + '/',
+    );
+    const after = await aggregate(page, 'press');
+    const saved =
+      'entries' in after
+        ? after.entries.find((row) => row.id === entry!.id)
+        : null;
+    expect(saved?.published_at).toBe(timestamp);
+  }),
+);

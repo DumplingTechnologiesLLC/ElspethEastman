@@ -39,7 +39,7 @@ it('validates required credentials and keeps failed logins outside CMS', async (
   await actionResponse(
     page,
     'POST',
-    '/api/session/login/',
+    '/api/v2/session/login/',
     () => page.getByLabel(/^Password/).press('Enter'),
     400,
   );

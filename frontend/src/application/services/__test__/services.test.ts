@@ -43,7 +43,7 @@ describe('notifications and API contracts', () => {
       expect((await service.request('/path')).status).toBe(
         [null, 500, 403].includes(status) ? null : status,
       );
-      await service.request('/api/contact-me/', 'POST', {});
+      await service.request('/api/v2/contact/', 'POST', {});
       await service.request('/x', 'PATCH', {});
       expect(http.request).toHaveBeenLastCalledWith('/x', 'PATCH', {}, true);
     },
@@ -71,7 +71,7 @@ describe('contact submission', () => {
     await service.submit();
     expect(api.request).toHaveBeenCalledOnce();
     await pending;
-    expect(api.request).toHaveBeenCalledWith('/api/contact-me/', 'POST', {
+    expect(api.request).toHaveBeenCalledWith('/api/v2/contact/', 'POST', {
       name: 'Visitor',
       email: 'visitor@example.invalid',
       message: 'Hello',
@@ -213,7 +213,7 @@ describe('sessions', () => {
     expect(service.getSnapshot().authenticated).toBe(false);
     expect(ports.tokens.read()).toBeNull();
     expect(ports.http.request).not.toHaveBeenCalledWith(
-      '/api/session/logout/',
+      '/api/v2/session/logout/',
       expect.anything(),
       expect.anything(),
       expect.anything(),

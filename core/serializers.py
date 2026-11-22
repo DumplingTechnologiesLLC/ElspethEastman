@@ -8,6 +8,7 @@ from core.models import (
 
 
 class ExperienceCreationSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="public_id", read_only=True)
 
     class Meta:
         model = Experience
@@ -25,6 +26,7 @@ class ExperienceCreationSerializer(serializers.ModelSerializer):
 
 
 class ExperienceSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="public_id", read_only=True)
 
     year = serializers.SerializerMethodField()
 
@@ -43,6 +45,7 @@ class ExperienceSerializer(serializers.ModelSerializer):
 
 
 class AffiliationSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="public_id", read_only=True)
 
     class Meta:
         model = Affiliations
@@ -54,6 +57,7 @@ class AffiliationSerializer(serializers.ModelSerializer):
 
 
 class FooterStatSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="public_id", read_only=True)
 
     class Meta:
         model = FooterStat
@@ -66,6 +70,8 @@ class FooterStatSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    uuid = serializers.UUIDField(source="public_id", read_only=True)
+    id = serializers.UUIDField(source="public_id", read_only=True)
 
     class Meta:
         model = Project
@@ -78,6 +84,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="public_id", read_only=True)
 
     class Meta:
         model = Contact
