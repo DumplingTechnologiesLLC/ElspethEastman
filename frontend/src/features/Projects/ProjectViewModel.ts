@@ -1,8 +1,8 @@
 export interface ProjectViewModel {
-  id: number;
+  id: string;
   src: string;
   title: string;
-  uuid: number | null;
+  uuid: string | null;
   thumbnail: string;
   embed: string;
 }

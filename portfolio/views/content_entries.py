@@ -19,15 +19,15 @@ class ContentEntryAPIView(ContentAPIView):
 
 class ContentEntryDetailAPIView(ContentAPIView):
     def patch(self, request, item_id):
-        page_id = get_object_or_404(ContentEntry, pk=item_id).page_id
+        page_id = get_object_or_404(ContentEntry, collection="entries", public_id=item_id).page_id
         with locked_page(page_id) as page:
-            row = get_object_or_404(ContentEntry, pk=item_id)
+            row = get_object_or_404(ContentEntry, collection="entries", public_id=item_id)
             serializer = ContentEntryPatchSerializer(row, data=request.data, partial=True, context={"page": page})
             serializer.is_valid(raise_exception=True)
             return Response(ContentEntrySerializer(serializer.save()).data)
 
     def delete(self, request, item_id):
-        page_id = get_object_or_404(ContentEntry, pk=item_id).page_id
+        page_id = get_object_or_404(ContentEntry, collection="entries", public_id=item_id).page_id
         with locked_page(page_id):
-            get_object_or_404(ContentEntry, pk=item_id).delete()
+            get_object_or_404(ContentEntry, collection="entries", public_id=item_id).delete()
         return Response(status=204)

@@ -116,7 +116,7 @@ export class ExperienceService
     } else if (reply.status === 400 && reply.data)
       this.patch({ errors: reply.data });
   };
-  remove = async (category: Category, id: number) => {
+  remove = async (category: Category, id: string) => {
     if (!this.confirm()) return;
     const reply = await this.api.request(`/api/experience/${id}/`, 'DELETE');
     const alert = getSubmissionAlert(reply.status, {

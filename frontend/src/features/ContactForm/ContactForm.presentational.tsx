@@ -48,9 +48,12 @@ export function ContactForm({
   submit,
 }: ReturnType<typeof useContactFormState>) {
   const ref = useRef<HTMLFormElement>(null);
+  const focusOnValidation = useRef(false);
   useEffect(() => {
-    if (Object.values(errors).some(Boolean))
-      ref.current!.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+    if (!focusOnValidation.current || !Object.values(errors).some(Boolean))
+      return;
+    focusOnValidation.current = false;
+    ref.current!.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
   }, [errors]);
   return (
     <form
@@ -60,6 +63,7 @@ export function ContactForm({
       noValidate
       onSubmit={(event) => {
         event.preventDefault();
+        focusOnValidation.current = true;
         void submit();
       }}
     >

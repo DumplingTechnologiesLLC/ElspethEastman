@@ -71,7 +71,7 @@ export function withFeaturedItem(
     : { ...content, entries, feature };
 }
 
-export function withoutEntry(content: PageContent, id: number): PageContent {
+export function withoutEntry(content: PageContent, id: string): PageContent {
   if (!isFeaturedPage(content)) return content;
   const rows =
     content.kind === PageKind.Voiceover ? content.roles : content.entries;

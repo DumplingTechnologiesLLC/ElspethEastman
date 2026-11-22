@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import sys
+from uuid import UUID
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -60,15 +61,19 @@ def reset():
         FooterStat(value='30+', label='Fixture broadcasts', percent=90),
     ])
 
+    for model in (Project, Experience, FooterStat, Affiliations, Skills):
+        for record in model.objects.all():
+            model.objects.filter(pk=record.pk).update(public_id=UUID(f'00000000-0000-4000-8000-{record.pk:012x}'))
+
 
 def inspect():
     from core.models import Affiliations, Contact, Experience, Project, Skills
     print(json.dumps({
         'contacts': list(Contact.objects.values('name', 'email', 'message', 'sent')),
-        'projects': list(Project.objects.order_by('-uuid').values('id', 'title', 'src', 'uuid')),
+        'projects': [{'id': str(record.public_id), 'title': record.title, 'src': record.src, 'uuid': str(record.public_id)} for record in Project.objects.order_by('-uuid')],
         'skills': list(Skills.objects.values('voice_acting', 'game_development', 'streaming')),
-        'experience': list(Experience.objects.values('id', 'credit', 'category', 'year', 'tba', 'link')),
-        'affiliations': list(Affiliations.objects.values('id', 'affiliation', 'link')),
+        'experience': [{'id': str(row.pop('public_id')), **row} for row in Experience.objects.values('public_id', 'credit', 'category', 'year', 'tba', 'link')],
+        'affiliations': [{'id': str(row.pop('public_id')), **row} for row in Affiliations.objects.values('public_id', 'affiliation', 'link')],
     }))
 
 

@@ -81,7 +81,7 @@ export class ProjectsService
         ? { draft: blank() }
         : { errors: { ...this.getSnapshot().errors, [NEW_PROJECT_ID]: {} } }),
     });
-  change = (id: number, key: 'src' | 'title', value: string) => {
+  change = (id: string, key: 'src' | 'title', value: string) => {
     const { draft, projects, errors } = this.getSnapshot();
     const fieldErrors = { ...errors[id] };
     delete fieldErrors[key];
@@ -100,7 +100,7 @@ export class ProjectsService
         errors: { ...errors, [id]: fieldErrors },
       });
   };
-  reset = (id: number) => {
+  reset = (id: string) => {
     const { cached, projects, errors } = this.getSnapshot();
     this.patch(
       id === NEW_PROJECT_ID
@@ -115,13 +115,13 @@ export class ProjectsService
           },
     );
   };
-  private busy(id: number, value: boolean) {
+  private busy(id: string, value: boolean) {
     const busy = this.getSnapshot().busy;
     this.patch({
       busy: value ? [...busy, id] : busy.filter((item) => item !== id),
     });
   }
-  save = async (id: number) => {
+  save = async (id: string) => {
     const { draft, projects } = this.getSnapshot();
     const project =
       id === NEW_PROJECT_ID ? draft : projects.find((item) => item.id === id);
@@ -129,7 +129,7 @@ export class ProjectsService
     this.busy(id, true);
     const reply = await this.api.request<{
       project: ProjectDTO;
-      id: number;
+      id: string;
       errors: Errors;
     }>(
       '/api/projects/list/' + (id === NEW_PROJECT_ID ? '' : `${id}/`),
@@ -187,7 +187,7 @@ export class ProjectsService
     const reply = await this.api.request<{
       message?: string;
       error?: string;
-      id: number;
+      id: string;
       errors: Errors;
     }>('/api/projects/list/batch_update/', 'PATCH', projects.map(toProjectDTO));
     this.patch({ busy: [] });
@@ -201,7 +201,7 @@ export class ProjectsService
       this.patch({ errors: { ...errors, [reply.data.id]: reply.data.errors } });
     else if (reply.status === 200) this.patch({ cached: projects });
   };
-  remove = async (id: number) => {
+  remove = async (id: string) => {
     if (!this.confirm()) return;
     this.busy(id, true);
     const reply = await this.api.request(`/api/projects/list/${id}/`, 'DELETE');
