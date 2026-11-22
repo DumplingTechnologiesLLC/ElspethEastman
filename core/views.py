@@ -92,7 +92,7 @@ class SkillViewSet(
         queryset = self.get_queryset()
         lookup = {}
         for field in self.model._meta.fields:
-            if field.name == 'id':
+            if field.name in ('id', 'public_id'):
                 continue
             regex = re.compile(r'(?<=_)([a-zA-Z])')
 
