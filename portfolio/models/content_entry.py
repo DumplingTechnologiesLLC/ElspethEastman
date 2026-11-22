@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 from .media_asset import MediaAsset
@@ -5,6 +6,7 @@ from .page import Page
 
 
 class ContentEntry(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="entries")
     title = models.CharField(max_length=300)
     eyebrow = models.CharField(max_length=300)
@@ -32,6 +34,7 @@ class ContentEntry(models.Model):
 
 
 class ContentEntryMetadata(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     entry = models.ForeignKey(ContentEntry, on_delete=models.CASCADE, related_name="metadata")
     key = models.SlugField(max_length=100)
     label = models.CharField(max_length=200)

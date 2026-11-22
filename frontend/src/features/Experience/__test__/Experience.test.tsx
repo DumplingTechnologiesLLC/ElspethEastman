@@ -10,7 +10,13 @@ it('renders category lists, empty Object.values(Category), plain credits and loa
       groups={{
         ...experienceView.groups,
         [Category.MusicGames]: [
-          { id: 2, year: '', credit: 'Plain credit', link: null, tba: false },
+          {
+            id: '00000000-0000-4000-8000-000000000002',
+            year: '',
+            credit: 'Plain credit',
+            link: null,
+            tba: false,
+          },
         ],
       }}
     />,
@@ -32,7 +38,10 @@ it('delegates edit, deletion and category creation', () => {
   fireEvent.click(buttons[1]!);
   for (const button of screen.getAllByRole('button', { name: /Add new/ }))
     fireEvent.click(button);
-  expect(remove).toHaveBeenCalledWith(Category.VoiceCredits, 1);
+  expect(remove).toHaveBeenCalledWith(
+    Category.VoiceCredits,
+    '00000000-0000-4000-8000-000000000001',
+  );
   expect(edit).toHaveBeenCalledTimes(5);
 });
 it('renders an independent form with prop-driven validation and checkbox state', () => {

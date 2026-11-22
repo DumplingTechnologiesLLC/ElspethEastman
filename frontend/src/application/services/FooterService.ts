@@ -51,7 +51,7 @@ export class FooterService
   };
   show = (open: boolean) =>
     this.patch({ open, ...(open ? { draft: blank() } : {}) });
-  change = (id: number, key: 'affiliation' | 'link', value: string) => {
+  change = (id: string, key: 'affiliation' | 'link', value: string) => {
     const { draft, data, errors } = this.getSnapshot();
     if (id === NEW_AFFILIATION_ID)
       this.patch({ draft: { ...draft, [key]: value } });
@@ -69,7 +69,7 @@ export class FooterService
       });
     }
   };
-  reset = (id: number) => {
+  reset = (id: string) => {
     const { data, cached, errors } = this.getSnapshot();
     this.patch(
       id === NEW_AFFILIATION_ID
@@ -87,13 +87,13 @@ export class FooterService
           },
     );
   };
-  private busy(id: number, value: boolean) {
+  private busy(id: string, value: boolean) {
     const { busy } = this.getSnapshot();
     this.patch({
       busy: value ? [...busy, id] : busy.filter((item) => item !== id),
     });
   }
-  save = async (id: number) => {
+  save = async (id: string) => {
     const { draft, data, errors } = this.getSnapshot();
     const affiliation =
       id === NEW_AFFILIATION_ID
@@ -129,7 +129,7 @@ export class FooterService
         errors: { ...this.getSnapshot().errors, [id]: reply.data },
       });
   };
-  remove = async (id: number) => {
+  remove = async (id: string) => {
     if (!this.confirm()) return;
     this.busy(id, true);
     const reply = await this.api.request(`/api/affiliations/${id}/`, 'DELETE');

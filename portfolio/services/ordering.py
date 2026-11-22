@@ -26,11 +26,11 @@ def reorder_collection(data):
             queryset = queryset.filter(section=section)
         elif section is not None:
             raise ValidationError({"section": "This collection does not have sections."})
-        members = {row.pk: row for row in queryset}
+        members = {row.public_id: row for row in queryset}
         if len(ids) != len(set(ids)) or set(ids) != set(members):
             raise ValidationError({"ordered_ids": "Include every current member exactly once."})
         ordered = [members[pk] for pk in ids]
         for position, row in enumerate(ordered):
             row.sort_order = position
         model.objects.bulk_update(ordered, ["sort_order"])
-        return data
+        return {**data, "page_id": page.public_id}
