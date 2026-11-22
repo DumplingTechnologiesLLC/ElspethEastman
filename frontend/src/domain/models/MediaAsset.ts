@@ -33,3 +33,6 @@ export interface MediaUploadInput {
   readonly credit: string;
   readonly sourceUrl: string;
 }
+export interface MediaState {
+  readonly uploading: boolean;
+}

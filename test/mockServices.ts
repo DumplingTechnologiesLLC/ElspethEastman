@@ -127,12 +127,16 @@ export function mockServices() {
     appearances: collection(),
     chapters: collection(),
     currentItems: collection(),
+    practice: vi.fn(),
+    feature: vi.fn(),
+    reorder: vi.fn(),
   };
   const services: ServiceContainer = {
     session,
     notifications,
     contact,
     site,
+    media: { ...observable({ uploading: false }), upload: vi.fn() },
     page: vi.fn(() => page),
     skills: vi.fn(() => skills),
     projects: vi.fn(() => projects),

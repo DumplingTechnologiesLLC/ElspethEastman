@@ -68,7 +68,14 @@ import {
   upsertRecord,
   withoutRecord,
 } from './pageContent/shared';
-import { withEntry, withoutEntry } from './pageContent/featured';
+import {
+  withEntry,
+  withoutEntry,
+  withFeaturedItem,
+  withPractice,
+} from './pageContent/featured';
+import { withCollectionOrder } from './pageContent/order';
+import { PageKind } from '../../domain/models/Page';
 
 export class PageService
   extends Store<PageContentState>
@@ -343,4 +350,30 @@ export class PageService
         value.key === input.key ? withPageImage(content, value) : content,
       (content) => content.images.some((image) => image.key === input.key),
     );
+
+  practice: PageController['practice'] = (input) =>
+    this.mutate(
+      () => this.repository.practice({ ...input, pageId: this.pageId }),
+      withPractice,
+      (content) => content.kind === PageKind.Music,
+    );
+  feature: PageController['feature'] = (itemId) => {
+    const input = { pageId: this.pageId, itemId };
+    return this.mutate(
+      () => this.repository.feature(input),
+      withFeaturedItem,
+      (content) => withFeaturedItem(content, input) !== content,
+    );
+  };
+  reorder: PageController['reorder'] = (input) => {
+    const scoped = { ...input, pageId: this.pageId };
+    return this.mutate(
+      () => this.repository.reorder(scoped),
+      (content, value) =>
+        value.collection === input.collection && value.section === input.section
+          ? withCollectionOrder(content, value)
+          : content,
+      (content) => withCollectionOrder(content, scoped) !== content,
+    );
+  };
 }
