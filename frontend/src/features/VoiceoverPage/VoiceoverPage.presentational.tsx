@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { useEffect, useRef } from 'react';
+import { useEntryFocus } from '../../ui/useEntryFocus';
 import { InteriorLayout } from '../../ui/InteriorLayout/InteriorLayout.presentational';
 import { PageIntro } from '../../ui/PageIntro/PageIntro.presentational';
 import { PageBoundary } from '../../ui/PageBoundary/PageBoundary.presentational';
@@ -57,35 +57,9 @@ export function VoiceoverPage({
   close,
   controls,
 }: ReturnType<typeof useVoiceoverPageState>) {
-  const list = useRef<HTMLDivElement>(null),
-    detail = useRef<HTMLDivElement>(null),
-    opener = useRef<HTMLButtonElement | null>(null),
-    wasSelected = useRef(false);
-  const selectedId = selected?.id ?? null;
-  useEffect(() => {
-    if (selectedId !== null) {
-      wasSelected.current = true;
-      detail.current?.focus();
-    } else if (wasSelected.current) {
-      wasSelected.current = false;
-      const previous = opener.current;
-      const replacement =
-        previous === null
-          ? null
-          : Array.from(
-              list.current?.querySelectorAll<HTMLButtonElement>(
-                '[data-entry-focus]',
-              ) ?? [],
-            ).find(
-              (button) =>
-                button.dataset.entryFocus === previous.dataset.entryFocus,
-            );
-      (replacement ?? list.current)?.focus();
-      opener.current = null;
-    }
-  }, [selectedId]);
-  const select = (id: number, button: HTMLButtonElement) => {
-    opener.current = button;
+  const { list, detail, remember } = useEntryFocus(selected?.id ?? null);
+  const select = (id: string, button: HTMLButtonElement) => {
+    remember(button);
     open(id);
   };
   return (

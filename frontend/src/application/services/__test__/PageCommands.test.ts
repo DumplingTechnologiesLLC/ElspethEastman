@@ -146,7 +146,7 @@ it('reports rejected inline promotion and ordering instead of silently dropping 
     },
   } as const;
   repository.feature.mockResolvedValueOnce(failure);
-  await service.feature(40);
+  await service.feature('00000000-0000-4000-8000-000000000028');
   expect(notifications.show).toHaveBeenCalledWith(
     expect.objectContaining({
       content: 'This item changed. Please refresh and try again.',
@@ -157,7 +157,7 @@ it('reports rejected inline promotion and ordering instead of silently dropping 
   await service.reorder({
     collection: PageCollection.ContentEntries,
     section: null,
-    orderedIds: [40],
+    orderedIds: ['00000000-0000-4000-8000-000000000028'],
   });
   expect(notifications.show).toHaveBeenCalledOnce();
   expect(service.getSnapshot().content).toBe(voice);

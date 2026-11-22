@@ -13,7 +13,11 @@ import { useVoiceoverPageState } from '../useVoiceoverPageState';
 it('selects from the loaded aggregate, keeps promotion separate, and retains all CMS members', () => {
   const { services, page, site, editor } = mockServices();
   const hook = renderHook(useVoiceoverPageState, {
-    initialProps: { services, pageId: 2, editor: false },
+    initialProps: {
+      services,
+      pageId: '00000000-0000-4000-8000-000000000002',
+      editor: false,
+    },
   });
   expect(hook.result.current).toMatchObject({
     ready: false,
@@ -25,11 +29,20 @@ it('selects from the loaded aggregate, keeps promotion separate, and retains all
   });
   const content = toPageContent(
     aVoiceoverDTO({
-      roles: [anEntryDTO(), anEntryDTO({ id: 42, is_featured: true })],
-      feature: { page_id: 2, item_id: 42 },
+      roles: [
+        anEntryDTO(),
+        anEntryDTO({
+          id: '00000000-0000-4000-8000-00000000002a',
+          is_featured: true,
+        }),
+      ],
+      feature: {
+        page_id: '00000000-0000-4000-8000-000000000002',
+        item_id: '00000000-0000-4000-8000-00000000002a',
+      },
       copy: [
         aCopyDTO({
-          page_id: 2,
+          page_id: '00000000-0000-4000-8000-000000000002',
           section: 'roles',
           kind: 'section_label',
           value: 'Roles',
@@ -45,39 +58,49 @@ it('selects from the loaded aggregate, keeps promotion separate, and retains all
         type: 'page',
         page: content.page,
         editor: false,
-        selectedId: 40,
+        selectedId: '00000000-0000-4000-8000-000000000028',
         anchor: '',
       },
     });
   });
   expect(hook.result.current).toMatchObject({
     ready: true,
-    selected: { id: 40 },
-    featured: { id: 42 },
-    rows: [{ id: 40 }],
+    selected: { id: '00000000-0000-4000-8000-000000000028' },
+    featured: { id: '00000000-0000-4000-8000-00000000002a' },
+    rows: [{ id: '00000000-0000-4000-8000-000000000028' }],
     section: [{ text: 'Roles' }],
   });
   expect(page.load).not.toHaveBeenCalled();
-  hook.rerender({ services, pageId: 2, editor: true });
-  expect(hook.result.current.rows.map((row) => row.id)).toEqual([40, 42]);
+  hook.rerender({
+    services,
+    pageId: '00000000-0000-4000-8000-000000000002',
+    editor: true,
+  });
+  expect(hook.result.current.rows.map((row) => row.id)).toEqual([
+    '00000000-0000-4000-8000-000000000028',
+    '00000000-0000-4000-8000-00000000002a',
+  ]);
   expect(hook.result.current.featured!.badge).toBe('Featured');
   hook.result.current.controls!.add();
   hook.result.current.controls!.addHeading();
-  hook.result.current.open(42);
+  hook.result.current.open('00000000-0000-4000-8000-00000000002a');
   hook.result.current.close();
   expect(editor.open.mock.calls.map(([target]) => target)).toEqual([
     { type: 'content_entries', id: null },
     { type: 'copy', section: 'roles', key: null },
   ]);
-  expect(site.select.mock.calls).toEqual([[42], [null]]);
+  expect(site.select.mock.calls).toEqual([
+    ['00000000-0000-4000-8000-00000000002a'],
+    [null],
+  ]);
   act(() =>
     site.publish({
       ...site.getSnapshot(),
       route: {
         type: 'page',
-        page: { ...content.page, id: 99 },
+        page: { ...content.page, id: '00000000-0000-4000-8000-000000000063' },
         editor: false,
-        selectedId: 40,
+        selectedId: '00000000-0000-4000-8000-000000000028',
         anchor: '',
       },
     }),
@@ -90,7 +113,7 @@ it('selects from the loaded aggregate, keeps promotion separate, and retains all
         type: 'page',
         page: content.page,
         editor: false,
-        selectedId: 999,
+        selectedId: '00000000-0000-4000-8000-0000000003e7',
         anchor: '',
       },
     }),
