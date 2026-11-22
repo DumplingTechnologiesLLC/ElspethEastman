@@ -1,0 +1,342 @@
+{
+  "environment": "macOS, pinned Playwright Chromium",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1728,
+      "documentWidth": 1728,
+      "height": 1329,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 10,
+          "renderedHeight": 10
+        },
+        {
+          "source": "/assets/stream-BfTcSNX1.png",
+          "alt": "Elspeth collaborating with The Normies",
+          "naturalWidth": 900,
+          "naturalHeight": 598,
+          "renderedWidth": 1038.375,
+          "renderedHeight": 430.05078125
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        }
+      ]
+    },
+    {
+      "name": "mobile",
+      "width": 400,
+      "documentWidth": 400,
+      "height": 2127,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 10,
+          "renderedHeight": 10
+        },
+        {
+          "source": "/assets/stream-BfTcSNX1.png",
+          "alt": "Elspeth collaborating with The Normies",
+          "naturalWidth": 900,
+          "naturalHeight": 598,
+          "renderedWidth": 369.81396484375,
+          "renderedHeight": 309.9000244140625
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        }
+      ]
+    },
+    {
+      "name": "cms-mobile",
+      "width": 400,
+      "documentWidth": 400,
+      "height": 2361,
+      "assets": [
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 10,
+          "renderedHeight": 10
+        },
+        {
+          "source": "/assets/stream-BfTcSNX1.png",
+          "alt": "Elspeth collaborating with The Normies",
+          "naturalWidth": 900,
+          "naturalHeight": 598,
+          "renderedWidth": 369.81396484375,
+          "renderedHeight": 309.9000244140625
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 6,
+          "naturalHeight": 8,
+          "renderedWidth": 6,
+          "renderedHeight": 8
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 11,
+          "naturalHeight": 11,
+          "renderedWidth": 11.25,
+          "renderedHeight": 11.25
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 6,
+          "naturalHeight": 8,
+          "renderedWidth": 6,
+          "renderedHeight": 8
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 11,
+          "naturalHeight": 11,
+          "renderedWidth": 11.25,
+          "renderedHeight": 11.25
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 6,
+          "naturalHeight": 8,
+          "renderedWidth": 6,
+          "renderedHeight": 8
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 11,
+          "naturalHeight": 11,
+          "renderedWidth": 11.25,
+          "renderedHeight": 11.25
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 6,
+          "naturalHeight": 8,
+          "renderedWidth": 6,
+          "renderedHeight": 8
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 11,
+          "naturalHeight": 11,
+          "renderedWidth": 11.25,
+          "renderedHeight": 11.25
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 6,
+          "naturalHeight": 8,
+          "renderedWidth": 6,
+          "renderedHeight": 8
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 11,
+          "naturalHeight": 11,
+          "renderedWidth": 11.25,
+          "renderedHeight": 11.25
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 10,
+          "naturalHeight": 10,
+          "renderedWidth": 9.75,
+          "renderedHeight": 9.75
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 6,
+          "naturalHeight": 8,
+          "renderedWidth": 6,
+          "renderedHeight": 8
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 16,
+          "naturalHeight": 16,
+          "renderedWidth": 16,
+          "renderedHeight": 16
+        },
+        {
+          "source": "inline SVG",
+          "alt": "",
+          "naturalWidth": 11,
+          "naturalHeight": 11,
+          "renderedWidth": 11.25,
+          "renderedHeight": 11.25
+        }
+      ]
+    }
+  ],
+  "pageErrors": []
+}
