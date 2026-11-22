@@ -9,6 +9,7 @@ import { useProjectsService } from '../../hooks/useProjectsService';
 import { useExperienceService } from '../../hooks/useExperienceService';
 import { useFooterService } from '../../hooks/useFooterService';
 import { useSiteService } from '../../hooks/useSiteService';
+import { usePageService } from '../../hooks/usePageService';
 
 import { fixturePorts } from '../../../../test/fakes';
 it('creates independent request-scoped domain aggregates with interface-based accessors', () => {
@@ -19,6 +20,29 @@ it('creates independent request-scoped domain aggregates with interface-based ac
   expect(first.notifications).not.toBe(second.notifications);
   expect(first.site).not.toBe(second.site);
   expect(useSiteService(first)).toBe(first.site);
+  expect(first.page('00000000-0000-4000-8000-000000000001')).not.toBe(
+    second.page('00000000-0000-4000-8000-000000000001'),
+  );
+  expect(first.page('00000000-0000-4000-8000-000000000001')).not.toBe(
+    first.page('00000000-0000-4000-8000-000000000002'),
+  );
+  const page = renderHook(usePageService, {
+    initialProps: {
+      services: first,
+      pageId: '00000000-0000-4000-8000-000000000001',
+    },
+  });
+  expect(page.result.current).toBe(
+    first.page('00000000-0000-4000-8000-000000000001'),
+  );
+  page.rerender({
+    services: first,
+    pageId: '00000000-0000-4000-8000-000000000001',
+  });
+  expect(page.result.current.getSnapshot()).toMatchObject({
+    pageId: '00000000-0000-4000-8000-000000000001',
+    status: 'idle',
+  });
   expect(useSessionService(first)).toBe(first.session);
   expect(useUIAlertService(first)).toBe(first.notifications);
   expect(useContactService(first)).toBe(first.contact);
