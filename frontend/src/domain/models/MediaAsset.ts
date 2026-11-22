@@ -9,7 +9,7 @@ export function isSupportedImageMime(value: string): value is MediaMime {
 }
 
 export interface MediaAsset {
-  readonly id: number;
+  readonly id: string;
   readonly url: string;
   readonly width: number;
   readonly height: number;
@@ -24,7 +24,7 @@ export interface ImageUse {
   readonly caption: string;
 }
 export interface ImageUseInput {
-  readonly assetId: number;
+  readonly assetId: string;
   readonly altText: string;
   readonly caption: string;
 }

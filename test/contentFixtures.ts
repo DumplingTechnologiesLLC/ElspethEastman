@@ -24,7 +24,14 @@ import type {
 } from '../frontend/src/application/dto/PageDTO';
 import type { StreamClipDTO } from '../frontend/src/application/dto/StreamClipDTO';
 
-const ids = { home: 1, voiceover: 2, music: 3, streaming: 4, press: 5, bio: 6 };
+const ids = {
+  home: '00000000-0000-4000-8000-000000000001',
+  voiceover: '00000000-0000-4000-8000-000000000002',
+  music: '00000000-0000-4000-8000-000000000003',
+  streaming: '00000000-0000-4000-8000-000000000004',
+  press: '00000000-0000-4000-8000-000000000005',
+  bio: '00000000-0000-4000-8000-000000000006',
+};
 export function aPageDTO<Kind extends PageKindDTO>(kind: Kind): PageDTO<Kind> {
   return {
     id: ids[kind],
@@ -38,7 +45,7 @@ export function aMediaAssetDTO(
   overrides: Partial<MediaAssetDTO> = {},
 ): MediaAssetDTO {
   return {
-    id: 20,
+    id: '00000000-0000-4000-8000-000000000014',
     url: '/media/uploads/portrait.png',
     width: 800,
     height: 600,
@@ -61,8 +68,8 @@ export function anImageUseDTO(
 }
 export function aCopyDTO(overrides: Partial<PageCopyDTO> = {}): PageCopyDTO {
   return {
-    id: 30,
-    page_id: 1,
+    id: '00000000-0000-4000-8000-00000000001e',
+    page_id: '00000000-0000-4000-8000-000000000001',
     key: 'intro-one',
     section: 'intro',
     kind: 'body',
@@ -75,8 +82,8 @@ export function anEntryDTO(
   overrides: Partial<ContentEntryDTO> = {},
 ): ContentEntryDTO {
   return {
-    id: 40,
-    page_id: 2,
+    id: '00000000-0000-4000-8000-000000000028',
+    page_id: '00000000-0000-4000-8000-000000000002',
     title: 'Tristana',
     eyebrow: 'League of Legends',
     description: 'Character summary',
@@ -90,8 +97,8 @@ export function anEntryDTO(
     published_at: null,
     metadata: [
       {
-        id: 41,
-        entry_id: 40,
+        id: '00000000-0000-4000-8000-000000000029',
+        entry_id: '00000000-0000-4000-8000-000000000028',
         key: 'details',
         label: 'Details',
         value: 'Character detail',
@@ -107,7 +114,7 @@ export function aMusicFeatureDTO(
   overrides: Partial<MusicFeatureDTO> = {},
 ): MusicFeatureDTO {
   return {
-    page_id: 3,
+    page_id: '00000000-0000-4000-8000-000000000003',
     eyebrow: 'Practice',
     title: 'Cello',
     description: 'Practice notes',
@@ -125,8 +132,8 @@ export function aReleaseDTO(
   overrides: Partial<MusicReleaseDTO> = {},
 ): MusicReleaseDTO {
   return {
-    id: 50,
-    page_id: 3,
+    id: '00000000-0000-4000-8000-000000000032',
+    page_id: '00000000-0000-4000-8000-000000000003',
     year: '2014',
     format: 'Album',
     title: 'Original music',
@@ -146,8 +153,8 @@ export function aClipDTO(
   overrides: Partial<StreamClipDTO> = {},
 ): StreamClipDTO {
   return {
-    id: 60,
-    page_id: 4,
+    id: '00000000-0000-4000-8000-00000000003c',
+    page_id: '00000000-0000-4000-8000-000000000004',
     eyebrow: 'Game',
     title: 'Highlights',
     category: 'Highlights',
@@ -164,8 +171,8 @@ export function anAppearanceDTO(
   overrides: Partial<AppearanceDTO> = {},
 ): AppearanceDTO {
   return {
-    id: 70,
-    page_id: 5,
+    id: '00000000-0000-4000-8000-000000000046',
+    page_id: '00000000-0000-4000-8000-000000000005',
     year: '2026',
     title: 'Convention',
     format: 'Panel',
@@ -178,8 +185,8 @@ export function aChapterDTO(
   overrides: Partial<BioChapterDTO> = {},
 ): BioChapterDTO {
   return {
-    id: 80,
-    page_id: 6,
+    id: '00000000-0000-4000-8000-000000000050',
+    page_id: '00000000-0000-4000-8000-000000000006',
     eyebrow: 'Early years',
     heading: 'The beginning',
     body: 'A chapter',
@@ -191,8 +198,8 @@ export function aCurrentItemDTO(
   overrides: Partial<CurrentItemDTO> = {},
 ): CurrentItemDTO {
   return {
-    id: 90,
-    page_id: 6,
+    id: '00000000-0000-4000-8000-00000000005a',
+    page_id: '00000000-0000-4000-8000-000000000006',
     eyebrow: 'Music',
     title: 'Practice',
     description: 'Current work',
@@ -210,11 +217,16 @@ export function sharedDTO<Kind extends PageKindDTO>(
     copy: [aCopyDTO({ page_id: page.id })],
     images: [{ page_id: page.id, key: 'portrait', image: anImageUseDTO() }],
     eyebrows: [
-      { id: 100, page_id: page.id, label: 'Voice actor', sort_order: 0 },
+      {
+        id: '00000000-0000-4000-8000-000000000064',
+        page_id: page.id,
+        label: 'Voice actor',
+        sort_order: 0,
+      },
     ],
     trivia: [
       {
-        id: 101,
+        id: '00000000-0000-4000-8000-000000000065',
         page_id: page.id,
         label: 'Since',
         value: '2012',
@@ -234,7 +246,7 @@ export function aVoiceoverDTO(
   return {
     ...sharedDTO('voiceover'),
     roles: [anEntryDTO()],
-    feature: { page_id: 2, item_id: null },
+    feature: { page_id: '00000000-0000-4000-8000-000000000002', item_id: null },
     ...overrides,
   };
 }
@@ -253,9 +265,12 @@ export function aStreamingDTO(
 ): StreamingContentDTO {
   return {
     ...sharedDTO('streaming'),
-    entries: [anEntryDTO({ page_id: 4 })],
+    entries: [anEntryDTO({ page_id: '00000000-0000-4000-8000-000000000004' })],
     clips: [aClipDTO()],
-    feature: { page_id: 4, item_id: 40 },
+    feature: {
+      page_id: '00000000-0000-4000-8000-000000000004',
+      item_id: '00000000-0000-4000-8000-000000000028',
+    },
     ...overrides,
   };
 }
@@ -266,12 +281,12 @@ export function aPressDTO(
     ...sharedDTO('press'),
     entries: [
       anEntryDTO({
-        page_id: 5,
+        page_id: '00000000-0000-4000-8000-000000000005',
         published_at: '2026-10-01T14:30:00Z',
         metadata: [
           {
-            id: 41,
-            entry_id: 40,
+            id: '00000000-0000-4000-8000-000000000029',
+            entry_id: '00000000-0000-4000-8000-000000000028',
             key: 'outlet',
             label: 'Publication',
             value: 'Outlet',
@@ -281,7 +296,10 @@ export function aPressDTO(
       }),
     ],
     appearances: [anAppearanceDTO()],
-    feature: { page_id: 5, item_id: 40 },
+    feature: {
+      page_id: '00000000-0000-4000-8000-000000000005',
+      item_id: '00000000-0000-4000-8000-000000000028',
+    },
     ...overrides,
   };
 }
